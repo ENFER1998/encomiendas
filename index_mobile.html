@@ -9,40 +9,6 @@
 </head>
 <body>
 
-  <div id="loginScreen" class="fixed inset-0 bg-blue-700 z-50 flex flex-col items-center justify-center text-white p-6">
-    <i class="fa-solid fa-truck-fast text-6xl mb-4"></i>
-    <h1 class="text-3xl font-bold mb-8">TSI APP</h1>
-    <div class="w-full max-w-xs space-y-4 mb-6">
-      <input type="text" id="userInput" placeholder="Usuario" class="w-full text-center text-xl p-4 rounded-xl text-slate-800" autocapitalize="none">
-      <input type="password" id="passInput" placeholder="Contraseña" class="w-full text-center text-xl p-4 rounded-xl text-slate-800">
-    </div>
-    <button onclick="ingresarAlSistema(this)" class="bg-slate-900 text-white w-full max-w-xs py-4 rounded-xl font-bold text-lg">ENTRAR</button>
-  </div>
-
-  <header class="bg-blue-700 text-white p-5 rounded-b-3xl shadow-md hidden" id="appHeader">
-    <h2 class="text-xl font-bold">Hola, <span id="userName">Agente</span></h2><p class="text-blue-200 text-sm">Operaciones en Ruta</p>
-  </header>
-
-  <main id="vistaEntregas" class="p-5 hidden">
-    <div class="bg-white rounded-2xl shadow-sm p-6 mb-4">
-      <h3 class="font-bold text-slate-800 mb-4"><i class="fa-solid fa-camera text-blue-600 mr-2"></i> Registrar Entrega</h3>
-      <input type="text" id="idEnvio" placeholder="ID (Ej: TSI-123456)" class="w-full border-2 p-4 rounded-xl text-xl text-center font-bold mb-4 uppercase">
-      <div class="border-2 border-dashed bg-blue-50 p-6 text-center rounded-xl" onclick="document.getElementById('camera').click()">
-        <p class="font-bold text-blue-700">📸 Capturar Evidencia</p>
-        <input type="file" id="camera" accept="image/*" capture="environment" class="hidden" onchange="leerFoto(event)">
-      </div>
-      <img id="preview" class="mt-4 rounded-xl hidden w-full h-48 object-cover border">
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>TSI Driver App</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style> body { background-color: #f1f5f9; padding-bottom: 80px; } </style>
-</head>
-<body>
-
   <!-- PANTALLA LOGIN -->
   <div id="loginScreen" class="fixed inset-0 bg-blue-700 z-50 flex flex-col items-center justify-center text-white p-6">
     <i class="fa-solid fa-truck-fast text-6xl mb-4"></i>
@@ -150,11 +116,16 @@
     let fotoEntregaData = "";
     let fotoRecepcionData = "";
 
+    // BLINDAJE DE CORS PARA CELULARES
     async function apiRequest(payload) {
       try {
-        let res = await fetch(API_URL, { method: "POST", body: JSON.stringify(payload) });
+        let res = await fetch(API_URL, { 
+          method: "POST", 
+          headers: { "Content-Type": "text/plain;charset=utf-8" }, 
+          body: JSON.stringify(payload) 
+        });
         return await res.json();
-      } catch (e) { return { success: false, error: e.message }; }
+      } catch (e) { return { success: false, error: "Error de red: " + e.message }; }
     }
     
     async function ingresarAlSistema(btn) {
@@ -174,7 +145,7 @@
         document.getElementById('userName').innerText = res.nombre;
         usuarioActual = res.nombre;
         if(res.rol === 'Dueño') { document.getElementById('btnFinanzas').classList.remove('hidden'); cargarDashboardMovil(); }
-      } else { alert(res.error); }
+      } else { alert("Aviso: " + res.error); }
     }
 
     function cambiarVista(vista) {
@@ -260,11 +231,11 @@
         res.resultados.forEach(r => {
           div.innerHTML += `
             <div class="border rounded-xl p-4 shadow-sm mb-4 border-l-4 ${r.estado==='Entregado'?'border-green-500':'border-amber-500'}">
-              <p class="font-bold text-blue-700">${r.id} <span class="float-right text-sm text-slate-500">${r.estado}</span></p>
+              <p class="font-bold text-blue-700">${r.id} <span class="float-right text-sm font-bold ${r.estado==='Entregado'?'text-green-600':'text-amber-600'}">${r.estado}</span></p>
               <p class="text-sm mt-2"><b>De:</b> ${r.ciRem} <br><b>Para:</b> ${r.ciDest}</p>
               <div class="mt-3 flex gap-2">
-                ${r.fotoRecepcion ? `<a href="${r.fotoRecepcion}" target="_blank" class="text-xs bg-slate-100 p-2 rounded block text-center w-1/2">Foto Origen</a>` : ''}
-                ${r.fotoEntrega ? `<a href="${r.fotoEntrega}" target="_blank" class="text-xs bg-blue-100 p-2 rounded block text-center w-1/2 text-blue-800">Foto Destino</a>` : ''}
+                ${r.fotoRecepcion ? `<a href="${r.fotoRecepcion}" target="_blank" class="text-xs bg-slate-100 p-2 rounded font-bold block text-center w-1/2">Foto Origen</a>` : ''}
+                ${r.fotoEntrega ? `<a href="${r.fotoEntrega}" target="_blank" class="text-xs bg-blue-100 p-2 rounded font-bold block text-center w-1/2 text-blue-800">Foto Destino</a>` : ''}
               </div>
             </div>`;
         });
