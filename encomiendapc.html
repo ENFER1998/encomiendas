@@ -1,107 +1,151 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Dashboard Encomiendas</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    body { background-color: #F7F9FC; font-family: 'Inter', sans-serif; }
-    .card { background: white; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); padding: 24px; border: 1px solid #E2E8F0; }
-  </style>
+  <style> body { background-color: #F7F9FC; } </style>
 </head>
 <body class="p-8">
 
-  <!-- Header -->
   <header class="flex justify-between items-center mb-8">
     <div>
-      <h1 class="text-2xl font-bold text-gray-800">Panel de Control</h1>
-      <p class="text-gray-500 text-sm">Bienvenido, Fernando Enrique. Sede: Ciudad del Este.</p>
+      <h1 class="text-2xl font-bold">Gestión de Encomiendas</h1>
+      <!-- Se inyecta el correo y rol desde el backend -->
+      <p class="text-gray-500 text-sm">Usuario: <?= usuario ?> | Rol: <span id="rolUsuario" class="font-bold text-blue-600"><?= rol ?></span></p>
     </div>
-    <button onclick="document.getElementById('modalEnvio').classList.remove('hidden')" class="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 transition">
+    <button onclick="document.getElementById('modalEnvio').classList.remove('hidden')" class="bg-blue-600 text-white px-5 py-2 rounded-lg">
       + Nuevo Envío
     </button>
   </header>
 
-  <!-- Dashboard Cards -->
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-    <div class="card border-l-4 border-blue-500">
-      <h3 class="text-gray-500 text-sm font-semibold">Envíos Pendientes</h3>
-      <p class="text-3xl font-bold text-gray-800 mt-2" id="dashPendientes">...</p>
+  <!-- MÓDULO FINANCIERO: Visible solo para el Dueño -->
+  <div class="solo-dueno">
+    <div class="grid grid-cols-3 gap-6 mb-8">
+      <div class="bg-white p-6 rounded-lg shadow border-l-4 border-blue-500">
+        <h3 class="text-gray-500 font-semibold">En Tránsito</h3>
+        <p class="text-3xl font-bold mt-2" id="dashPendientes">...</p>
+      </div>
+      <div class="bg-white p-6 rounded-lg shadow border-l-4 border-green-500">
+        <h3 class="text-gray-500 font-semibold">Entregados</h3>
+        <p class="text-3xl font-bold mt-2" id="dashEntregados">...</p>
+      </div>
+      <div class="bg-white p-6 rounded-lg shadow border-l-4 border-yellow-500">
+        <h3 class="text-gray-500 font-semibold">Cuentas por Cobrar</h3>
+        <p class="text-3xl font-bold mt-2">Gs. <span id="dashCobrar">...</span></p>
+      </div>
     </div>
-    <div class="card border-l-4 border-green-500">
-      <h3 class="text-gray-500 text-sm font-semibold">Entregados Hoy</h3>
-      <p class="text-3xl font-bold text-gray-800 mt-2" id="dashEntregados">...</p>
-    </div>
-    <div class="card border-l-4 border-yellow-500">
-      <h3 class="text-gray-500 text-sm font-semibold">Cuentas por Cobrar (Fin de mes)</h3>
-      <p class="text-3xl font-bold text-gray-800 mt-2">Gs. <span id="dashCobrar">...</span></p>
+    
+    <div class="mt-4">
+      <button onclick="window.open('https://docs.google.com/spreadsheets/d/1dAhefOk9MTmJRSL560K_KcmnOWRzazHJJVnbAdvM130/export?format=csv&gid=0')" class="bg-green-600 text-white px-4 py-2 rounded shadow">
+        Descargar Reporte Mensual (Excel/CSV)
+      </button>
     </div>
   </div>
 
-  <!-- Modal Nuevo Envío -->
-  <div id="modalEnvio" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-    <div class="card w-full max-w-2xl">
-      <h2 class="text-xl font-bold mb-4">Registrar Nueva Encomienda</h2>
-      <form id="formEnvio" onsubmit="enviarFormulario(event)">
-        <div class="grid grid-cols-2 gap-4">
+  <!-- Modal Nuevo Envío (Visible para Dueño y Empleado) -->
+  <div id="modalEnvio" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center overflow-y-auto">
+    <div class="bg-white p-6 rounded-lg shadow w-full max-w-3xl my-8">
+      <h2 class="text-xl font-bold mb-4">Registrar Encomienda</h2>
+      <form id="formEnvio" onsubmit="guardar(event)">
+        
+        <!-- Ficha Remitente con Autocompletado -->
+        <div class="bg-gray-50 p-4 border rounded mb-4 grid grid-cols-2 gap-4">
+          <h3 class="col-span-2 font-bold text-gray-700">Remitente</h3>
           <div>
-            <label class="block text-sm font-medium text-gray-700">Remitente</label>
-            <input type="text" id="remitente" class="mt-1 w-full border rounded-md p-2" required>
+            <label class="text-sm">CI / RUC (Escribe y presiona Tab)</label>
+            <input type="text" id="ciRem" onblur="buscar(this.value, 'Rem')" class="w-full border p-2 rounded" required>
           </div>
+          <div><label class="text-sm">Nombre</label><input type="text" id="nomRem" class="w-full border p-2 rounded" required></div>
+          <div><label class="text-sm">Teléfono</label><input type="text" id="telRem" class="w-full border p-2 rounded"></div>
+        </div>
+
+        <!-- Ficha Destinatario con Autocompletado -->
+        <div class="bg-gray-50 p-4 border rounded mb-4 grid grid-cols-2 gap-4">
+          <h3 class="col-span-2 font-bold text-gray-700">Destinatario</h3>
           <div>
-            <label class="block text-sm font-medium text-gray-700">Destinatario</label>
-            <input type="text" id="destinatario" class="mt-1 w-full border rounded-md p-2" required>
+            <label class="text-sm">CI / RUC (Escribe y presiona Tab)</label>
+            <input type="text" id="ciDest" onblur="buscar(this.value, 'Dest')" class="w-full border p-2 rounded" required>
           </div>
-          <div class="col-span-2">
-            <label class="block text-sm font-medium text-gray-700">Detalle del Paquete</label>
-            <input type="text" id="detalle" placeholder="Ej: 1 (UNO) PAQ CHICO BLANCO..." class="mt-1 w-full border rounded-md p-2" required>
-          </div>
+          <div><label class="text-sm">Nombre / Empresa</label><input type="text" id="nomDest" class="w-full border p-2 rounded" required></div>
+          <div><label class="text-sm">Teléfono</label><input type="text" id="telDest" class="w-full border p-2 rounded"></div>
+          <div><label class="text-sm">Dirección de Entrega</label><input type="text" id="dirDest" class="w-full border p-2 rounded"></div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">Costo Gs.</label>
-            <input type="number" id="costo" class="mt-1 w-full border rounded-md p-2" required>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700">Tipo de Cliente / Pago</label>
-            <select id="tipoCliente" class="mt-1 w-full border rounded-md p-2">
-              <option value="Contado">Pequeño (Pago Inmediato)</option>
-              <option value="Cobro Destino">Cobro en Destino</option>
-              <option value="Fin de Mes">Empresa (Pago a fin de mes)</option>
+            <label class="text-sm">Tipo de Cliente</label>
+            <select id="tipoCli" class="w-full border p-2 rounded">
+              <option value="Contado">Normal (Pago al enviar/recibir)</option>
+              <option value="Corporativo">Empresa (Abono a Fin de Mes)</option>
             </select>
           </div>
         </div>
-        <div class="mt-6 flex justify-end gap-3">
-          <button type="button" onclick="document.getElementById('modalEnvio').classList.add('hidden')" class="px-4 py-2 text-gray-600 bg-gray-100 rounded-md">Cancelar</button>
-          <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md">Guardar Envío</button>
+
+        <!-- Detalles del Envío -->
+        <div class="grid grid-cols-2 gap-4 mb-6">
+          <div class="col-span-2"><label class="text-sm">Detalle (Ej: 1 PAQ CHICO BLANCO)</label><input type="text" id="detalle" class="w-full border p-2 rounded" required></div>
+          <div><label class="text-sm">Costo de Envío Gs.</label><input type="number" id="costo" class="w-full border p-2 rounded" required></div>
+        </div>
+
+        <div class="flex justify-end gap-3">
+          <button type="button" onclick="document.getElementById('modalEnvio').classList.add('hidden')" class="px-4 py-2 bg-gray-200 rounded">Cancelar</button>
+          <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded">Guardar</button>
         </div>
       </form>
     </div>
   </div>
 
   <script>
-    // Cargar métricas al iniciar
-    google.script.run.withSuccessHandler(function(data) {
-      document.getElementById('dashPendientes').innerText = data.pendientes;
-      document.getElementById('dashEntregados').innerText = data.entregados;
-      document.getElementById('dashCobrar').innerText = data.porCobrar.toLocaleString('es-PY');
-    }).getDashboardData();
+    // Control de Accesos por Rol
+    document.addEventListener("DOMContentLoaded", () => {
+      const rol = "<?= rol ?>";
+      if (rol === 'Empleado') {
+        document.querySelectorAll('.solo-dueno').forEach(el => el.style.display = 'none');
+      } else {
+        google.script.run.withSuccessHandler(data => {
+          document.getElementById('dashPendientes').innerText = data.pendientes;
+          document.getElementById('dashEntregados').innerText = data.entregados;
+          document.getElementById('dashCobrar').innerText = data.porCobrar.toLocaleString('es-PY');
+        }).getDashboardData();
+      }
+    });
 
-    function enviarFormulario(e) {
+    // Autocompletado de Clientes
+    function buscar(ci, prefijo) {
+      if(!ci) return;
+      document.getElementById('ci' + prefijo).classList.add('bg-yellow-100');
+      google.script.run.withSuccessHandler(res => {
+        document.getElementById('ci' + prefijo).classList.remove('bg-yellow-100');
+        if(res.encontrado) {
+          document.getElementById('nom' + prefijo).value = res.nombre;
+          document.getElementById('tel' + prefijo).value = res.telefono;
+          if(prefijo === 'Dest') {
+            document.getElementById('dirDest').value = res.direccion;
+            document.getElementById('tipoCli').value = res.tipo;
+          }
+        }
+      }).buscarCliente(ci);
+    }
+
+    // Guardar Envío
+    function guardar(e) {
       e.preventDefault();
       const datos = {
-        remitente: document.getElementById('remitente').value,
-        destinatario: document.getElementById('destinatario').value,
+        ciRemitente: document.getElementById('ciRem').value,
+        nombreRemitente: document.getElementById('nomRem').value,
+        telRemitente: document.getElementById('telRem').value,
+        ciDestinatario: document.getElementById('ciDest').value,
+        nombreDestinatario: document.getElementById('nomDest').value,
+        telDestinatario: document.getElementById('telDest').value,
+        dirDestinatario: document.getElementById('dirDest').value,
+        tipoCliente: document.getElementById('tipoCli').value,
         detalle: document.getElementById('detalle').value,
-        costo: document.getElementById('costo').value,
-        pago: document.getElementById('tipoCliente').value === 'Fin de Mes' ? 'Pendiente Fin de Mes' : 'Pagado',
-        tipoCliente: document.getElementById('tipoCliente').value
+        costo: document.getElementById('costo').value
       };
       
-      google.script.run.withSuccessHandler((res) => {
-        alert("Guardado con ID: " + res.id);
-        document.getElementById('formEnvio').reset();
-        document.getElementById('modalEnvio').classList.add('hidden');
-        location.reload(); // Recargar para actualizar dashboard
-      }).guardarEnvio(datos);
+      const btn = e.target.querySelector('button[type="submit"]');
+      btn.innerText = "Guardando..."; btn.disabled = true;
+
+      google.script.run.withSuccessHandler(res => {
+        alert("Enviado. ID: " + res.id);
+        location.reload();
+      }).guardarEnvioCompleto(datos, "<?= usuario ?>");
     }
   </script>
 </body>
