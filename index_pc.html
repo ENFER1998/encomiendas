@@ -13,52 +13,32 @@
     <div class="bg-white p-10 rounded-2xl shadow-2xl w-96 text-center">
       <h1 class="text-3xl font-bold text-slate-800 mb-2">TSI</h1>
       <p class="text-slate-500 mb-8">Sistema Logístico Central</p>
-      
       <div class="space-y-4 mb-6">
-        <input type="text" id="userInput" placeholder="Usuario" class="w-full text-center text-xl border-b-2 border-blue-500 p-2 focus:outline-none bg-slate-50" autocomplete="off">
+        <input type="text" id="userInput" placeholder="Usuario" class="w-full text-center text-xl border-b-2 border-blue-500 p-2 focus:outline-none bg-slate-50">
         <input type="password" id="passInput" placeholder="Contraseña" class="w-full text-center text-xl border-b-2 border-blue-500 p-2 focus:outline-none bg-slate-50">
       </div>
-      
-      <button onclick="ingresarAlSistema(this)" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition"><i class="fa-solid fa-right-to-bracket mr-2"></i> INGRESAR</button>
+      <button onclick="ingresarAlSistema(this)" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg"><i class="fa-solid fa-right-to-bracket mr-2"></i> INGRESAR</button>
     </div>
   </div>
 
   <div id="appContainer" class="flex w-full h-full hidden">
     <aside class="w-64 bg-slate-900 text-white flex flex-col">
-      <div class="p-6 text-center border-b border-slate-700">
-        <h2 class="text-2xl font-bold">TSI Admin</h2>
-        <p class="text-sm text-slate-400 mt-1" id="userLabel">Dueño</p>
-      </div>
-      <nav class="flex-1 p-4 space-y-2">
-        <button class="w-full text-left p-3 rounded-lg bg-blue-600 shadow"><i class="fa-solid fa-chart-pie w-6"></i> Dashboard</button>
-      </nav>
-      <div class="p-4 border-t border-slate-700">
-        <button onclick="location.reload()" class="w-full text-left p-3 text-red-400 hover:bg-slate-800 rounded-lg"><i class="fa-solid fa-power-off w-6"></i> Cerrar Sesión</button>
-      </div>
+      <div class="p-6 text-center border-b border-slate-700"><h2 class="text-2xl font-bold">TSI Admin</h2><p class="text-sm text-slate-400 mt-1" id="userLabel">Dueño</p></div>
+      <nav class="flex-1 p-4 space-y-2"><button class="w-full text-left p-3 rounded-lg bg-blue-600"><i class="fa-solid fa-chart-pie w-6"></i> Dashboard</button></nav>
+      <div class="p-4 border-t border-slate-700"><button onclick="location.reload()" class="w-full text-left p-3 text-red-400 hover:bg-slate-800"><i class="fa-solid fa-power-off w-6"></i> Salir</button></div>
     </aside>
 
     <main class="flex-1 flex flex-col h-full overflow-y-auto">
       <header class="bg-white shadow-sm p-6 flex justify-between items-center">
         <h2 class="text-2xl font-bold text-slate-800">Panel de Control</h2>
-        <button onclick="document.getElementById('modalEnvio').classList.remove('hidden')" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold shadow hover:bg-blue-700">
-          <i class="fa-solid fa-plus mr-2"></i> Nuevo Envío
-        </button>
+        <button onclick="document.getElementById('modalEnvio').classList.remove('hidden')" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold shadow hover:bg-blue-700"><i class="fa-solid fa-plus mr-2"></i> Nuevo Envío</button>
       </header>
 
       <div class="p-8 space-y-8">
         <div class="grid grid-cols-3 gap-6">
-          <div class="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-indigo-500">
-            <p class="text-sm text-slate-500 font-semibold uppercase tracking-wider">Ingresos del Mes</p>
-            <p class="text-3xl font-bold text-slate-800 mt-2">Gs. <span id="dashGanancia">0</span></p>
-          </div>
-          <div class="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-amber-500">
-            <p class="text-sm text-slate-500 font-semibold uppercase tracking-wider">En Tránsito</p>
-            <p class="text-3xl font-bold text-slate-800 mt-2" id="dashPendientes">0</p>
-          </div>
-          <div class="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-emerald-500">
-            <p class="text-sm text-slate-500 font-semibold uppercase tracking-wider">Entregados</p>
-            <p class="text-3xl font-bold text-slate-800 mt-2" id="dashEntregados">0</p>
-          </div>
+          <div class="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-indigo-500"><p class="text-sm text-slate-500 font-semibold uppercase">Ingresos Mes</p><p class="text-3xl font-bold mt-2">Gs. <span id="dashGanancia">0</span></p></div>
+          <div class="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-amber-500"><p class="text-sm text-slate-500 font-semibold uppercase">En Tránsito</p><p class="text-3xl font-bold mt-2" id="dashPendientes">0</p></div>
+          <div class="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-emerald-500"><p class="text-sm text-slate-500 font-semibold uppercase">Entregados</p><p class="text-3xl font-bold mt-2" id="dashEntregados">0</p></div>
         </div>
       </div>
     </main>
@@ -67,10 +47,9 @@
   <div id="modalEnvio" class="hidden fixed inset-0 bg-slate-900 bg-opacity-75 z-50 flex justify-center items-center overflow-y-auto p-4">
     <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl p-8">
       <div class="flex justify-between items-center mb-6 border-b pb-4">
-        <h2 class="text-2xl font-bold text-slate-800"><i class="fa-solid fa-truck-fast text-blue-600 mr-2"></i> Registrar Encomienda</h2>
+        <h2 class="text-2xl font-bold"><i class="fa-solid fa-truck-fast text-blue-600 mr-2"></i> Registrar Encomienda</h2>
         <button onclick="document.getElementById('modalEnvio').classList.add('hidden')" class="text-slate-400 hover:text-red-500"><i class="fa-solid fa-xmark text-2xl"></i></button>
       </div>
-
       <form id="formEnvio" onsubmit="guardarEnvio(event)" class="space-y-6">
         <div class="grid grid-cols-2 gap-8">
           <div class="bg-slate-50 p-6 rounded-xl border border-slate-200">
@@ -96,7 +75,7 @@
           <div><label class="text-sm font-semibold">Costo Envío (Gs)</label><input type="number" id="costo" class="w-full border p-2 rounded" required></div>
           <div class="col-span-3">
             <label class="text-sm font-semibold">Modalidad de Pago</label>
-            <select id="tipoCli" class="w-full border p-2 rounded font-bold text-slate-700">
+            <select id="tipoCli" class="w-full border p-2 rounded font-bold">
               <option value="Contado">PAGO AL CONTADO</option>
               <option value="Corporativo">CUENTA CORPORATIVA (A fin de mes)</option>
             </select>
@@ -108,90 +87,74 @@
   </div>
 
   <script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbyAwM6OAW5u_jLp2y2iCdJZtK3P7yUONt2UEFIuVTRYNIrwQGMD03_uJyGpzJnxcKkYmQ/exec";
     let usuarioActual = "";
-    
-    function ingresarAlSistema(btn) {
-      const user = document.getElementById('userInput').value;
-      const pass = document.getElementById('passInput').value;
-      
-      if(!user || !pass) {
-        alert("Atención: Ingrese Usuario y Contraseña");
-        return;
-      }
 
-      btn.innerHTML = "CONECTANDO...";
-      btn.disabled = true;
-
+    async function apiRequest(payload) {
       try {
-        google.script.run
-          .withSuccessHandler(function(res) {
-            btn.innerHTML = `<i class="fa-solid fa-right-to-bracket mr-2"></i> INGRESAR`;
-            btn.disabled = false;
-            
-            if(res.success) {
-              if(res.rol !== 'Dueño') {
-                alert("Acceso denegado: Los empleados deben usar la versión Móvil.");
-                return;
-              }
-              document.getElementById('loginScreen').style.display = 'none';
-              document.getElementById('appContainer').classList.remove('hidden');
-              document.getElementById('userLabel').innerText = res.nombre;
-              usuarioActual = res.nombre;
-              cargarDashboard();
-            } else {
-              alert("Aviso del sistema: " + res.error);
-            }
-          })
-          .withFailureHandler(function(err) {
-            btn.innerHTML = `<i class="fa-solid fa-right-to-bracket mr-2"></i> INGRESAR`;
-            btn.disabled = false;
-            alert("Bloqueo de Google detectado: " + err.message);
-          })
-          .iniciarSesion(user, pass);
-      } catch(e) {
-        alert("Error del navegador: " + e.message);
-      }
+        let res = await fetch(API_URL, { method: "POST", body: JSON.stringify(payload) });
+        return await res.json();
+      } catch (e) { return { success: false, error: e.message }; }
     }
 
-    function buscar(tipo) {
+    async function ingresarAlSistema(btn) {
+      const user = document.getElementById('userInput').value;
+      const pass = document.getElementById('passInput').value;
+      if(!user || !pass) return alert("Ingrese Usuario y Contraseña");
+      btn.innerHTML = "CONECTANDO..."; btn.disabled = true;
+
+      const res = await apiRequest({ accion: 'login', usuario: user, password: pass });
+      
+      btn.innerHTML = "INGRESAR"; btn.disabled = false;
+      if(res.success) {
+        if(res.rol !== 'Dueño') return alert("Los empleados deben usar la versión Móvil.");
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('appContainer').classList.remove('hidden');
+        document.getElementById('userLabel').innerText = res.nombre;
+        usuarioActual = res.nombre;
+        cargarDashboard();
+      } else { alert("Error: " + res.error); }
+    }
+
+    async function buscar(tipo) {
       const ci = document.getElementById('ci' + tipo).value;
       if(!ci) return;
       document.getElementById('ci' + tipo).classList.add('bg-yellow-100');
-      google.script.run.withSuccessHandler(res => {
-        document.getElementById('ci' + tipo).classList.remove('bg-yellow-100');
-        if(res.encontrado) {
-          document.getElementById('nom' + tipo).value = res.nombre;
-          document.getElementById('tel' + tipo).value = res.telefono;
-          if(tipo === 'Dest') {
-            document.getElementById('dirDest').value = res.direccion;
-            document.getElementById('tipoCli').value = res.tipo;
-          }
+      const res = await apiRequest({ accion: 'buscarCliente', ci: ci });
+      document.getElementById('ci' + tipo).classList.remove('bg-yellow-100');
+      if(res.encontrado) {
+        document.getElementById('nom' + tipo).value = res.nombre;
+        document.getElementById('tel' + tipo).value = res.telefono;
+        if(tipo === 'Dest') {
+          document.getElementById('dirDest').value = res.direccion;
+          document.getElementById('tipoCli').value = res.tipo;
         }
-      }).buscarCliente(ci);
+      }
     }
 
-    function guardarEnvio(e) {
+    async function guardarEnvio(e) {
       e.preventDefault();
       const datos = {
         ciRem: document.getElementById('ciRem').value, nomRem: document.getElementById('nomRem').value, telRem: document.getElementById('telRem').value,
         ciDest: document.getElementById('ciDest').value, nomDest: document.getElementById('nomDest').value, telDest: document.getElementById('telDest').value, dirDest: document.getElementById('dirDest').value,
         detalle: document.getElementById('detalle').value, costo: document.getElementById('costo').value, tipoCli: document.getElementById('tipoCli').value
       };
-      
-      google.script.run.withSuccessHandler(res => {
+      const res = await apiRequest({ accion: 'guardarEnvio', datos: datos, agente: usuarioActual });
+      if(res.success) {
         alert("ENVÍO REGISTRADO: " + res.id);
         document.getElementById('formEnvio').reset();
         document.getElementById('modalEnvio').classList.add('hidden');
         cargarDashboard();
-      }).guardarEnvioCompleto(datos, usuarioActual);
+      }
     }
 
-    function cargarDashboard() {
-      google.script.run.withSuccessHandler(data => {
-        document.getElementById('dashPendientes').innerText = data.pendientes;
-        document.getElementById('dashEntregados').innerText = data.entregados;
-        document.getElementById('dashGanancia').innerText = data.gananciaMes.toLocaleString('es-PY');
-      }).getDatosDashboard();
+    async function cargarDashboard() {
+      const res = await apiRequest({ accion: 'getDashboard' });
+      if(res.success) {
+        document.getElementById('dashPendientes').innerText = res.pendientes;
+        document.getElementById('dashEntregados').innerText = res.entregados;
+        document.getElementById('dashGanancia').innerText = res.gananciaMes.toLocaleString('es-PY');
+      }
     }
   </script>
 </body>
