@@ -1,121 +1,152 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+  <meta charset="UTF-8">
+  <title>TSI Admin Panel</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <style> body { background-color: #F7F9FC; } </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style> body { background-color: #f1f5f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; } </style>
 </head>
-<body class="p-8">
+<body class="h-screen flex overflow-hidden">
 
-  <header class="flex justify-between items-center mb-8">
-    <div>
-      <h1 class="text-2xl font-bold">Gestión de Encomiendas</h1>
-      <!-- Se inyecta el correo y rol desde el backend -->
-      <p class="text-gray-500 text-sm">Usuario: <?= usuario ?> | Rol: <span id="rolUsuario" class="font-bold text-blue-600"><?= rol ?></span></p>
-    </div>
-    <button onclick="document.getElementById('modalEnvio').classList.remove('hidden')" class="bg-blue-600 text-white px-5 py-2 rounded-lg">
-      + Nuevo Envío
-    </button>
-  </header>
-
-  <!-- MÓDULO FINANCIERO: Visible solo para el Dueño -->
-  <div class="solo-dueno">
-    <div class="grid grid-cols-3 gap-6 mb-8">
-      <div class="bg-white p-6 rounded-lg shadow border-l-4 border-blue-500">
-        <h3 class="text-gray-500 font-semibold">En Tránsito</h3>
-        <p class="text-3xl font-bold mt-2" id="dashPendientes">...</p>
-      </div>
-      <div class="bg-white p-6 rounded-lg shadow border-l-4 border-green-500">
-        <h3 class="text-gray-500 font-semibold">Entregados</h3>
-        <p class="text-3xl font-bold mt-2" id="dashEntregados">...</p>
-      </div>
-      <div class="bg-white p-6 rounded-lg shadow border-l-4 border-yellow-500">
-        <h3 class="text-gray-500 font-semibold">Cuentas por Cobrar</h3>
-        <p class="text-3xl font-bold mt-2">Gs. <span id="dashCobrar">...</span></p>
-      </div>
-    </div>
-    
-    <div class="mt-4">
-      <button onclick="window.open('https://docs.google.com/spreadsheets/d/1dAhefOk9MTmJRSL560K_KcmnOWRzazHJJVnbAdvM130/export?format=csv&gid=0')" class="bg-green-600 text-white px-4 py-2 rounded shadow">
-        Descargar Reporte Mensual (Excel/CSV)
-      </button>
+  <!-- PANTALLA DE LOGIN -->
+  <div id="loginScreen" class="fixed inset-0 bg-slate-900 z-50 flex items-center justify-center">
+    <div class="bg-white p-10 rounded-2xl shadow-2xl w-96 text-center">
+      <h1 class="text-3xl font-bold text-slate-800 mb-2">TSI</h1>
+      <p class="text-slate-500 mb-8">Sistema Logístico</p>
+      <input type="password" id="pinInput" placeholder="Ingrese su PIN" class="w-full text-center text-2xl tracking-widest border-b-2 border-blue-500 p-2 mb-6 focus:outline-none bg-slate-50">
+      <button onclick="login()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition"><i class="fa-solid fa-right-to-bracket mr-2"></i> INGRESAR</button>
+      <p id="loginError" class="text-red-500 mt-4 hidden text-sm"></p>
     </div>
   </div>
 
-  <!-- Modal Nuevo Envío (Visible para Dueño y Empleado) -->
-  <div id="modalEnvio" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center overflow-y-auto">
-    <div class="bg-white p-6 rounded-lg shadow w-full max-w-3xl my-8">
-      <h2 class="text-xl font-bold mb-4">Registrar Encomienda</h2>
-      <form id="formEnvio" onsubmit="guardar(event)">
-        
-        <!-- Ficha Remitente con Autocompletado -->
-        <div class="bg-gray-50 p-4 border rounded mb-4 grid grid-cols-2 gap-4">
-          <h3 class="col-span-2 font-bold text-gray-700">Remitente</h3>
-          <div>
-            <label class="text-sm">CI / RUC (Escribe y presiona Tab)</label>
-            <input type="text" id="ciRem" onblur="buscar(this.value, 'Rem')" class="w-full border p-2 rounded" required>
+  <!-- APLICACIÓN PRINCIPAL -->
+  <div id="appContainer" class="flex w-full h-full hidden">
+    
+    <!-- Sidebar -->
+    <aside class="w-64 bg-slate-900 text-white flex flex-col">
+      <div class="p-6 text-center border-b border-slate-700">
+        <h2 class="text-2xl font-bold tracking-wider">TSI Admin</h2>
+        <p class="text-sm text-slate-400 mt-1" id="userLabel">Dueño</p>
+      </div>
+      <nav class="flex-1 p-4 space-y-2">
+        <button class="w-full text-left p-3 rounded-lg bg-blue-600 shadow"><i class="fa-solid fa-chart-pie w-6"></i> Dashboard</button>
+        <button class="w-full text-left p-3 rounded-lg hover:bg-slate-800 transition"><i class="fa-solid fa-box-open w-6"></i> Envíos</button>
+        <button class="w-full text-left p-3 rounded-lg hover:bg-slate-800 transition"><i class="fa-solid fa-users w-6"></i> Clientes</button>
+      </nav>
+      <div class="p-4 border-t border-slate-700">
+        <button onclick="location.reload()" class="w-full text-left p-3 text-red-400 hover:bg-slate-800 rounded-lg"><i class="fa-solid fa-power-off w-6"></i> Salir</button>
+      </div>
+    </aside>
+
+    <!-- Contenido Central -->
+    <main class="flex-1 flex flex-col h-full overflow-y-auto">
+      <header class="bg-white shadow-sm p-6 flex justify-between items-center">
+        <h2 class="text-2xl font-bold text-slate-800">Panel de Control</h2>
+        <button onclick="document.getElementById('modalEnvio').classList.remove('hidden')" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold shadow hover:bg-blue-700">
+          <i class="fa-solid fa-plus mr-2"></i> Nuevo Envío
+        </button>
+      </header>
+
+      <div class="p-8 space-y-8">
+        <!-- KPIs -->
+        <div class="grid grid-cols-3 gap-6">
+          <div class="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-indigo-500">
+            <p class="text-sm text-slate-500 font-semibold uppercase tracking-wider">Ingresos del Mes</p>
+            <p class="text-3xl font-bold text-slate-800 mt-2">Gs. <span id="dashGanancia">0</span></p>
           </div>
-          <div><label class="text-sm">Nombre</label><input type="text" id="nomRem" class="w-full border p-2 rounded" required></div>
-          <div><label class="text-sm">Teléfono</label><input type="text" id="telRem" class="w-full border p-2 rounded"></div>
+          <div class="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-amber-500">
+            <p class="text-sm text-slate-500 font-semibold uppercase tracking-wider">Paquetes en Tránsito</p>
+            <p class="text-3xl font-bold text-slate-800 mt-2" id="dashPendientes">0</p>
+          </div>
+          <div class="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-emerald-500">
+            <p class="text-sm text-slate-500 font-semibold uppercase tracking-wider">Entregados (Éxito)</p>
+            <p class="text-3xl font-bold text-slate-800 mt-2" id="dashEntregados">0</p>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Modal Nuevo Envío (Super Completo) -->
+  <div id="modalEnvio" class="hidden fixed inset-0 bg-slate-900 bg-opacity-75 z-50 flex justify-center items-center overflow-y-auto p-4">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl p-8">
+      <div class="flex justify-between items-center mb-6 border-b pb-4">
+        <h2 class="text-2xl font-bold text-slate-800"><i class="fa-solid fa-truck-fast text-blue-600 mr-2"></i> Registrar Encomienda</h2>
+        <button onclick="document.getElementById('modalEnvio').classList.add('hidden')" class="text-slate-400 hover:text-red-500"><i class="fa-solid fa-xmark text-2xl"></i></button>
+      </div>
+
+      <form id="formEnvio" onsubmit="guardarEnvio(event)" class="space-y-6">
+        <div class="grid grid-cols-2 gap-8">
+          <!-- Remitente -->
+          <div class="bg-slate-50 p-6 rounded-xl border border-slate-200">
+            <h3 class="font-bold text-slate-700 mb-4"><i class="fa-solid fa-user mr-2"></i> Remitente</h3>
+            <div class="space-y-3">
+              <div><label class="text-sm font-semibold">CI / RUC (Presione TAB para buscar)</label><input type="text" id="ciRem" onblur="buscar('Rem')" class="w-full border p-2 rounded focus:border-blue-500 outline-none" required></div>
+              <div><label class="text-sm font-semibold">Nombre Completo</label><input type="text" id="nomRem" class="w-full border p-2 rounded" required></div>
+              <div><label class="text-sm font-semibold">Teléfono</label><input type="text" id="telRem" class="w-full border p-2 rounded" required></div>
+            </div>
+          </div>
+          <!-- Destinatario -->
+          <div class="bg-slate-50 p-6 rounded-xl border border-slate-200">
+            <h3 class="font-bold text-slate-700 mb-4"><i class="fa-solid fa-building mr-2"></i> Destinatario</h3>
+            <div class="space-y-3">
+              <div><label class="text-sm font-semibold">CI / RUC (Presione TAB para buscar)</label><input type="text" id="ciDest" onblur="buscar('Dest')" class="w-full border p-2 rounded focus:border-blue-500 outline-none" required></div>
+              <div><label class="text-sm font-semibold">Nombre / Empresa</label><input type="text" id="nomDest" class="w-full border p-2 rounded" required></div>
+              <div><label class="text-sm font-semibold">Teléfono</label><input type="text" id="telDest" class="w-full border p-2 rounded"></div>
+              <div><label class="text-sm font-semibold">Dirección</label><input type="text" id="dirDest" class="w-full border p-2 rounded"></div>
+            </div>
+          </div>
         </div>
 
-        <!-- Ficha Destinatario con Autocompletado -->
-        <div class="bg-gray-50 p-4 border rounded mb-4 grid grid-cols-2 gap-4">
-          <h3 class="col-span-2 font-bold text-gray-700">Destinatario</h3>
-          <div>
-            <label class="text-sm">CI / RUC (Escribe y presiona Tab)</label>
-            <input type="text" id="ciDest" onblur="buscar(this.value, 'Dest')" class="w-full border p-2 rounded" required>
-          </div>
-          <div><label class="text-sm">Nombre / Empresa</label><input type="text" id="nomDest" class="w-full border p-2 rounded" required></div>
-          <div><label class="text-sm">Teléfono</label><input type="text" id="telDest" class="w-full border p-2 rounded"></div>
-          <div><label class="text-sm">Dirección de Entrega</label><input type="text" id="dirDest" class="w-full border p-2 rounded"></div>
-          <div>
-            <label class="text-sm">Tipo de Cliente</label>
-            <select id="tipoCli" class="w-full border p-2 rounded">
-              <option value="Contado">Normal (Pago al enviar/recibir)</option>
-              <option value="Corporativo">Empresa (Abono a Fin de Mes)</option>
+        <div class="grid grid-cols-3 gap-6 bg-blue-50 p-6 rounded-xl border border-blue-100">
+          <div class="col-span-2"><label class="text-sm font-semibold">Detalle del Paquete</label><input type="text" id="detalle" class="w-full border p-2 rounded" placeholder="Ej: 1 PAQUETE CHICO" required></div>
+          <div><label class="text-sm font-semibold">Costo Envío (Gs)</label><input type="number" id="costo" class="w-full border p-2 rounded" required></div>
+          <div class="col-span-3">
+            <label class="text-sm font-semibold">Modalidad de Pago</label>
+            <select id="tipoCli" class="w-full border p-2 rounded font-bold text-slate-700">
+              <option value="Contado">PAGO AL CONTADO (Agencia o Destino)</option>
+              <option value="Corporativo">CUENTA CORPORATIVA (Paga a fin de mes)</option>
             </select>
           </div>
         </div>
 
-        <!-- Detalles del Envío -->
-        <div class="grid grid-cols-2 gap-4 mb-6">
-          <div class="col-span-2"><label class="text-sm">Detalle (Ej: 1 PAQ CHICO BLANCO)</label><input type="text" id="detalle" class="w-full border p-2 rounded" required></div>
-          <div><label class="text-sm">Costo de Envío Gs.</label><input type="number" id="costo" class="w-full border p-2 rounded" required></div>
-        </div>
-
-        <div class="flex justify-end gap-3">
-          <button type="button" onclick="document.getElementById('modalEnvio').classList.add('hidden')" class="px-4 py-2 bg-gray-200 rounded">Cancelar</button>
-          <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded">Guardar</button>
-        </div>
+        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg transition text-lg">
+          <i class="fa-solid fa-check-circle mr-2"></i> REGISTRAR Y GENERAR BOLETA
+        </button>
       </form>
     </div>
   </div>
 
   <script>
-    // Control de Accesos por Rol
-    document.addEventListener("DOMContentLoaded", () => {
-      const rol = "<?= rol ?>";
-      if (rol === 'Empleado') {
-        document.querySelectorAll('.solo-dueno').forEach(el => el.style.display = 'none');
-      } else {
-        google.script.run.withSuccessHandler(data => {
-          document.getElementById('dashPendientes').innerText = data.pendientes;
-          document.getElementById('dashEntregados').innerText = data.entregados;
-          document.getElementById('dashCobrar').innerText = data.porCobrar.toLocaleString('es-PY');
-        }).getDashboardData();
-      }
-    });
-
-    // Autocompletado de Clientes
-    function buscar(ci, prefijo) {
-      if(!ci) return;
-      document.getElementById('ci' + prefijo).classList.add('bg-yellow-100');
+    let usuarioActual = "";
+    
+    // Login Lógica
+    function login() {
+      const pin = document.getElementById('pinInput').value;
       google.script.run.withSuccessHandler(res => {
-        document.getElementById('ci' + prefijo).classList.remove('bg-yellow-100');
+        if(res.success) {
+          if(res.rol !== 'Dueño') return alert("Los empleados deben usar la versión Móvil.");
+          usuarioActual = res.nombre;
+          document.getElementById('userLabel').innerText = res.nombre;
+          document.getElementById('loginScreen').style.display = 'none';
+          document.getElementById('appContainer').classList.remove('hidden');
+          cargarDashboard();
+        } else { document.getElementById('loginError').innerText = res.error; document.getElementById('loginError').classList.remove('hidden'); }
+      }).iniciarSesion(pin);
+    }
+
+    // Buscador Inteligente
+    function buscar(tipo) {
+      const ci = document.getElementById('ci' + tipo).value;
+      if(!ci) return;
+      document.getElementById('ci' + tipo).classList.add('bg-yellow-100');
+      google.script.run.withSuccessHandler(res => {
+        document.getElementById('ci' + tipo).classList.remove('bg-yellow-100');
         if(res.encontrado) {
-          document.getElementById('nom' + prefijo).value = res.nombre;
-          document.getElementById('tel' + prefijo).value = res.telefono;
-          if(prefijo === 'Dest') {
+          document.getElementById('nom' + tipo).value = res.nombre;
+          document.getElementById('tel' + tipo).value = res.telefono;
+          if(tipo === 'Dest') {
             document.getElementById('dirDest').value = res.direccion;
             document.getElementById('tipoCli').value = res.tipo;
           }
@@ -123,29 +154,29 @@
       }).buscarCliente(ci);
     }
 
-    // Guardar Envío
-    function guardar(e) {
+    // Guardar
+    function guardarEnvio(e) {
       e.preventDefault();
       const datos = {
-        ciRemitente: document.getElementById('ciRem').value,
-        nombreRemitente: document.getElementById('nomRem').value,
-        telRemitente: document.getElementById('telRem').value,
-        ciDestinatario: document.getElementById('ciDest').value,
-        nombreDestinatario: document.getElementById('nomDest').value,
-        telDestinatario: document.getElementById('telDest').value,
-        dirDestinatario: document.getElementById('dirDest').value,
-        tipoCliente: document.getElementById('tipoCli').value,
-        detalle: document.getElementById('detalle').value,
-        costo: document.getElementById('costo').value
+        ciRem: document.getElementById('ciRem').value, nomRem: document.getElementById('nomRem').value, telRem: document.getElementById('telRem').value,
+        ciDest: document.getElementById('ciDest').value, nomDest: document.getElementById('nomDest').value, telDest: document.getElementById('telDest').value, dirDest: document.getElementById('dirDest').value,
+        detalle: document.getElementById('detalle').value, costo: document.getElementById('costo').value, tipoCli: document.getElementById('tipoCli').value
       };
       
-      const btn = e.target.querySelector('button[type="submit"]');
-      btn.innerText = "Guardando..."; btn.disabled = true;
-
       google.script.run.withSuccessHandler(res => {
-        alert("Enviado. ID: " + res.id);
-        location.reload();
-      }).guardarEnvioCompleto(datos, "<?= usuario ?>");
+        alert("ENVÍO REGISTRADO: " + res.id);
+        document.getElementById('formEnvio').reset();
+        document.getElementById('modalEnvio').classList.add('hidden');
+        cargarDashboard();
+      }).guardarEnvioCompleto(datos, usuarioActual);
+    }
+
+    function cargarDashboard() {
+      google.script.run.withSuccessHandler(data => {
+        document.getElementById('dashPendientes').innerText = data.pendientes;
+        document.getElementById('dashEntregados').innerText = data.entregados;
+        document.getElementById('dashGanancia').innerText = data.gananciaMes.toLocaleString('es-PY');
+      }).getDatosDashboard();
     }
   </script>
 </body>
