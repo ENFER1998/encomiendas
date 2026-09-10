@@ -7,7 +7,6 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style> 
     body { background-color: #f1f5f9; font-family: 'Segoe UI', sans-serif; } 
-    /* CSS PARA EL PDF PROFESIONAL */
     @media print {
       body * { visibility: hidden; }
       #printArea, #printArea * { visibility: visible; }
@@ -18,14 +17,12 @@
 </head>
 <body class="h-screen flex overflow-hidden">
 
-  <!-- MODAL VISOR DE FOTOS -->
   <div id="modalVisorFoto" class="hidden fixed inset-0 bg-slate-900 bg-opacity-95 z-[60] flex flex-col items-center justify-center p-6">
     <button onclick="document.getElementById('modalVisorFoto').classList.add('hidden')" class="absolute top-6 right-6 text-white text-4xl hover:text-red-500 transition"><i class="fa-solid fa-xmark"></i></button>
     <img id="visorFotoImg" src="" class="max-w-full max-h-[75vh] object-contain rounded-lg shadow-2xl mb-6 bg-slate-800">
     <a id="visorFotoDownload" href="#" target="_blank" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full shadow-lg transition"><i class="fa-solid fa-download mr-2"></i> Descargar Imagen</a>
   </div>
 
-  <!-- LOGIN DE ESCRITORIO -->
   <div id="loginScreen" class="fixed inset-0 bg-white z-50 flex flex-col items-center justify-center">
     <div class="p-10 rounded-2xl w-96 text-center">
       <img src="logo.png" onerror="this.src='logo.jpeg'" alt="Logo" class="mx-auto h-32 mb-6 object-contain mix-blend-multiply">
@@ -39,12 +36,9 @@
   </div>
 
   <div id="appContainer" class="flex w-full h-full hidden">
-    <!-- MENÚ LATERAL -->
     <aside class="w-64 bg-slate-900 text-white flex flex-col justify-between shadow-2xl z-20">
       <div>
-        <div class="p-6 text-center border-b border-slate-700 bg-white">
-          <img src="logo.png" onerror="this.src='logo.jpeg'" alt="Logo" class="mx-auto h-16 object-contain mix-blend-multiply">
-        </div>
+        <div class="p-6 text-center border-b border-slate-700 bg-white"><img src="logo.png" onerror="this.src='logo.jpeg'" alt="Logo" class="mx-auto h-16 object-contain mix-blend-multiply"></div>
         <nav class="p-4 space-y-2 mt-4">
           <button onclick="cambiarVistaPC('dashboard')" class="w-full text-left p-3 rounded-lg hover:bg-slate-800"><i class="fa-solid fa-chart-pie w-6"></i> Dashboard</button>
           <button onclick="cambiarVistaPC('historial')" class="w-full text-left p-3 rounded-lg hover:bg-slate-800"><i class="fa-solid fa-list w-6"></i> Historial Envíos</button>
@@ -52,9 +46,7 @@
           <button onclick="cambiarVistaPC('personal')" class="w-full text-left p-3 rounded-lg hover:bg-slate-800 text-amber-400"><i class="fa-solid fa-users w-6"></i> Personal</button>
         </nav>
       </div>
-      <div>
-        <div class="p-4 border-t border-slate-700"><p class="text-xs text-blue-400 font-bold mb-3 text-center" id="userLabel">Admin</p><button onclick="location.reload()" class="w-full text-left p-3 text-red-400 hover:bg-slate-800 rounded"><i class="fa-solid fa-power-off w-6"></i> Cerrar Sesión</button></div>
-      </div>
+      <div><div class="p-4 border-t border-slate-700"><p class="text-xs text-blue-400 font-bold mb-3 text-center" id="userLabel">Admin</p><button onclick="location.reload()" class="w-full text-left p-3 text-red-400 hover:bg-slate-800 rounded"><i class="fa-solid fa-power-off w-6"></i> Cerrar Sesión</button></div></div>
     </aside>
 
     <main class="flex-1 flex flex-col h-full overflow-y-auto">
@@ -63,20 +55,17 @@
         <button onclick="document.getElementById('modalEnvio').classList.remove('hidden')" class="bg-blue-700 text-white px-6 py-2 rounded-lg font-bold shadow hover:bg-blue-800"><i class="fa-solid fa-plus mr-2"></i> Nuevo Envío</button>
       </header>
 
-      <!-- VISTA DASHBOARD -->
       <div id="vistaDashboard" class="p-8 space-y-6">
         <div class="grid grid-cols-3 gap-6">
           <div class="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-blue-700"><p class="text-xs text-slate-500 font-bold uppercase">Ingresos Mes (Cobrado)</p><p class="text-3xl font-bold mt-2 text-slate-800">Gs. <span id="dashGanancia">0</span></p></div>
           <div class="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-amber-500"><p class="text-xs text-slate-500 font-bold uppercase">En Tránsito</p><p class="text-3xl font-bold mt-2 text-slate-800" id="dashPendientes">0</p></div>
           <div class="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-emerald-500"><p class="text-xs text-slate-500 font-bold uppercase">Entregados</p><p class="text-3xl font-bold mt-2 text-slate-800" id="dashEntregados">0</p></div>
         </div>
-        
         <div class="grid grid-cols-2 gap-6">
           <div class="bg-white rounded-2xl shadow-sm border overflow-hidden">
             <div class="p-4 border-b bg-slate-50"><h3 class="font-bold text-slate-800"><i class="fa-solid fa-truck-fast mr-2 text-blue-700"></i> Últimos 15 Envíos</h3></div>
             <table class="w-full text-left text-sm"><thead class="bg-white border-b"><tr><th class="p-3 text-slate-500">ID</th><th class="p-3 text-slate-500">Destinatario</th><th class="p-3 text-slate-500">Estado</th></tr></thead><tbody id="tablaDashboard" class="divide-y"></tbody></table>
           </div>
-          <!-- NUEVA TABLA: EMPRESAS MOROSAS -->
           <div class="bg-white rounded-2xl shadow-sm border overflow-hidden h-fit">
             <div class="p-4 border-b bg-rose-50"><h3 class="font-bold text-rose-800"><i class="fa-solid fa-file-invoice-dollar mr-2"></i> Empresas con Deuda Pendiente</h3></div>
             <table class="w-full text-left text-sm"><thead class="bg-white border-b"><tr><th class="p-3 text-slate-500">Empresa</th><th class="p-3 text-slate-500">Deuda Total</th><th class="p-3 text-slate-500">Antigüedad</th></tr></thead><tbody id="tablaDeudasDashboard" class="divide-y"></tbody></table>
@@ -84,11 +73,12 @@
         </div>
       </div>
 
-      <!-- VISTA HISTORIAL COMPACTA -->
       <div id="vistaHistorial" class="p-8 hidden">
         <div class="bg-white p-4 rounded-xl shadow-sm border flex gap-4 mb-4 items-center">
           <input type="text" id="inputBusqueda" oninput="filtrarHistorial()" placeholder="Buscar por ID, Nombre o CI/RUC..." class="flex-1 border p-2 rounded text-sm bg-slate-50 focus:bg-white text-slate-900">
-          <select id="filtroTiempo" onchange="filtrarHistorial()" class="border p-2 rounded text-sm font-bold text-slate-700 bg-slate-50"><option value="todos">Últimos 150</option><option value="hoy">Hoy</option><option value="semana">7 días</option><option value="mes">Este mes</option></select>
+          <select id="filtroTiempo" onchange="filtrarHistorial()" class="border p-2 rounded text-sm font-bold text-slate-700 bg-slate-50">
+            <option value="todos">Últimos 150</option><option value="hoy">Hoy</option><option value="semana">7 días</option><option value="mes">Este mes</option>
+          </select>
           <button onclick="cargarHistorial()" class="bg-slate-800 text-white px-4 py-2 font-bold rounded text-sm hover:bg-slate-700"><i class="fa-solid fa-rotate-right mr-1"></i> Refrescar</button>
         </div>
         <div class="bg-white rounded-xl shadow-sm border overflow-x-auto">
@@ -96,7 +86,6 @@
         </div>
       </div>
 
-      <!-- VISTA COBRANZAS CORPORATIVAS -->
       <div id="vistaCobranzas" class="p-8 hidden">
         <div class="bg-white p-6 rounded-2xl shadow-sm border mb-6 flex gap-4 items-end">
           <div class="flex-1"><label class="text-xs font-bold text-slate-500 uppercase">CI/RUC de la Empresa/Cliente</label><input type="text" id="cobranzaRuc" placeholder="Ej: 1234567" class="w-full border-2 border-slate-300 p-3 rounded-lg font-bold text-slate-900 focus:border-emerald-600 focus:outline-none"></div>
@@ -115,7 +104,6 @@
         </div>
       </div>
 
-      <!-- VISTA GESTIÓN PERSONAL -->
       <div id="vistaPersonal" class="p-8 hidden">
         <div class="grid grid-cols-3 gap-6">
           <div class="bg-white p-6 rounded-2xl shadow-sm border col-span-1 h-fit">
@@ -137,7 +125,6 @@
     </main>
   </div>
 
-  <!-- AREA DE IMPRESIÓN PDF (PROFESIONAL Y CON LOGO) -->
   <div id="printArea" class="hidden text-black font-sans">
     <div class="flex items-center justify-between border-b-4 border-blue-900 pb-4 mb-6">
       <img src="logo.png" onerror="this.src='logo.jpeg'" style="max-height: 90px; object-fit: contain;">
@@ -147,13 +134,11 @@
         <p class="text-sm font-semibold mt-1" id="printFecha"></p>
       </div>
     </div>
-    
     <div class="mb-6 text-sm leading-relaxed">
       <p class="text-lg"><strong>Cliente / Empresa:</strong> <span id="printNombre" class="uppercase font-bold"></span></p>
       <p class="text-lg"><strong>RUC:</strong> <span id="printRuc" class="font-bold"></span></p>
       <p class="mt-4 text-justify">Por medio de la presente, se detalla el extracto de cuenta correspondiente a los servicios de logística y transporte prestados por <strong>Luis Transportes</strong>. A continuación, se desglosan los envíos realizados que se encuentran pendientes de cobro a la fecha de emisión de este documento.</p>
     </div>
-    
     <table class="w-full text-left text-xs border-collapse border border-slate-400 mb-6">
       <thead>
         <tr class="bg-slate-200">
@@ -172,20 +157,14 @@
         </tr>
       </tfoot>
     </table>
-    
     <div class="text-sm text-slate-700">
       <p>Agradecemos su preferencia y confianza en nuestros servicios. Para coordinar el pago o ante cualquier consulta, por favor comunicarse con el departamento de administración de Luis Transportes.</p>
     </div>
-    
     <div class="mt-24 flex justify-center">
-      <div class="text-center w-64 border-t border-black pt-2">
-        <p class="font-bold text-sm">Firma Autorizada</p>
-        <p class="text-xs">Luis Transportes</p>
-      </div>
+      <div class="text-center w-64 border-t border-black pt-2"><p class="font-bold text-sm">Firma Autorizada</p><p class="text-xs">Luis Transportes</p></div>
     </div>
   </div>
 
-  <!-- MODAL NUEVO ENVÍO -->
   <div id="modalEnvio" class="hidden fixed inset-0 bg-slate-900 bg-opacity-75 z-50 flex justify-center items-center overflow-y-auto p-4">
     <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl p-8 my-8">
       <div class="flex justify-between items-center mb-6 border-b pb-4"><h2 class="text-2xl font-bold"><i class="fa-solid fa-box text-blue-700 mr-2"></i> Registrar Encomienda</h2><button onclick="document.getElementById('modalEnvio').classList.add('hidden')" class="text-slate-800 hover:text-red-500"><i class="fa-solid fa-xmark text-2xl"></i></button></div>
@@ -212,7 +191,13 @@
         <div class="grid grid-cols-4 gap-4 bg-blue-50 p-6 rounded-xl border-2 border-blue-200">
           <div class="col-span-2"><label class="text-xs font-black text-blue-900 uppercase">Detalle del Paquete</label><input type="text" id="detalle" class="w-full border-2 border-slate-300 p-3 rounded-lg font-bold text-slate-900 focus:border-blue-600 focus:outline-none" required></div>
           <div class="col-span-1"><label class="text-xs font-black text-blue-900 uppercase">Costo Gs.</label><input type="number" id="costo" class="w-full border-2 border-emerald-400 p-3 rounded-lg font-black text-emerald-700 focus:outline-none" required></div>
-          <div class="col-span-1"><label class="text-xs font-black text-blue-900 uppercase">Pago</label><select id="tipoCli" class="w-full border-2 border-slate-300 p-3 rounded-lg font-bold text-slate-900 focus:outline-none"><option value="Contado">AL CONTADO</option><option value="Corporativo">CORPORATIVA</option></select></div>
+          <div class="col-span-1"><label class="text-xs font-black text-blue-900 uppercase">Modalidad de Pago</label>
+            <select id="tipoCli" class="w-full border-2 border-slate-300 p-3 rounded-lg font-bold text-slate-900 focus:outline-none">
+              <option value="Contado">PAGO AL CONTADO (Remitente)</option>
+              <option value="Destino">PAGO EN DESTINO (Receptor)</option>
+              <option value="Corporativo">CUENTA CORPORATIVA</option>
+            </select>
+          </div>
           <div class="col-span-4 mt-2"><label class="text-xs font-black text-slate-800 uppercase">Foto del Paquete al Recibir (Opcional)</label><input type="file" id="fotoRecepcion" accept="image/*" onchange="leerFotoRec(event)" class="w-full border-2 border-slate-300 p-2 rounded-lg bg-white text-slate-900"></div>
         </div>
         <button id="btnRegistrar" type="submit" class="w-full bg-slate-900 hover:bg-black text-white font-black py-4 rounded-xl shadow-lg transition text-lg tracking-widest">GUARDAR ENVÍO EN BASE DE DATOS</button>
@@ -272,9 +257,8 @@
       if(res.success) {
         document.getElementById('dashPendientes').innerText = res.pendientes; document.getElementById('dashEntregados').innerText = res.entregados; document.getElementById('dashGanancia').innerText = res.gananciaMes.toLocaleString('es-PY');
         const tbody = document.getElementById('tablaDashboard'); tbody.innerHTML = "";
-        if(res.lista && res.lista.length > 0) { res.lista.forEach(e => { let colorEstado = e.estado === 'Entregado' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'; tbody.innerHTML += `<tr class="hover:bg-slate-50 transition"><td class="p-3 font-bold text-blue-800">${e.id}</td><td class="p-3 font-semibold text-slate-700">${e.destinatario}</td><td class="p-3"><span class="px-2 py-1 rounded text-xs font-bold ${colorEstado}">${e.estado}</span></td></tr>`; }); }
+        if(res.lista && res.lista.length > 0) { res.lista.forEach(e => { let colorEstado = e.estado === 'Entregado' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'; tbody.innerHTML += `<tr class="hover:bg-slate-50 transition"><td class="p-3 font-bold text-blue-800">${e.id}</td><td class="p-3 text-slate-500">${e.fecha}</td><td class="p-3 font-semibold text-slate-700">${e.destinatario}</td><td class="p-3"><span class="px-2 py-1 rounded text-xs font-bold ${colorEstado}">${e.estado}</span></td></tr>`; }); }
         
-        // PINTAR DEUDAS
         const tbD = document.getElementById('tablaDeudasDashboard'); tbD.innerHTML = "";
         if(res.deudas && res.deudas.length > 0) { res.deudas.forEach(d => { tbD.innerHTML += `<tr class="hover:bg-rose-50 transition border-b"><td class="p-3 font-bold text-slate-800 uppercase">${d.empresa}</td><td class="p-3 font-bold text-rose-600">Gs. ${d.total.toLocaleString('es-PY')}</td><td class="p-3 text-xs text-slate-500 font-bold">Hace ${d.dias} Días</td></tr>`; }); }
         else { tbD.innerHTML = "<tr><td colspan='3' class='p-6 text-center text-slate-400 font-bold'>No hay empresas con deuda.</td></tr>"; }
@@ -315,7 +299,6 @@
       } else { div.innerHTML = "<tr><td colspan='6' class='p-6 text-center text-slate-500'>Sin resultados.</td></tr>"; }
     }
 
-    // --- COBRANZAS CORPORATIVAS ---
     async function buscarDeuda() {
       const ruc = document.getElementById('cobranzaRuc').value.trim();
       if(!ruc) return alert("Ingrese el RUC del cliente.");
@@ -372,7 +355,6 @@
       } else { alert("Error al procesar el pago."); }
     }
 
-    // --- PERSONAL ---
     async function cargarUsuarios() {
       document.getElementById('tablaUsuarios').innerHTML = "<tr><td colspan='4' class='p-3 text-center'><i class='fa-solid fa-spinner fa-spin'></i></td></tr>";
       const res = await apiRequest({ accion: 'getUsuarios' });
