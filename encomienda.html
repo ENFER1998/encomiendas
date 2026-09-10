@@ -9,7 +9,6 @@
 </head>
 <body>
 
-  <!-- PANTALLA DE LOGIN MÓVIL -->
   <div id="loginScreen" class="fixed inset-0 bg-blue-700 z-50 flex flex-col items-center justify-center text-white p-6">
     <i class="fa-solid fa-truck-fast text-6xl mb-4"></i>
     <h1 class="text-3xl font-bold mb-8">TSI APP</h1>
@@ -19,8 +18,7 @@
       <input type="password" id="passInput" placeholder="Contraseña" class="w-full text-center text-xl p-4 rounded-xl text-slate-800">
     </div>
     
-    <button onclick="login(this)" class="bg-slate-900 text-white w-full max-w-xs py-4 rounded-xl font-bold text-lg shadow-lg transition">ENTRAR</button>
-    <p id="loginError" class="text-red-200 mt-4 hidden font-bold text-center"></p>
+    <button onclick="ingresarAlSistema(this)" class="bg-slate-900 text-white w-full max-w-xs py-4 rounded-xl font-bold text-lg shadow-lg transition">ENTRAR</button>
   </div>
 
   <header class="bg-blue-700 text-white p-5 rounded-b-3xl shadow-md hidden" id="appHeader">
@@ -79,43 +77,51 @@
 
   <script>
     let fotoData = "";
+    let usuarioActual = "";
     
-    function login(btn) {
+    function ingresarAlSistema(btn) {
       const user = document.getElementById('userInput').value;
       const pass = document.getElementById('passInput').value;
-      if(!user || !pass) return alert("Ingrese Usuario y Contraseña");
+      
+      if(!user || !pass) {
+        alert("Atención: Ingrese Usuario y Contraseña");
+        return;
+      }
 
-      btn.innerHTML = "CARGANDO...";
+      btn.innerHTML = "CONECTANDO...";
       btn.disabled = true;
 
-      google.script.run
-        .withSuccessHandler(res => {
-          btn.innerHTML = "ENTRAR";
-          btn.disabled = false;
-
-          if(res.success) {
-            document.getElementById('loginScreen').style.display = 'none';
-            document.getElementById('appHeader').classList.remove('hidden');
-            document.getElementById('vistaEntregas').classList.remove('hidden');
-            document.getElementById('bottomNav').classList.remove('hidden');
-            document.getElementById('userName').innerText = res.nombre;
+      try {
+        google.script.run
+          .withSuccessHandler(function(res) {
+            btn.innerHTML = "ENTRAR";
+            btn.disabled = false;
             
-            if(res.rol === 'Dueño') {
-              document.getElementById('btnFinanzas').classList.remove('hidden');
-              cargarDashboardMovil();
+            if(res.success) {
+              document.getElementById('loginScreen').style.display = 'none';
+              document.getElementById('appHeader').classList.remove('hidden');
+              document.getElementById('vistaEntregas').classList.remove('hidden');
+              document.getElementById('bottomNav').classList.remove('hidden');
+              document.getElementById('userName').innerText = res.nombre;
+              usuarioActual = res.nombre;
+              
+              if(res.rol === 'Dueño') {
+                document.getElementById('btnFinanzas').classList.remove('hidden');
+                cargarDashboardMovil();
+              }
+            } else {
+              alert("Aviso del sistema: " + res.error);
             }
-          } else {
-            document.getElementById('loginError').innerText = res.error;
-            document.getElementById('loginError').classList.remove('hidden');
-          }
-        })
-        .withFailureHandler(err => {
-          btn.innerHTML = "ENTRAR";
-          btn.disabled = false;
-          document.getElementById('loginError').innerText = "Falla de conexión: " + err;
-          document.getElementById('loginError').classList.remove('hidden');
-        })
-        .iniciarSesion(user, pass);
+          })
+          .withFailureHandler(function(err) {
+            btn.innerHTML = "ENTRAR";
+            btn.disabled = false;
+            alert("Bloqueo de Google detectado: " + err.message);
+          })
+          .iniciarSesion(user, pass);
+      } catch(e) {
+        alert("Error del navegador: " + e.message);
+      }
     }
 
     function cambiarVista(vista) {
@@ -129,7 +135,7 @@
     function cargarDashboardMovil() {
       google.script.run.withSuccessHandler(data => {
         document.getElementById('mPendientes').innerText = data.pendientes;
-        document.getElementById('mGanancia').innerText = data.gananciaMes.toLocaleString();
+        document.getElementById('mGanancia').innerText = data.gananciaMes.toLocaleString('es-PY');
       }).getDatosDashboard();
     }
 
