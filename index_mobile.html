@@ -59,9 +59,7 @@
       <button onclick="cambiarVista('vistaNuevo', 'Recibir Paquete')" class="w-full text-left p-4 rounded-xl bg-blue-50 text-blue-800 navBtn"><i class="fa-solid fa-box-open w-6"></i> Recibir Paquete</button>
       <button onclick="cambiarVista('vistaEntregas', 'Entregar')" class="w-full text-left p-4 rounded-xl hover:bg-slate-100 navBtn"><i class="fa-solid fa-house-circle-check w-6"></i> Entregar</button>
       <button onclick="cambiarVista('vistaHistorial', 'Historial')" class="w-full text-left p-4 rounded-xl hover:bg-slate-100 navBtn"><i class="fa-solid fa-list w-6"></i> Historial</button>
-      <button id="btnNavFinanzas" onclick="cambiarVista('vistaFinanzas', 'Balance')" class="w-full text-left p-4 rounded-xl hover:bg-slate-100 navBtn hidden"><i class="fa-solid fa-chart-line w-6"></i> Balance</button>
-      <!-- NUEVO BOTÓN: COBRANZAS (Solo Dueño) -->
-      <button id="btnNavCobranzas" onclick="cambiarVista('vistaCobranzas', 'Cobranzas Corporativas')" class="w-full text-left p-4 rounded-xl hover:bg-slate-100 navBtn hidden text-emerald-600"><i class="fa-solid fa-file-invoice-dollar w-6"></i> Cobranzas Corp.</button>
+      <button id="btnNavFinanzas" onclick="cambiarVista('vistaFinanzas', 'Balance y Cobros')" class="w-full text-left p-4 rounded-xl hover:bg-slate-100 navBtn hidden"><i class="fa-solid fa-chart-line w-6"></i> Balance y Cobros</button>
       <button id="btnNavPersonal" onclick="cambiarVista('vistaPersonal', 'Gestión Personal')" class="w-full text-left p-4 rounded-xl hover:bg-slate-100 navBtn hidden text-amber-600"><i class="fa-solid fa-users w-6"></i> Personal</button>
     </nav>
     <div class="p-4 border-t"><button onclick="location.reload()" class="w-full text-left p-4 rounded-xl text-red-500 hover:bg-red-50 font-bold"><i class="fa-solid fa-power-off w-6"></i> Cerrar Sesión</button></div>
@@ -138,43 +136,43 @@
     <div id="m_resultados" class="space-y-3 pb-8"></div>
   </main>
 
-  <!-- VISTA 4: FINANZAS -->
+  <!-- VISTA 4: FINANZAS Y COBROS (SOLO DUEÑO) -->
   <main id="vistaFinanzas" class="px-4 hidden">
-    <div class="grid grid-cols-1 gap-4">
+    <div class="grid grid-cols-1 gap-4 mb-6">
       <div class="bg-[#111827] text-white p-8 rounded-3xl shadow-2xl relative overflow-hidden border border-slate-700">
-        <p class="text-xs font-bold opacity-60 uppercase tracking-widest mb-2 text-center">Balance del Mes</p>
+        <p class="text-xs font-bold opacity-60 uppercase tracking-widest mb-2 text-center">Ingresos Reales (Cobrado)</p>
         <p class="text-4xl font-black tracking-tighter text-emerald-400 text-center">Gs. <span id="mGanancia">0</span></p>
         <div class="border-t border-slate-700 mt-6 pt-4 text-center"><p class="text-sm font-bold text-slate-300">Pendientes en Tránsito: <span id="mPendientes" class="text-amber-400">0</span></p></div>
       </div>
     </div>
-  </main>
-
-  <!-- VISTA 5: NUEVA COBRANZA CORPORATIVA MÓVIL (Solo Dueño) -->
-  <main id="vistaCobranzas" class="px-4 hidden">
-    <div class="bg-white rounded-2xl shadow-sm p-5 mb-4 border border-slate-100">
-      <h3 class="font-black text-slate-800 text-lg mb-4 text-center border-b pb-3 text-emerald-700 uppercase">Buscar Deuda</h3>
-      <input type="text" id="m_cobranzaRuc" placeholder="CI/RUC Empresa (Ej: 1234567)" class="w-full border-2 border-slate-300 p-4 rounded-xl font-black text-center text-xl text-slate-900 bg-white focus:border-emerald-600 focus:outline-none mb-4">
-      <button onclick="buscarDeudaM(this)" class="w-full bg-emerald-600 text-white font-black py-4 rounded-xl shadow-lg transition tracking-widest text-lg active:scale-95"><i class="fa-solid fa-search mr-2"></i> BUSCAR</button>
+    
+    <div class="bg-white rounded-2xl shadow-sm p-5 border border-slate-100 mb-6">
+      <h3 class="font-black text-slate-800 text-lg mb-4 text-center border-b pb-3 text-rose-700 uppercase">Empresas con Deuda</h3>
+      <div id="m_listaDeudas" class="space-y-2 max-h-60 overflow-y-auto"></div>
     </div>
+
+    <div class="bg-white rounded-2xl shadow-sm p-5 mb-4 border border-slate-100">
+      <h3 class="font-black text-slate-800 text-lg mb-4 text-center border-b pb-3 text-emerald-700 uppercase">Cobrar a Empresa</h3>
+      <input type="text" id="m_cobranzaRuc" placeholder="RUC Empresa (Ej: 1234567)" class="w-full border-2 border-slate-300 p-4 rounded-xl font-black text-center text-xl text-slate-900 bg-white focus:border-emerald-600 focus:outline-none mb-4">
+      <button onclick="buscarDeudaM(this)" class="w-full bg-emerald-600 text-white font-black py-4 rounded-xl shadow-lg transition tracking-widest text-lg active:scale-95"><i class="fa-solid fa-search mr-2"></i> BUSCAR DEUDA</button>
+    </div>
+    
     <!-- Resultados Cobranza Móvil -->
     <div id="m_cobranzaResultados" class="hidden bg-white p-5 rounded-2xl shadow-sm border border-slate-100 mb-6">
       <div class="text-center border-b border-slate-200 pb-4 mb-4">
-        <h3 class="font-black text-xl text-slate-800 leading-tight" id="m_cobranzaNombre">Empresa S.A.</h3>
+        <h3 class="font-black text-xl text-slate-800 leading-tight uppercase" id="m_cobranzaNombre">Empresa S.A.</h3>
         <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-2">Total Adeudado</p>
         <p class="text-4xl font-black text-emerald-600 mt-1">Gs. <span id="m_cobranzaMonto">0</span></p>
       </div>
-      <div id="m_tablaDeudas" class="space-y-2 mb-6 max-h-60 overflow-y-auto pr-1">
-        <!-- Tarjetas de Envío -->
-      </div>
+      <div id="m_tablaDeudas" class="space-y-2 mb-6 max-h-60 overflow-y-auto pr-1"></div>
       <div class="space-y-3">
-        <!-- window.print() abrirá la herramienta nativa del celular para guardar PDF o Compartir -->
         <button onclick="imprimirPDF_M()" class="w-full bg-slate-800 text-white font-bold py-4 rounded-xl shadow-lg active:scale-95 transition"><i class="fa-solid fa-file-pdf mr-2"></i> Generar Reporte / PDF</button>
-        <button onclick="liquidarDeudaM()" class="w-full bg-emerald-600 text-white font-black py-4 rounded-xl shadow-lg active:scale-95 transition"><i class="fa-solid fa-check-double mr-2"></i> LIQUIDAR DEUDA</button>
+        <button onclick="liquidarDeudaM()" class="w-full bg-emerald-600 text-white font-black py-4 rounded-xl shadow-lg active:scale-95 transition"><i class="fa-solid fa-check-double mr-2"></i> MARCAR COMO PAGADO</button>
       </div>
     </div>
   </main>
 
-  <!-- VISTA 6: PERSONAL -->
+  <!-- VISTA 5: PERSONAL -->
   <main id="vistaPersonal" class="px-4 hidden">
     <div class="bg-white rounded-2xl shadow-sm p-5 mb-4 border border-slate-100">
       <h3 class="font-black text-slate-800 text-lg mb-4 text-center border-b pb-3 text-blue-900 uppercase">Nuevo Empleado</h3>
@@ -192,36 +190,39 @@
     </div>
   </main>
 
-  <!-- AREA DE IMPRESIÓN PDF NATIVA PARA CELULAR (Oculta hasta imprimir) -->
+  <!-- AREA DE IMPRESIÓN PDF NATIVA PARA CELULAR -->
   <div id="printArea" class="hidden text-black font-sans">
-    <div class="text-center border-b-2 border-black pb-4 mb-4">
-      <h1 class="text-2xl font-black uppercase">Luis Transportes</h1>
-      <h2 class="text-lg font-bold mt-1">REPORTE DE ENVÍOS</h2>
-      <p class="text-xs mt-1" id="printFecha"></p>
+    <div class="flex items-center justify-between border-b-2 border-black pb-4 mb-4">
+      <img src="logo.png" onerror="this.src='logo.jpeg'" style="max-height: 50px; object-fit: contain;">
+      <div class="text-right">
+        <h1 class="text-xl font-black uppercase text-blue-900">Luis Transportes</h1>
+        <h2 class="text-sm font-bold mt-1 text-slate-700">EXTRACTO DE CUENTA</h2>
+        <p class="text-[10px] font-semibold" id="printFecha"></p>
+      </div>
     </div>
-    <div class="mb-4 text-sm">
-      <p><strong>Cliente:</strong> <span id="printNombre"></span></p>
+    <div class="mb-4 text-xs leading-tight">
+      <p><strong>Cliente:</strong> <span id="printNombre" class="uppercase"></span></p>
       <p><strong>RUC:</strong> <span id="printRuc"></span></p>
+      <p class="mt-2 text-justify">Detalle de servicios logísticos pendientes de cobro.</p>
     </div>
-    <table class="w-full text-left text-xs border-collapse border border-black mb-6">
+    <table class="w-full text-left text-[10px] border-collapse border border-slate-400 mb-6">
       <thead>
-        <tr class="bg-gray-200">
-          <th class="border border-black p-1 font-bold">ID</th>
-          <th class="border border-black p-1 font-bold">Fecha</th>
-          <th class="border border-black p-1 font-bold">Destino</th>
-          <th class="border border-black p-1 font-bold">Costo</th>
+        <tr class="bg-slate-200">
+          <th class="border border-slate-400 p-1 font-bold">ID / Fecha</th>
+          <th class="border border-slate-400 p-1 font-bold">Destino / Detalle</th>
+          <th class="border border-slate-400 p-1 font-bold text-right">Costo</th>
         </tr>
       </thead>
       <tbody id="printTabla"></tbody>
       <tfoot>
-        <tr>
-          <td colspan="3" class="border border-black p-1 text-right font-black text-sm">TOTAL:</td>
-          <td class="border border-black p-1 text-right font-black text-sm">Gs. <span id="printTotal">0</span></td>
+        <tr class="bg-slate-100">
+          <td colspan="2" class="border border-slate-400 p-2 text-right font-black text-sm text-blue-900">TOTAL:</td>
+          <td class="border border-slate-400 p-2 text-right font-black text-sm text-blue-900">Gs. <span id="printTotal">0</span></td>
         </tr>
       </tfoot>
     </table>
-    <div class="mt-12 flex justify-center">
-      <div class="text-center w-48 border-t-2 border-black pt-1"><p class="font-bold text-xs">Firma y Aclaración</p></div>
+    <div class="mt-16 flex justify-center">
+      <div class="text-center w-48 border-t border-black pt-1"><p class="font-bold text-xs">Firma Autorizada</p></div>
     </div>
   </div>
 
@@ -252,7 +253,6 @@
         if(res.rol === 'Dueño') { 
           document.getElementById('btnNavFinanzas').classList.remove('hidden'); 
           document.getElementById('btnNavPersonal').classList.remove('hidden'); 
-          document.getElementById('btnNavCobranzas').classList.remove('hidden'); 
           cargarDashboardMovil(); 
         }
         cambiarVista('vistaNuevo', 'Recibir Paquete');
@@ -260,7 +260,7 @@
     }
 
     function cambiarVista(vista, titulo) {
-      ['vistaEntregas','vistaNuevo','vistaHistorial','vistaFinanzas','vistaPersonal','vistaCobranzas'].forEach(v => document.getElementById(v).classList.add('hidden'));
+      ['vistaEntregas','vistaNuevo','vistaHistorial','vistaFinanzas','vistaPersonal'].forEach(v => document.getElementById(v).classList.add('hidden'));
       document.getElementById(vista).classList.remove('hidden');
       if(titulo) document.getElementById('tituloApp') ? document.getElementById('tituloApp').innerText = titulo : null;
       
@@ -273,14 +273,23 @@
     }
 
     function abrirVisorFoto(urlDrive) {
-      let id = extraerIdDrive(urlDrive);
-      if(!id) return;
+      let id = extraerIdDrive(urlDrive); if(!id) return;
       document.getElementById('visorFotoImg').src = `https://drive.google.com/thumbnail?id=${id}&sz=w1000`;
       document.getElementById('visorFotoDownload').href = `https://drive.google.com/uc?export=download&id=${id}`;
       document.getElementById('modalVisorFoto').classList.remove('hidden');
     }
 
-    async function cargarDashboardMovil() { const res = await apiRequest({ accion: 'getDashboard' }); if(res.success) { document.getElementById('mPendientes').innerText = res.pendientes; document.getElementById('mGanancia').innerText = res.gananciaMes.toLocaleString('es-PY'); } }
+    async function cargarDashboardMovil() { 
+      const res = await apiRequest({ accion: 'getDashboard' }); 
+      if(res.success) { 
+        document.getElementById('mPendientes').innerText = res.pendientes; 
+        document.getElementById('mGanancia').innerText = res.gananciaMes.toLocaleString('es-PY'); 
+        
+        const tbD = document.getElementById('m_listaDeudas'); tbD.innerHTML = "";
+        if(res.deudas && res.deudas.length > 0) { res.deudas.forEach(d => { tbD.innerHTML += `<div class="bg-rose-50 border border-rose-200 p-3 rounded-xl mb-2 flex justify-between items-center"><div class="truncate pr-2"><p class="font-bold text-slate-800 uppercase text-sm truncate">${d.empresa}</p><p class="text-[10px] text-slate-500 font-bold">Deuda hace ${d.dias} Días</p></div><p class="font-black text-rose-600">Gs. ${d.total.toLocaleString('es-PY')}</p></div>`; }); }
+        else { tbD.innerHTML = "<p class='text-center text-xs font-bold text-slate-400 py-2'>Sin empresas morosas.</p>"; }
+      } 
+    }
     
     function leerFoto(e, imgId, tipoVar) { const file = e.target.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = ev => { document.getElementById(imgId).src = ev.target.result; document.getElementById(imgId).classList.remove('hidden'); if(tipoVar === 1) fotoEntregaData = ev.target.result; if(tipoVar === 2) fotoRecepcionData = ev.target.result; }; reader.readAsDataURL(file); }
 
@@ -353,51 +362,41 @@
       } else { div.innerHTML = "<p class='text-sm text-slate-400 text-center mt-8 font-bold'>No hay resultados.</p>"; }
     }
 
-    // --- COBRANZAS CORPORATIVAS EN CELULAR ---
+    // --- COBRANZAS MÓVIL ---
     async function buscarDeudaM(btn) {
-      const ruc = document.getElementById('m_cobranzaRuc').value.trim();
-      if(!ruc) return alert("Ingrese el RUC de la Empresa.");
-      
+      const ruc = document.getElementById('m_cobranzaRuc').value.trim(); if(!ruc) return alert("Ingrese RUC.");
       document.getElementById('m_cobranzaResultados').classList.add('hidden');
       let tOri = btn.innerHTML; btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Buscando..."; btn.disabled = true;
-      
       const res = await apiRequest({ accion: 'getPendientes', ci: ruc });
       btn.innerHTML = tOri; btn.disabled = false;
-      
       if(res.success) {
         pendientesDeudaGlobal = res.pendientes.map(p => p.id); 
-        document.getElementById('m_cobranzaNombre').innerText = res.cliente;
-        document.getElementById('printNombre').innerText = res.cliente; document.getElementById('printRuc').innerText = ruc;
-        document.getElementById('m_cobranzaMonto').innerText = res.total.toLocaleString('es-PY');
-        document.getElementById('printTotal').innerText = res.total.toLocaleString('es-PY');
-        
+        document.getElementById('m_cobranzaNombre').innerText = res.cliente; document.getElementById('printNombre').innerText = res.cliente; document.getElementById('printRuc').innerText = ruc;
+        document.getElementById('m_cobranzaMonto').innerText = res.total.toLocaleString('es-PY'); document.getElementById('printTotal').innerText = res.total.toLocaleString('es-PY');
         let tHtml = ""; let pHtml = "";
         res.pendientes.forEach(p => {
           tHtml += `<div class="bg-slate-50 border border-slate-200 p-3 rounded-xl"><div class="flex justify-between border-b border-slate-200 pb-2 mb-2"><span class="font-black text-blue-800">${p.id}</span><span class="text-[10px] text-slate-500 font-bold">${p.fecha.split(',')[0]}</span></div><p class="text-xs font-bold text-slate-800 truncate">${p.destino}</p><p class="text-[10px] text-slate-500 mb-2 truncate">${p.detalle}</p><p class="text-right font-black text-emerald-600 text-sm">Gs. ${p.costo.toLocaleString('es-PY')}</p></div>`;
-          pHtml += `<tr><td class="border border-black p-1 font-bold">${p.id}</td><td class="border border-black p-1">${p.fecha.split(',')[0]}</td><td class="border border-black p-1">${p.destino}</td><td class="border border-black p-1 text-right">Gs. ${p.costo.toLocaleString('es-PY')}</td></tr>`;
+          pHtml += `<tr><td class="border border-slate-400 p-1 font-bold">${p.id}<br><span style="font-size:8px; font-weight:normal;">${p.fecha.split(',')[0]}</span></td><td class="border border-slate-400 p-1">${p.destino}<br><span style="font-size:8px;">${p.detalle}</span></td><td class="border border-slate-400 p-1 text-right font-bold">Gs. ${p.costo.toLocaleString('es-PY')}</td></tr>`;
         });
         if(res.pendientes.length === 0) tHtml = "<p class='text-center text-xs font-bold text-slate-400 py-4'>Sin deudas pendientes.</p>";
-        
-        document.getElementById('m_tablaDeudas').innerHTML = tHtml;
-        document.getElementById('printTabla').innerHTML = pHtml;
+        document.getElementById('m_tablaDeudas').innerHTML = tHtml; document.getElementById('printTabla').innerHTML = pHtml;
         document.getElementById('m_cobranzaResultados').classList.remove('hidden');
       }
     }
 
     function imprimirPDF_M() {
-      if(pendientesDeudaGlobal.length === 0) return alert("No hay datos para el PDF.");
+      if(pendientesDeudaGlobal.length === 0) return alert("No hay datos.");
       document.getElementById('printFecha').innerText = "Emitido: " + new Date().toLocaleString('es-PY');
-      window.print(); // Abre sistema nativo del celular para generar PDF
+      window.print(); 
     }
 
     async function liquidarDeudaM() {
       if(pendientesDeudaGlobal.length === 0) return alert("Nada que liquidar.");
-      if(!confirm("¿Marcar estos envíos como PAGADOS? (Afectará tu Dashboard)")) return;
+      if(!confirm("¿Marcar estos envíos como PAGADOS?")) return;
       const res = await apiRequest({ accion: 'saldarDeuda', ids: pendientesDeudaGlobal });
       if(res.success) {
         alert(`Liquidado: ${res.actualizados} encomiendas.`);
-        document.getElementById('m_cobranzaResultados').classList.add('hidden');
-        document.getElementById('m_cobranzaRuc').value = ''; pendientesDeudaGlobal = [];
+        document.getElementById('m_cobranzaResultados').classList.add('hidden'); document.getElementById('m_cobranzaRuc').value = ''; pendientesDeudaGlobal = [];
         cargarDashboardMovil(); historialGlobalM = []; 
       } else { alert("Error de red."); }
     }
