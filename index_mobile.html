@@ -16,36 +16,34 @@
     <a id="visorFotoDownload" href="#" target="_blank" class="bg-blue-600 text-white font-bold py-3 px-8 rounded-full shadow-lg"><i class="fa-solid fa-download mr-2"></i> Descargar</a>
   </div>
 
-  <!-- LOGIN DE CELULAR (Solucionado lo del teclado empujando el texto) -->
+  <!-- LOGIN DE CELULAR -->
   <div id="loginScreen" class="fixed inset-0 bg-white z-50 flex flex-col justify-between items-center p-6 overflow-y-auto">
     <div class="flex-1 w-full flex flex-col items-center justify-center max-w-sm">
       <img src="logo.png" onerror="this.src='logo.jpeg'" alt="Logo" class="w-48 h-auto mb-8 object-contain mix-blend-multiply">
       <div class="w-full space-y-4 mb-8">
-        <input type="text" id="userInput" placeholder="Usuario" class="w-full text-center text-xl p-4 rounded-xl border-2 border-slate-200 focus:border-blue-800 focus:outline-none" autocapitalize="none">
-        <input type="password" id="passInput" placeholder="Contraseña" class="w-full text-center text-xl p-4 rounded-xl border-2 border-slate-200 focus:border-blue-800 focus:outline-none">
+        <input type="text" id="userInput" placeholder="Usuario" class="w-full text-center text-xl p-4 rounded-xl border-2 border-slate-300 font-bold text-slate-900 focus:border-blue-800 focus:outline-none placeholder-slate-400" autocapitalize="none">
+        <input type="password" id="passInput" placeholder="Contraseña" class="w-full text-center text-xl p-4 rounded-xl border-2 border-slate-300 font-bold text-slate-900 focus:border-blue-800 focus:outline-none placeholder-slate-400">
       </div>
       <button onclick="ingresarAlSistema(this)" class="bg-blue-900 hover:bg-slate-900 text-white w-full py-4 rounded-xl font-bold text-lg shadow-xl transition">ENTRAR</button>
     </div>
-    <!-- mt-auto y sin position fixed/absolute hace que el teclado fluya naturalmente sin tapar nada -->
     <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest text-center mt-auto pb-4 pt-8">Desarrollado Por Fernando Rodriguez 2026</p>
   </div>
 
-  <!-- BARRA SUPERIOR (Limpia, blanca, solo logo centrado) -->
+  <!-- BARRA SUPERIOR BLANCA Y LIMPIA -->
   <header class="bg-white text-slate-800 p-4 shadow-sm hidden flex-row items-center justify-between fixed top-0 w-full z-40 border-b" id="appHeader">
     <button onclick="toggleMenu()" class="text-2xl focus:outline-none text-blue-900 w-10 text-left"><i class="fa-solid fa-bars"></i></button>
     <div class="flex-1 flex justify-center">
       <img src="logo.png" onerror="this.src='logo.jpeg'" alt="Logo" class="h-10 object-contain mix-blend-multiply">
     </div>
-    <div class="w-10"></div> <!-- Espacio fantasma para balancear el centro -->
+    <div class="w-10"></div>
   </header>
 
-  <!-- MENÚ LATERAL DESPLEGABLE (Con el Perfil Adentro) -->
+  <!-- MENÚ LATERAL DESPLEGABLE -->
   <div id="sideMenu" class="fixed inset-y-0 left-0 w-64 bg-white transform -translate-x-full transition-transform duration-300 z-50 shadow-2xl flex flex-col">
     <div class="p-6 bg-slate-50 border-b flex flex-col items-center mt-4">
       <img src="logo.png" onerror="this.src='logo.jpeg'" alt="Logo" class="h-14 object-contain mb-4 mix-blend-multiply">
       <div class="flex items-center gap-2 bg-blue-100 text-blue-800 px-4 py-2 rounded-full w-full justify-center">
-        <i class="fa-solid fa-user-circle text-xl"></i>
-        <p class="text-sm font-bold truncate" id="userName">Agente</p>
+        <i class="fa-solid fa-user-circle text-xl"></i><p class="text-sm font-bold truncate" id="userName">Agente</p>
       </div>
     </div>
     <nav class="flex-1 p-4 space-y-2 font-bold text-slate-600 overflow-y-auto">
@@ -59,70 +57,86 @@
   </div>
   <div id="menuOverlay" onclick="toggleMenu()" class="fixed inset-0 bg-slate-900 bg-opacity-50 hidden z-40"></div>
 
-  <!-- VISTA NUEVO ENVÍO -->
+  <!-- VISTA 1: RECIBIR PAQUETE (AQUÍ ESTÁ LA TICKETERA) -->
   <main id="vistaNuevo" class="px-4 hidden">
-    <div class="bg-white rounded-2xl shadow-sm p-5">
+    <div class="bg-white rounded-2xl shadow-sm p-5 mb-6 border border-slate-100">
       <h3 class="font-black text-slate-800 text-lg mb-4 text-center border-b pb-3 text-blue-900 uppercase">Recibir Nuevo Paquete</h3>
       <form onsubmit="guardarEnvioMovil(event)" class="space-y-4">
-        <p class="font-bold text-[10px] text-slate-400 uppercase tracking-widest">Remitente</p>
-        <input type="text" id="m_ciRem" onblur="buscarM('Rem')" placeholder="CI/RUC Remitente" class="w-full border-b-2 border-slate-200 p-2 font-bold text-blue-800 bg-slate-50 focus:outline-none" required>
-        <input type="text" id="m_nomRem" placeholder="Nombre Remitente" class="w-full border-b border-slate-200 p-2 focus:outline-none" required>
-        <input type="text" id="m_telRem" placeholder="Teléfono" class="w-full border-b border-slate-200 p-2 focus:outline-none" required>
+
+        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
+          <p class="font-black text-sm text-blue-900 uppercase tracking-widest mb-2"><i class="fa-solid fa-user mr-1"></i> Remitente</p>
+          <input type="text" id="m_ciRem" onblur="buscarM('Rem')" placeholder="CI/RUC Remitente" class="w-full border-2 border-slate-300 p-3 rounded-lg font-bold text-slate-900 bg-white placeholder-slate-500 focus:border-blue-600 focus:outline-none mb-2" required>
+          <input type="text" id="m_nomRem" placeholder="Nombre Remitente" class="w-full border-2 border-slate-300 p-3 rounded-lg font-bold text-slate-900 bg-white placeholder-slate-500 focus:border-blue-600 focus:outline-none mb-2" required>
+          <input type="text" id="m_telRem" placeholder="Teléfono" class="w-full border-2 border-slate-300 p-3 rounded-lg font-bold text-slate-900 bg-white placeholder-slate-500 focus:border-blue-600 focus:outline-none" required>
+        </div>
         
-        <p class="font-bold text-[10px] text-slate-400 uppercase tracking-widest mt-6">Destinatario</p>
-        <input type="text" id="m_ciDest" onblur="buscarM('Dest')" placeholder="CI/RUC Destino" class="w-full border-b-2 border-slate-200 p-2 font-bold text-blue-800 bg-slate-50 focus:outline-none" required>
-        <input type="text" id="m_nomDest" placeholder="Nombre Destinatario" class="w-full border-b border-slate-200 p-2 focus:outline-none" required>
-        <input type="text" id="m_telDest" placeholder="Teléfono" class="w-full border-b border-slate-200 p-2 focus:outline-none">
-        <input type="text" id="m_dirDest" placeholder="Dirección Destino" class="w-full border-b border-slate-200 p-2 focus:outline-none">
+        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
+          <p class="font-black text-sm text-blue-900 uppercase tracking-widest mb-2"><i class="fa-solid fa-location-dot mr-1"></i> Destinatario</p>
+          <input type="text" id="m_ciDest" onblur="buscarM('Dest')" placeholder="CI/RUC Destino" class="w-full border-2 border-slate-300 p-3 rounded-lg font-bold text-slate-900 bg-white placeholder-slate-500 focus:border-blue-600 focus:outline-none mb-2" required>
+          <input type="text" id="m_nomDest" placeholder="Nombre Destinatario" class="w-full border-2 border-slate-300 p-3 rounded-lg font-bold text-slate-900 bg-white placeholder-slate-500 focus:border-blue-600 focus:outline-none mb-2" required>
+          <input type="text" id="m_telDest" placeholder="Teléfono" class="w-full border-2 border-slate-300 p-3 rounded-lg font-bold text-slate-900 bg-white placeholder-slate-500 focus:border-blue-600 focus:outline-none mb-2">
+          <input type="text" id="m_dirDest" placeholder="Dirección Destino" class="w-full border-2 border-slate-300 p-3 rounded-lg font-bold text-slate-900 bg-white placeholder-slate-500 focus:border-blue-600 focus:outline-none">
+        </div>
+
+        <div class="bg-blue-50 p-3 rounded-xl border border-blue-200">
+          <p class="font-black text-sm text-blue-900 uppercase tracking-widest mb-2"><i class="fa-solid fa-box-open mr-1"></i> Cobro y Detalles</p>
+          <input type="text" id="m_detalle" placeholder="¿Qué contiene el paquete?" class="w-full border-2 border-slate-300 p-3 rounded-lg font-bold text-slate-900 bg-white placeholder-slate-500 focus:border-blue-600 focus:outline-none mb-2" required>
+          <input type="number" id="m_costo" placeholder="Costo del Envío (Gs.)" class="w-full border-2 border-emerald-400 p-3 rounded-lg font-black text-emerald-700 text-xl bg-white placeholder-emerald-300 focus:outline-none mb-2" required>
+          <select id="m_tipoCli" class="w-full border-2 border-slate-300 p-3 rounded-lg font-bold text-slate-900 bg-white focus:outline-none">
+            <option value="Contado">PAGO AL CONTADO</option>
+            <option value="Corporativo">CUENTA CORPORATIVA</option>
+          </select>
+        </div>
         
-        <p class="font-bold text-[10px] text-slate-400 uppercase tracking-widest mt-6">Cobro y Detalles</p>
-        <input type="text" id="m_detalle" placeholder="¿Qué contiene el paquete?" class="w-full border-b border-slate-200 p-2 font-bold text-slate-700 focus:outline-none" required>
-        <input type="number" id="m_costo" placeholder="Costo del Envío (Gs.)" class="w-full border-b-2 border-emerald-400 p-3 font-black text-emerald-700 text-xl mt-2 focus:outline-none" required>
-        <select id="m_tipoCli" class="w-full border-2 border-slate-200 p-3 rounded-xl font-bold text-slate-700 mt-2"><option value="Contado">PAGO AL CONTADO</option><option value="Corporativo">CUENTA CORPORATIVA</option></select>
-        
-        <div class="border-2 border-dashed border-slate-300 bg-slate-50 p-4 text-center rounded-xl mt-4" onclick="document.getElementById('cameraRecepcion').click()">
-          <p class="font-bold text-slate-500 text-sm"><i class="fa-solid fa-camera mb-1 text-2xl text-blue-400"></i><br>Foto (Opcional)</p>
+        <div class="border-2 border-dashed border-slate-400 bg-slate-50 p-4 text-center rounded-xl mt-4" onclick="document.getElementById('cameraRecepcion').click()">
+          <p class="font-bold text-slate-700 text-sm"><i class="fa-solid fa-camera mb-1 text-2xl text-blue-500"></i><br>Foto del Paquete (Opcional)</p>
           <input type="file" id="cameraRecepcion" accept="image/*" capture="environment" class="hidden" onchange="leerFoto(event, 'previewRecepcion', 2)">
         </div>
-        <img id="previewRecepcion" class="mt-2 rounded-xl hidden w-full h-40 object-cover border shadow-sm">
+        <img id="previewRecepcion" class="mt-2 rounded-xl hidden w-full h-40 object-cover border-2 border-blue-300 shadow-sm">
         
-        <button type="submit" id="btnRegMovil" class="w-full bg-[#111827] text-white font-bold py-4 rounded-xl shadow-lg mt-6 text-lg tracking-widest active:scale-95 transition">GUARDAR</button>
+        <button type="submit" id="btnRegMovil" class="w-full bg-[#111827] text-white font-black py-4 rounded-xl shadow-lg mt-6 text-lg tracking-widest active:scale-95 transition">GUARDAR ENVÍO</button>
       </form>
+
+      <!-- TICKETERA -->
+      <div class="bg-slate-100 rounded-xl border border-slate-300 p-4 mt-6">
+        <h3 class="font-black text-slate-800 text-xs uppercase tracking-widest mb-3 text-center"><i class="fa-solid fa-print text-blue-700 mr-1"></i> Ticketera Bluetooth</h3>
+        <div class="grid grid-cols-2 gap-3">
+          <button type="button" onclick="imprimirTicket(1)" class="bg-slate-800 text-white py-4 rounded-xl font-bold shadow active:scale-95 transition"><i class="fa-solid fa-receipt mr-1"></i> Remitente</button>
+          <button type="button" onclick="imprimirTicket(2)" class="bg-blue-800 text-white py-4 rounded-xl font-bold shadow active:scale-95 transition"><i class="fa-solid fa-copy mr-1"></i> Paquete</button>
+        </div>
+        <p class="text-[10px] text-slate-400 text-center mt-2 font-bold uppercase">Imprimir después de guardar el envío.</p>
+      </div>
     </div>
   </main>
 
-  <!-- VISTA ENTREGAS -->
+  <!-- VISTA 2: ENTREGAS (SÓLO ENTREGA) -->
   <main id="vistaEntregas" class="px-4 hidden">
-    <div class="bg-white rounded-2xl shadow-sm p-5 mb-4">
+    <div class="bg-white rounded-2xl shadow-sm p-5 mb-4 border border-slate-100">
       <h3 class="font-black text-slate-800 text-lg mb-4 text-center border-b pb-3 text-blue-900 uppercase">Confirmar Entrega</h3>
-      <input type="text" id="idEnvio" placeholder="Ej: LT-123456" class="w-full border-b-4 border-blue-800 p-4 text-2xl text-center font-black mb-6 uppercase text-blue-900 bg-slate-50 focus:outline-none rounded-t-xl">
-      <div class="border-2 border-dashed bg-blue-50 border-blue-300 p-8 text-center rounded-xl active:bg-blue-100 transition" onclick="document.getElementById('cameraEntrega').click()">
+      <input type="text" id="idEnvio" placeholder="EJ: LT-123456" class="w-full border-2 border-slate-300 p-4 rounded-xl text-2xl text-center font-black mb-6 uppercase text-blue-900 bg-white placeholder-slate-400 focus:border-blue-600 focus:outline-none">
+      <div class="border-2 border-dashed bg-blue-50 border-blue-400 p-8 text-center rounded-xl active:bg-blue-100 transition" onclick="document.getElementById('cameraEntrega').click()">
         <p class="font-bold text-blue-800 text-lg"><i class="fa-solid fa-camera mb-2 text-5xl"></i><br>Foto Destino / Firma</p>
         <input type="file" id="cameraEntrega" accept="image/*" capture="environment" class="hidden" onchange="leerFoto(event, 'previewEntrega', 1)">
       </div>
-      <img id="previewEntrega" class="mt-4 rounded-xl hidden w-full h-48 object-cover border border-blue-200 shadow-md">
-      <button onclick="subirFoto(this)" class="w-full bg-emerald-500 text-white font-bold py-5 rounded-xl shadow-lg mt-6 text-lg tracking-widest active:scale-95 transition">ENTREGAR PAQUETE</button>
-    </div>
-    <div class="bg-white rounded-2xl shadow-sm p-5">
-      <h3 class="font-bold text-slate-400 text-[10px] uppercase tracking-widest mb-3 text-center">Ticketera Bluetooth</h3>
-      <div class="grid grid-cols-2 gap-3"><button onclick="imprimirTicket(1)" class="bg-slate-800 text-white py-4 rounded-xl font-bold shadow active:scale-95 transition"><i class="fa-solid fa-receipt mr-1"></i> Cliente</button><button onclick="imprimirTicket(2)" class="bg-blue-800 text-white py-4 rounded-xl font-bold shadow active:scale-95 transition"><i class="fa-solid fa-copy mr-1"></i> Empresa</button></div>
+      <img id="previewEntrega" class="mt-4 rounded-xl hidden w-full h-48 object-cover border-2 border-blue-300 shadow-md">
+      <button onclick="subirFoto(this)" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black py-5 rounded-xl shadow-lg mt-6 text-lg tracking-widest active:scale-95 transition">ENTREGAR PAQUETE</button>
     </div>
   </main>
 
-  <!-- VISTA HISTORIAL -->
+  <!-- VISTA 3: HISTORIAL -->
   <main id="vistaHistorial" class="px-4 hidden">
     <div class="flex gap-2 mb-4">
-      <input type="text" id="m_inputBusqueda" oninput="filtrarHistorialMovil()" placeholder="Buscar CI/Nombre..." class="w-1/2 border p-3 rounded-xl text-sm focus:outline-none shadow-sm">
-      <select id="m_filtroTiempo" onchange="filtrarHistorialMovil()" class="w-1/4 border p-2 rounded-xl text-xs font-bold text-slate-700 bg-white focus:outline-none shadow-sm"><option value="todos">Últimos</option><option value="hoy">Hoy</option></select>
+      <input type="text" id="m_inputBusqueda" oninput="filtrarHistorialMovil()" placeholder="Buscar CI/Nombre..." class="w-1/2 border-2 border-slate-200 p-3 rounded-xl text-sm font-bold text-slate-800 focus:border-blue-600 focus:outline-none bg-white">
+      <select id="m_filtroTiempo" onchange="filtrarHistorialMovil()" class="w-1/4 border-2 border-slate-200 p-2 rounded-xl text-xs font-bold text-slate-700 bg-white focus:outline-none shadow-sm"><option value="todos">Últimos</option><option value="hoy">Hoy</option></select>
       <button onclick="cargarHistorialMovil()" class="w-1/4 bg-[#111827] text-white rounded-xl text-sm shadow-sm active:scale-95 transition"><i class="fa-solid fa-rotate-right"></i></button>
     </div>
     <div id="m_resultados" class="space-y-3 pb-8"></div>
   </main>
 
-  <!-- VISTA FINANZAS -->
+  <!-- VISTA 4: FINANZAS -->
   <main id="vistaFinanzas" class="px-4 hidden">
     <div class="grid grid-cols-1 gap-4">
-      <div class="bg-[#111827] text-white p-8 rounded-3xl shadow-2xl relative overflow-hidden">
+      <div class="bg-[#111827] text-white p-8 rounded-3xl shadow-2xl relative overflow-hidden border border-slate-700">
         <p class="text-xs font-bold opacity-60 uppercase tracking-widest mb-2 text-center">Balance del Mes</p>
         <p class="text-4xl font-black tracking-tighter text-emerald-400 text-center">Gs. <span id="mGanancia">0</span></p>
         <div class="border-t border-slate-700 mt-6 pt-4 text-center"><p class="text-sm font-bold text-slate-300">Pendientes en Tránsito: <span id="mPendientes" class="text-amber-400">0</span></p></div>
@@ -130,19 +144,19 @@
     </div>
   </main>
 
-  <!-- VISTA PERSONAL (Para el Dueño en Móvil) -->
+  <!-- VISTA 5: PERSONAL -->
   <main id="vistaPersonal" class="px-4 hidden">
-    <div class="bg-white rounded-2xl shadow-sm p-5 mb-4">
+    <div class="bg-white rounded-2xl shadow-sm p-5 mb-4 border border-slate-100">
       <h3 class="font-black text-slate-800 text-lg mb-4 text-center border-b pb-3 text-blue-900 uppercase">Nuevo Empleado</h3>
       <form onsubmit="crearUser(event)" class="space-y-3">
-        <input type="text" id="nu_user" placeholder="Usuario" class="w-full border-b-2 p-2 bg-slate-50 focus:outline-none" required>
-        <input type="text" id="nu_pass" placeholder="Contraseña" class="w-full border-b-2 p-2 bg-slate-50 focus:outline-none" required>
-        <input type="text" id="nu_nombre" placeholder="Nombre Completo" class="w-full border-b-2 p-2 bg-slate-50 focus:outline-none" required>
-        <select id="nu_rol" class="w-full border-2 p-3 rounded-xl font-bold text-slate-700 mt-2"><option value="Empleado">Empleado (Chofer)</option><option value="Dueño">Dueño (Admin)</option></select>
-        <button type="submit" class="w-full bg-blue-800 text-white font-bold py-4 rounded-xl mt-4">CREAR USUARIO</button>
+        <input type="text" id="nu_user" placeholder="Usuario" class="w-full border-2 border-slate-300 p-3 rounded-lg font-bold text-slate-900 bg-white focus:border-blue-600 focus:outline-none" required>
+        <input type="text" id="nu_pass" placeholder="Contraseña" class="w-full border-2 border-slate-300 p-3 rounded-lg font-bold text-slate-900 bg-white focus:border-blue-600 focus:outline-none" required>
+        <input type="text" id="nu_nombre" placeholder="Nombre Completo" class="w-full border-2 border-slate-300 p-3 rounded-lg font-bold text-slate-900 bg-white focus:border-blue-600 focus:outline-none" required>
+        <select id="nu_rol" class="w-full border-2 border-slate-300 p-3 rounded-lg font-bold text-slate-700 bg-white mt-2 focus:outline-none"><option value="Empleado">Empleado (Chofer)</option><option value="Dueño">Dueño (Admin)</option></select>
+        <button type="submit" class="w-full bg-blue-800 text-white font-bold py-4 rounded-xl mt-4 tracking-widest active:scale-95 transition">CREAR USUARIO</button>
       </form>
     </div>
-    <div class="bg-white rounded-2xl shadow-sm p-5">
+    <div class="bg-white rounded-2xl shadow-sm p-5 border border-slate-100">
       <h3 class="font-bold text-slate-800 text-lg mb-4 border-b pb-2">Personal Activo</h3>
       <div id="m_listaUsuarios" class="space-y-3 text-sm"></div>
     </div>
@@ -188,7 +202,6 @@
       if(vista === 'vistaPersonal') cargarUsuarios();
     }
 
-    // VISOR DE FOTOS REPARADO (Usa Thumbnail High-Res)
     function abrirVisorFoto(urlDrive) {
       let id = extraerIdDrive(urlDrive);
       if(!id) return;
@@ -219,8 +232,8 @@
       e.preventDefault(); document.getElementById('btnRegMovil').innerHTML = "CARGANDO...";
       const datos = { ciRem: document.getElementById('m_ciRem').value, nomRem: document.getElementById('m_nomRem').value, telRem: document.getElementById('m_telRem').value, ciDest: document.getElementById('m_ciDest').value, nomDest: document.getElementById('m_nomDest').value, telDest: document.getElementById('m_telDest').value, dirDest: document.getElementById('m_dirDest').value, detalle: document.getElementById('m_detalle').value, costo: document.getElementById('m_costo').value, tipoCli: document.getElementById('m_tipoCli').value };
       const res = await apiRequest({ accion: 'guardarEnvio', datos: datos, agente: usuarioActual, fotoRecepcion: fotoRecepcionData });
-      document.getElementById('btnRegMovil').innerHTML = "GUARDAR";
-      if(res.success) { alert("CREADO: " + res.id); e.target.reset(); document.getElementById('previewRecepcion').classList.add('hidden'); fotoRecepcionData = ""; historialGlobalM = []; document.getElementById('idEnvio').value = res.id; cambiarVista('vistaEntregas'); }
+      document.getElementById('btnRegMovil').innerHTML = "GUARDAR ENVÍO";
+      if(res.success) { alert("CREADO: " + res.id); e.target.reset(); document.getElementById('previewRecepcion').classList.add('hidden'); fotoRecepcionData = ""; historialGlobalM = []; cambiarVista('vistaNuevo'); }
     }
 
     function extraerIdDrive(url) { if(!url) return null; let m1 = url.match(/id=([^&]+)/); if (m1) return m1[1]; let m2 = url.match(/\/d\/([a-zA-Z0-9_-]+)/); if (m2) return m2[1]; return null; }
@@ -274,7 +287,7 @@
       document.getElementById('m_listaUsuarios').innerHTML = "<p class='text-center'><i class='fa-solid fa-spinner fa-spin'></i></p>";
       const res = await apiRequest({ accion: 'getUsuarios' });
       if(res.success) {
-        let h = ""; res.usuarios.forEach(u => { h += `<div class="flex justify-between items-center border-b py-2"><div><p class="font-bold text-slate-700">${u.usuario}</p><p class="text-xs text-slate-500">${u.nombre} (${u.rol})</p></div><div><button onclick="solicitarCambioPass('${u.usuario}')" class="text-blue-600 p-2"><i class="fa-solid fa-key"></i></button><button onclick="borrarUser('${u.usuario}')" class="text-red-500 p-2"><i class="fa-solid fa-trash"></i></button></div></div>`; }); document.getElementById('m_listaUsuarios').innerHTML = h;
+        let h = ""; res.usuarios.forEach(u => { h += `<div class="flex justify-between items-center border-b py-2"><div><p class="font-bold text-slate-700">${u.usuario}</p><p class="text-xs text-slate-500">${u.nombre} (${u.rol})</p></div><div><button type="button" onclick="solicitarCambioPass('${u.usuario}')" class="text-blue-600 p-2"><i class="fa-solid fa-key"></i></button><button type="button" onclick="borrarUser('${u.usuario}')" class="text-red-500 p-2"><i class="fa-solid fa-trash"></i></button></div></div>`; }); document.getElementById('m_listaUsuarios').innerHTML = h;
       }
     }
     async function crearUser(e) { e.preventDefault(); const p = { usuario: document.getElementById('nu_user').value, password: document.getElementById('nu_pass').value, nombre: document.getElementById('nu_nombre').value, rol: document.getElementById('nu_rol').value }; const res = await apiRequest({ accion: 'crearUsuario', datosUsuario: p }); if(res.success) { alert("Creado."); e.target.reset(); cargarUsuarios(); } }
