@@ -5,29 +5,33 @@
   <title>TSI Driver App</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style> body { background-color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; padding-bottom: 80px; } </style>
+  <style> body { background-color: #f1f5f9; padding-bottom: 80px; } </style>
 </head>
 <body>
 
-  <!-- PANTALLA DE LOGIN MÓVIL (Numpad) -->
-  <div id="loginScreen" class="fixed inset-0 bg-blue-700 z-50 flex flex-col items-center justify-center text-white">
+  <!-- PANTALLA DE LOGIN MÓVIL CON USUARIO Y CONTRASEÑA -->
+  <div id="loginScreen" class="fixed inset-0 bg-blue-700 z-50 flex flex-col items-center justify-center text-white p-6">
     <i class="fa-solid fa-truck-fast text-6xl mb-4"></i>
     <h1 class="text-3xl font-bold mb-8">TSI APP</h1>
-    <input type="password" id="pinInput" placeholder="PIN de Acceso" class="w-64 text-center text-3xl tracking-widest p-4 rounded-xl text-slate-800 mb-4" inputmode="numeric">
-    <button onclick="login()" class="bg-slate-900 text-white w-64 py-4 rounded-xl font-bold text-lg shadow-lg">ENTRAR</button>
+    
+    <div class="w-full max-w-xs space-y-4 mb-6">
+      <input type="text" id="userInput" placeholder="Usuario" class="w-full text-center text-xl p-4 rounded-xl text-slate-800" autocapitalize="none" autocomplete="off">
+      <input type="password" id="passInput" placeholder="Contraseña" class="w-full text-center text-xl p-4 rounded-xl text-slate-800">
+    </div>
+    
+    <button onclick="login(this)" class="bg-slate-900 text-white w-full max-w-xs py-4 rounded-xl font-bold text-lg shadow-lg">ENTRAR</button>
+    <p id="loginError" class="text-red-200 mt-4 hidden font-bold"></p>
   </div>
 
-  <!-- HEADER APP -->
   <header class="bg-blue-700 text-white p-5 rounded-b-3xl shadow-md hidden" id="appHeader">
     <h2 class="text-xl font-bold">Hola, <span id="userName">Agente</span></h2>
-    <p class="text-blue-200 text-sm">Central CDE - Operaciones</p>
+    <p class="text-blue-200 text-sm">Operaciones en Ruta</p>
   </header>
 
-  <!-- VISTA 1: ENTREGAS (Para todos) -->
   <main id="vistaEntregas" class="p-5 hidden">
     <div class="bg-white rounded-2xl shadow-sm p-6 mb-4">
       <h3 class="font-bold text-slate-800 mb-4"><i class="fa-solid fa-camera text-blue-600 mr-2"></i> Registrar Entrega</h3>
-      <input type="text" id="idEnvio" placeholder="Ej: TSI-123456" class="w-full border-2 border-slate-200 p-4 rounded-xl text-xl text-center font-bold mb-4 uppercase">
+      <input type="text" id="idEnvio" placeholder="ID (Ej: TSI-123456)" class="w-full border-2 border-slate-200 p-4 rounded-xl text-xl text-center font-bold mb-4 uppercase">
       
       <div class="border-2 border-dashed border-blue-300 bg-blue-50 p-6 text-center rounded-xl cursor-pointer" onclick="document.getElementById('camera').click()">
         <i class="fa-solid fa-image text-3xl text-blue-500 mb-2"></i>
@@ -37,21 +41,19 @@
       <img id="preview" class="mt-4 rounded-xl hidden w-full h-48 object-cover border">
       
       <button onclick="subirFoto()" class="w-full bg-emerald-500 text-white font-bold py-4 rounded-xl shadow-lg mt-4 text-lg">
-        <i class="fa-solid fa-check mr-2"></i> Confirmar Entrega
+        Confirmar Entrega
       </button>
     </div>
 
-    <!-- Impresión Bluetooth -->
     <div class="bg-white rounded-2xl shadow-sm p-6">
-      <h3 class="font-bold text-slate-800 mb-4"><i class="fa-solid fa-print text-blue-600 mr-2"></i> Impresión Térmica</h3>
+      <h3 class="font-bold text-slate-800 mb-4"><i class="fa-solid fa-print text-blue-600 mr-2"></i> Ticketera</h3>
       <div class="grid grid-cols-2 gap-3">
-        <button onclick="imprimirTicket(1)" class="bg-slate-800 text-white py-3 rounded-lg font-semibold"><i class="fa-solid fa-user mr-1"></i> Ticket Cliente</button>
-        <button onclick="imprimirTicket(2)" class="bg-blue-600 text-white py-3 rounded-lg font-semibold"><i class="fa-solid fa-building mr-1"></i> Ticket Empresa</button>
+        <button onclick="imprimirTicket(1)" class="bg-slate-800 text-white py-3 rounded-lg font-semibold">Cliente</button>
+        <button onclick="imprimirTicket(2)" class="bg-blue-600 text-white py-3 rounded-lg font-semibold">Empresa</button>
       </div>
     </div>
   </main>
 
-  <!-- VISTA 2: FINANZAS (Solo Dueño) -->
   <main id="vistaFinanzas" class="p-5 hidden">
     <h3 class="font-bold text-xl text-slate-800 mb-4">Balance General</h3>
     <div class="grid grid-cols-2 gap-4 mb-6">
@@ -64,15 +66,12 @@
         <p class="text-xl font-bold">Gs.<span id="mGanancia">0</span></p>
       </div>
     </div>
-    <button onclick="window.open('https://docs.google.com/spreadsheets/d/1dAhefOk9MTmJRSL560K_KcmnOWRzazHJJVnbAdvM130/export?format=csv')" class="w-full bg-slate-800 text-white py-3 rounded-xl font-bold"><i class="fa-solid fa-file-excel mr-2"></i> Exportar Base de Datos</button>
   </main>
 
-  <!-- NAVEGACIÓN INFERIOR (Estilo App) -->
   <nav id="bottomNav" class="fixed bottom-0 w-full bg-white border-t flex justify-around p-3 hidden pb-5">
     <button onclick="cambiarVista('vistaEntregas')" class="flex flex-col items-center text-blue-600 w-1/2">
       <i class="fa-solid fa-truck text-xl mb-1"></i><span class="text-xs font-bold">Operaciones</span>
     </button>
-    <!-- Este botón solo aparece si el que se loguea es el dueño -->
     <button id="btnFinanzas" onclick="cambiarVista('vistaFinanzas')" class="flex flex-col items-center text-slate-400 w-1/2 hidden">
       <i class="fa-solid fa-chart-line text-xl mb-1"></i><span class="text-xs font-bold">Finanzas</span>
     </button>
@@ -81,9 +80,18 @@
   <script>
     let fotoData = "";
     
-    function login() {
-      const pin = document.getElementById('pinInput').value;
+    function login(btn) {
+      const user = document.getElementById('userInput').value;
+      const pass = document.getElementById('passInput').value;
+      if(!user || !pass) return alert("Ingrese Usuario y Contraseña");
+
+      btn.innerHTML = "CARGANDO...";
+      btn.disabled = true;
+
       google.script.run.withSuccessHandler(res => {
+        btn.innerHTML = "ENTRAR";
+        btn.disabled = false;
+
         if(res.success) {
           document.getElementById('loginScreen').style.display = 'none';
           document.getElementById('appHeader').classList.remove('hidden');
@@ -95,16 +103,17 @@
             document.getElementById('btnFinanzas').classList.remove('hidden');
             cargarDashboardMovil();
           }
-        } else { alert("PIN Incorrecto"); }
-      }).iniciarSesion(pin);
+        } else {
+          document.getElementById('loginError').innerText = res.error;
+          document.getElementById('loginError').classList.remove('hidden');
+        }
+      }).iniciarSesion(user, pass);
     }
 
     function cambiarVista(vista) {
       document.getElementById('vistaEntregas').classList.add('hidden');
       document.getElementById('vistaFinanzas').classList.add('hidden');
       document.getElementById(vista).classList.remove('hidden');
-      
-      // Estilos del menú
       document.querySelectorAll('#bottomNav button').forEach(b => { b.classList.remove('text-blue-600'); b.classList.add('text-slate-400'); });
       event.currentTarget.classList.remove('text-slate-400'); event.currentTarget.classList.add('text-blue-600');
     }
@@ -135,7 +144,6 @@
       }).confirmarEntrega(id, fotoData);
     }
 
-    // Impresión Térmica ESC/POS (1 = Cliente, 2 = Empresa con firma)
     async function imprimirTicket(tipo) {
       try {
         const device = await navigator.bluetooth.requestDevice({ acceptAllDevices: true, optionalServices: ['000018f0-0000-1000-8000-00805f9b34fb'] });
@@ -149,7 +157,7 @@
         
         await char.writeValue(new TextEncoder().encode(texto));
         alert("Impresión enviada.");
-      } catch(e) { alert("Error Bluetooth. Asegurese de vincular la impresora en Android."); }
+      } catch(e) { alert("Error Bluetooth. Asegurese de vincular la impresora."); }
     }
   </script>
 </body>
