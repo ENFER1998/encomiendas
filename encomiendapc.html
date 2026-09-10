@@ -5,41 +5,41 @@
   <title>TSI Admin Panel</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style> body { background-color: #f1f5f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; } </style>
+  <style> body { background-color: #f1f5f9; font-family: 'Segoe UI', sans-serif; } </style>
 </head>
 <body class="h-screen flex overflow-hidden">
 
-  <!-- PANTALLA DE LOGIN -->
+  <!-- PANTALLA DE LOGIN CON USUARIO Y CONTRASEÑA -->
   <div id="loginScreen" class="fixed inset-0 bg-slate-900 z-50 flex items-center justify-center">
     <div class="bg-white p-10 rounded-2xl shadow-2xl w-96 text-center">
       <h1 class="text-3xl font-bold text-slate-800 mb-2">TSI</h1>
-      <p class="text-slate-500 mb-8">Sistema Logístico</p>
-      <input type="password" id="pinInput" placeholder="Ingrese su PIN" class="w-full text-center text-2xl tracking-widest border-b-2 border-blue-500 p-2 mb-6 focus:outline-none bg-slate-50">
-      <button onclick="login()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition"><i class="fa-solid fa-right-to-bracket mr-2"></i> INGRESAR</button>
-      <p id="loginError" class="text-red-500 mt-4 hidden text-sm"></p>
+      <p class="text-slate-500 mb-8">Sistema Logístico Central</p>
+      
+      <div class="space-y-4 mb-6">
+        <input type="text" id="userInput" placeholder="Usuario" class="w-full text-center text-xl border-b-2 border-blue-500 p-2 focus:outline-none bg-slate-50" autocomplete="off">
+        <input type="password" id="passInput" placeholder="Contraseña" class="w-full text-center text-xl border-b-2 border-blue-500 p-2 focus:outline-none bg-slate-50">
+      </div>
+      
+      <button onclick="login(this)" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition"><i class="fa-solid fa-right-to-bracket mr-2"></i> INGRESAR</button>
+      <p id="loginError" class="text-red-500 mt-4 hidden text-sm font-bold"></p>
     </div>
   </div>
 
   <!-- APLICACIÓN PRINCIPAL -->
   <div id="appContainer" class="flex w-full h-full hidden">
-    
-    <!-- Sidebar -->
     <aside class="w-64 bg-slate-900 text-white flex flex-col">
       <div class="p-6 text-center border-b border-slate-700">
-        <h2 class="text-2xl font-bold tracking-wider">TSI Admin</h2>
+        <h2 class="text-2xl font-bold">TSI Admin</h2>
         <p class="text-sm text-slate-400 mt-1" id="userLabel">Dueño</p>
       </div>
       <nav class="flex-1 p-4 space-y-2">
         <button class="w-full text-left p-3 rounded-lg bg-blue-600 shadow"><i class="fa-solid fa-chart-pie w-6"></i> Dashboard</button>
-        <button class="w-full text-left p-3 rounded-lg hover:bg-slate-800 transition"><i class="fa-solid fa-box-open w-6"></i> Envíos</button>
-        <button class="w-full text-left p-3 rounded-lg hover:bg-slate-800 transition"><i class="fa-solid fa-users w-6"></i> Clientes</button>
       </nav>
       <div class="p-4 border-t border-slate-700">
-        <button onclick="location.reload()" class="w-full text-left p-3 text-red-400 hover:bg-slate-800 rounded-lg"><i class="fa-solid fa-power-off w-6"></i> Salir</button>
+        <button onclick="location.reload()" class="w-full text-left p-3 text-red-400 hover:bg-slate-800 rounded-lg"><i class="fa-solid fa-power-off w-6"></i> Cerrar Sesión</button>
       </div>
     </aside>
 
-    <!-- Contenido Central -->
     <main class="flex-1 flex flex-col h-full overflow-y-auto">
       <header class="bg-white shadow-sm p-6 flex justify-between items-center">
         <h2 class="text-2xl font-bold text-slate-800">Panel de Control</h2>
@@ -49,18 +49,17 @@
       </header>
 
       <div class="p-8 space-y-8">
-        <!-- KPIs -->
         <div class="grid grid-cols-3 gap-6">
           <div class="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-indigo-500">
             <p class="text-sm text-slate-500 font-semibold uppercase tracking-wider">Ingresos del Mes</p>
             <p class="text-3xl font-bold text-slate-800 mt-2">Gs. <span id="dashGanancia">0</span></p>
           </div>
           <div class="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-amber-500">
-            <p class="text-sm text-slate-500 font-semibold uppercase tracking-wider">Paquetes en Tránsito</p>
+            <p class="text-sm text-slate-500 font-semibold uppercase tracking-wider">En Tránsito</p>
             <p class="text-3xl font-bold text-slate-800 mt-2" id="dashPendientes">0</p>
           </div>
           <div class="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-emerald-500">
-            <p class="text-sm text-slate-500 font-semibold uppercase tracking-wider">Entregados (Éxito)</p>
+            <p class="text-sm text-slate-500 font-semibold uppercase tracking-wider">Entregados</p>
             <p class="text-3xl font-bold text-slate-800 mt-2" id="dashEntregados">0</p>
           </div>
         </div>
@@ -68,7 +67,7 @@
     </main>
   </div>
 
-  <!-- Modal Nuevo Envío (Super Completo) -->
+  <!-- Modal Nuevo Envío -->
   <div id="modalEnvio" class="hidden fixed inset-0 bg-slate-900 bg-opacity-75 z-50 flex justify-center items-center overflow-y-auto p-4">
     <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl p-8">
       <div class="flex justify-between items-center mb-6 border-b pb-4">
@@ -78,42 +77,36 @@
 
       <form id="formEnvio" onsubmit="guardarEnvio(event)" class="space-y-6">
         <div class="grid grid-cols-2 gap-8">
-          <!-- Remitente -->
           <div class="bg-slate-50 p-6 rounded-xl border border-slate-200">
-            <h3 class="font-bold text-slate-700 mb-4"><i class="fa-solid fa-user mr-2"></i> Remitente</h3>
+            <h3 class="font-bold text-slate-700 mb-4">Remitente</h3>
             <div class="space-y-3">
-              <div><label class="text-sm font-semibold">CI / RUC (Presione TAB para buscar)</label><input type="text" id="ciRem" onblur="buscar('Rem')" class="w-full border p-2 rounded focus:border-blue-500 outline-none" required></div>
-              <div><label class="text-sm font-semibold">Nombre Completo</label><input type="text" id="nomRem" class="w-full border p-2 rounded" required></div>
+              <div><label class="text-sm font-semibold">CI/RUC (Presione TAB)</label><input type="text" id="ciRem" onblur="buscar('Rem')" class="w-full border p-2 rounded" required></div>
+              <div><label class="text-sm font-semibold">Nombre</label><input type="text" id="nomRem" class="w-full border p-2 rounded" required></div>
               <div><label class="text-sm font-semibold">Teléfono</label><input type="text" id="telRem" class="w-full border p-2 rounded" required></div>
             </div>
           </div>
-          <!-- Destinatario -->
           <div class="bg-slate-50 p-6 rounded-xl border border-slate-200">
-            <h3 class="font-bold text-slate-700 mb-4"><i class="fa-solid fa-building mr-2"></i> Destinatario</h3>
+            <h3 class="font-bold text-slate-700 mb-4">Destinatario</h3>
             <div class="space-y-3">
-              <div><label class="text-sm font-semibold">CI / RUC (Presione TAB para buscar)</label><input type="text" id="ciDest" onblur="buscar('Dest')" class="w-full border p-2 rounded focus:border-blue-500 outline-none" required></div>
-              <div><label class="text-sm font-semibold">Nombre / Empresa</label><input type="text" id="nomDest" class="w-full border p-2 rounded" required></div>
+              <div><label class="text-sm font-semibold">CI/RUC (Presione TAB)</label><input type="text" id="ciDest" onblur="buscar('Dest')" class="w-full border p-2 rounded" required></div>
+              <div><label class="text-sm font-semibold">Nombre</label><input type="text" id="nomDest" class="w-full border p-2 rounded" required></div>
               <div><label class="text-sm font-semibold">Teléfono</label><input type="text" id="telDest" class="w-full border p-2 rounded"></div>
               <div><label class="text-sm font-semibold">Dirección</label><input type="text" id="dirDest" class="w-full border p-2 rounded"></div>
             </div>
           </div>
         </div>
-
         <div class="grid grid-cols-3 gap-6 bg-blue-50 p-6 rounded-xl border border-blue-100">
-          <div class="col-span-2"><label class="text-sm font-semibold">Detalle del Paquete</label><input type="text" id="detalle" class="w-full border p-2 rounded" placeholder="Ej: 1 PAQUETE CHICO" required></div>
+          <div class="col-span-2"><label class="text-sm font-semibold">Detalle del Paquete</label><input type="text" id="detalle" class="w-full border p-2 rounded" required></div>
           <div><label class="text-sm font-semibold">Costo Envío (Gs)</label><input type="number" id="costo" class="w-full border p-2 rounded" required></div>
           <div class="col-span-3">
             <label class="text-sm font-semibold">Modalidad de Pago</label>
             <select id="tipoCli" class="w-full border p-2 rounded font-bold text-slate-700">
-              <option value="Contado">PAGO AL CONTADO (Agencia o Destino)</option>
-              <option value="Corporativo">CUENTA CORPORATIVA (Paga a fin de mes)</option>
+              <option value="Contado">PAGO AL CONTADO</option>
+              <option value="Corporativo">CUENTA CORPORATIVA (A fin de mes)</option>
             </select>
           </div>
         </div>
-
-        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg transition text-lg">
-          <i class="fa-solid fa-check-circle mr-2"></i> REGISTRAR Y GENERAR BOLETA
-        </button>
+        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg transition">REGISTRAR ENVÍO</button>
       </form>
     </div>
   </div>
@@ -121,10 +114,18 @@
   <script>
     let usuarioActual = "";
     
-    // Login Lógica
-    function login() {
-      const pin = document.getElementById('pinInput').value;
+    function login(btn) {
+      const user = document.getElementById('userInput').value;
+      const pass = document.getElementById('passInput').value;
+      if(!user || !pass) return alert("Ingrese Usuario y Contraseña");
+
+      btn.innerHTML = "CARGANDO...";
+      btn.disabled = true;
+
       google.script.run.withSuccessHandler(res => {
+        btn.innerHTML = `<i class="fa-solid fa-right-to-bracket mr-2"></i> INGRESAR`;
+        btn.disabled = false;
+
         if(res.success) {
           if(res.rol !== 'Dueño') return alert("Los empleados deben usar la versión Móvil.");
           usuarioActual = res.nombre;
@@ -132,11 +133,13 @@
           document.getElementById('loginScreen').style.display = 'none';
           document.getElementById('appContainer').classList.remove('hidden');
           cargarDashboard();
-        } else { document.getElementById('loginError').innerText = res.error; document.getElementById('loginError').classList.remove('hidden'); }
-      }).iniciarSesion(pin);
+        } else {
+          document.getElementById('loginError').innerText = res.error;
+          document.getElementById('loginError').classList.remove('hidden');
+        }
+      }).iniciarSesion(user, pass);
     }
 
-    // Buscador Inteligente
     function buscar(tipo) {
       const ci = document.getElementById('ci' + tipo).value;
       if(!ci) return;
@@ -154,7 +157,6 @@
       }).buscarCliente(ci);
     }
 
-    // Guardar
     function guardarEnvio(e) {
       e.preventDefault();
       const datos = {
