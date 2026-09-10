@@ -9,9 +9,10 @@
 </head>
 <body class="h-screen flex overflow-hidden">
 
-  <!-- MODAL VISOR DE FOTOS -->
+  <!-- MODAL VISOR DE FOTOS REPARADO -->
   <div id="modalVisorFoto" class="hidden fixed inset-0 bg-slate-900 bg-opacity-95 z-[60] flex flex-col items-center justify-center p-6">
     <button onclick="document.getElementById('modalVisorFoto').classList.add('hidden')" class="absolute top-6 right-6 text-white text-4xl hover:text-red-500 transition"><i class="fa-solid fa-xmark"></i></button>
+    <!-- Usa API de miniatura grande (w1000) que Google NO bloquea -->
     <img id="visorFotoImg" src="" class="max-w-full max-h-[75vh] object-contain rounded-lg shadow-2xl mb-6 bg-slate-800">
     <a id="visorFotoDownload" href="#" target="_blank" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full shadow-lg transition"><i class="fa-solid fa-download mr-2"></i> Descargar Imagen</a>
   </div>
@@ -19,7 +20,7 @@
   <!-- LOGIN DE ESCRITORIO -->
   <div id="loginScreen" class="fixed inset-0 bg-white z-50 flex flex-col items-center justify-center">
     <div class="p-10 rounded-2xl w-96 text-center">
-      <img src="logo.png" onerror="this.src='logo.jpeg'" alt="Logo" class="mx-auto h-32 mb-6 object-contain">
+      <img src="logo.png" onerror="this.src='logo.jpeg'" alt="Logo" class="mx-auto h-32 mb-6 object-contain mix-blend-multiply">
       <div class="space-y-4 mb-6">
         <input type="text" id="userInput" placeholder="Usuario" class="w-full text-center text-xl border-b-2 border-slate-300 p-2 focus:outline-none focus:border-blue-600 bg-transparent" autocomplete="off">
         <input type="password" id="passInput" placeholder="Contraseña" class="w-full text-center text-xl border-b-2 border-slate-300 p-2 focus:outline-none focus:border-blue-600 bg-transparent">
@@ -34,7 +35,7 @@
     <aside class="w-64 bg-slate-900 text-white flex flex-col justify-between shadow-2xl z-20">
       <div>
         <div class="p-6 text-center border-b border-slate-700 bg-white">
-          <img src="logo.png" onerror="this.src='logo.jpeg'" alt="Logo" class="mx-auto h-16 object-contain">
+          <img src="logo.png" onerror="this.src='logo.jpeg'" alt="Logo" class="mx-auto h-16 object-contain mix-blend-multiply">
         </div>
         <nav class="p-4 space-y-2 mt-4">
           <button onclick="cambiarVistaPC('dashboard')" class="w-full text-left p-3 rounded-lg hover:bg-slate-800"><i class="fa-solid fa-chart-pie w-6"></i> Dashboard</button>
@@ -153,11 +154,12 @@
       if(vista === 'dashboard') cargarDashboard(); if(vista === 'historial' && historialGlobal.length === 0) cargarHistorial(); if(vista === 'personal') cargarUsuarios();
     }
 
-    // VISOR DE FOTOS FLOTANTE
+    // VISOR DE FOTOS REPARADO
     function abrirVisorFoto(urlDrive) {
       let id = extraerIdDrive(urlDrive);
       if(!id) return;
-      document.getElementById('visorFotoImg').src = `https://drive.google.com/uc?export=view&id=${id}`;
+      // USAMOS THUMBNAIL EN ALTA RESOLUCIÓN, NO EXPORT=VIEW
+      document.getElementById('visorFotoImg').src = `https://drive.google.com/thumbnail?id=${id}&sz=w1000`;
       document.getElementById('visorFotoDownload').href = `https://drive.google.com/uc?export=download&id=${id}`;
       document.getElementById('modalVisorFoto').classList.remove('hidden');
     }
