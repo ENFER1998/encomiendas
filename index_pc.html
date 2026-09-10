@@ -5,7 +5,16 @@
   <title>Luis Transportes - Panel</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style> body { background-color: #f1f5f9; font-family: 'Segoe UI', sans-serif; } </style>
+  <style> 
+    body { background-color: #f1f5f9; font-family: 'Segoe UI', sans-serif; } 
+    /* CSS PARA EL PDF / IMPRESIÓN */
+    @media print {
+      body * { visibility: hidden; }
+      #printArea, #printArea * { visibility: visible; }
+      #printArea { position: absolute; left: 0; top: 0; width: 100%; height: auto; background: white; padding: 20px; display: block !important; }
+      #appContainer { display: none; }
+    }
+  </style>
 </head>
 <body class="h-screen flex overflow-hidden">
 
@@ -37,9 +46,10 @@
           <img src="logo.png" onerror="this.src='logo.jpeg'" alt="Logo" class="mx-auto h-16 object-contain mix-blend-multiply">
         </div>
         <nav class="p-4 space-y-2 mt-4">
-          <button onclick="cambiarVistaPC('dashboard')" class="w-full text-left p-3 rounded-lg hover:bg-slate-800"><i class="fa-solid fa-chart-pie w-6"></i> Dashboard</button>
-          <button onclick="cambiarVistaPC('historial')" class="w-full text-left p-3 rounded-lg hover:bg-slate-800"><i class="fa-solid fa-list w-6"></i> Historial Envíos</button>
-          <button onclick="cambiarVistaPC('personal')" class="w-full text-left p-3 rounded-lg hover:bg-slate-800 text-amber-400"><i class="fa-solid fa-users w-6"></i> Personal</button>
+          <button onclick="cambiarVistaPC('dashboard')" class="w-full text-left p-3 rounded-lg hover:bg-slate-800 navBtnPC"><i class="fa-solid fa-chart-pie w-6"></i> Dashboard</button>
+          <button onclick="cambiarVistaPC('historial')" class="w-full text-left p-3 rounded-lg hover:bg-slate-800 navBtnPC"><i class="fa-solid fa-list w-6"></i> Historial Envíos</button>
+          <button onclick="cambiarVistaPC('cobranzas')" class="w-full text-left p-3 rounded-lg hover:bg-slate-800 text-emerald-400 navBtnPC"><i class="fa-solid fa-file-invoice-dollar w-6"></i> Cobranzas Corp.</button>
+          <button onclick="cambiarVistaPC('personal')" class="w-full text-left p-3 rounded-lg hover:bg-slate-800 text-amber-400 navBtnPC"><i class="fa-solid fa-users w-6"></i> Personal</button>
         </nav>
       </div>
       <div>
@@ -66,7 +76,7 @@
         </div>
       </div>
 
-      <!-- VISTA HISTORIAL -->
+      <!-- VISTA HISTORIAL COMPACTA -->
       <div id="vistaHistorial" class="p-8 hidden">
         <div class="bg-white p-4 rounded-xl shadow-sm border flex gap-4 mb-4 items-center">
           <input type="text" id="inputBusqueda" oninput="filtrarHistorial()" placeholder="Buscar por ID, Nombre o CI/RUC..." class="flex-1 border p-2 rounded text-sm bg-slate-50 focus:bg-white text-slate-900">
@@ -80,6 +90,30 @@
             <thead class="bg-slate-100 border-b text-slate-600"><tr><th class="p-3 font-bold">ID / Fecha</th><th class="p-3 font-bold">Remitente</th><th class="p-3 font-bold">Destinatario</th><th class="p-3 font-bold">Detalle y Costo</th><th class="p-3 font-bold text-center">Estado</th><th class="p-3 font-bold text-center">Fotos</th></tr></thead>
             <tbody id="resultadosBusqueda" class="divide-y text-slate-700"></tbody>
           </table>
+        </div>
+      </div>
+
+      <!-- VISTA COBRANZAS CORPORATIVAS -->
+      <div id="vistaCobranzas" class="p-8 hidden">
+        <div class="bg-white p-6 rounded-2xl shadow-sm border mb-6 flex gap-4 items-end">
+          <div class="flex-1">
+            <label class="text-xs font-bold text-slate-500 uppercase">CI/RUC de la Empresa/Cliente</label>
+            <input type="text" id="cobranzaRuc" placeholder="Ej: 1234567" class="w-full border-2 border-slate-300 p-3 rounded-lg font-bold text-slate-900 focus:border-emerald-600 focus:outline-none">
+          </div>
+          <button onclick="buscarDeuda()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-8 rounded-lg transition"><i class="fa-solid fa-search mr-2"></i> Buscar Deuda</button>
+        </div>
+        
+        <!-- Resultados Cobranza -->
+        <div id="cobranzaResultados" class="hidden bg-white p-6 rounded-2xl shadow-sm border">
+          <div class="flex justify-between items-center mb-6 border-b pb-4">
+            <div><h3 class="font-bold text-2xl text-slate-800" id="cobranzaNombre">Empresa S.A.</h3><p class="text-sm text-slate-500">Deuda Total Acumulada</p></div>
+            <div class="text-right"><p class="text-4xl font-black text-emerald-600">Gs. <span id="cobranzaMonto">0</span></p></div>
+          </div>
+          <table class="w-full text-left text-sm mb-6"><thead class="bg-slate-50 border-b"><tr><th class="p-3 font-bold">ID Envío</th><th class="p-3 font-bold">Fecha</th><th class="p-3 font-bold">Destino</th><th class="p-3 font-bold">Detalle</th><th class="p-3 font-bold text-right">Costo</th></tr></thead><tbody id="tablaDeudas" class="divide-y text-slate-700"></tbody></table>
+          <div class="flex justify-end gap-4">
+            <button onclick="imprimirPDF()" class="bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 px-6 rounded-lg"><i class="fa-solid fa-file-pdf mr-2"></i> Generar Reporte / PDF</button>
+            <button onclick="liquidarDeuda()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-6 rounded-lg"><i class="fa-solid fa-check-double mr-2"></i> Liquidar y Marcar Pagado</button>
+          </div>
         </div>
       </div>
 
@@ -103,6 +137,42 @@
         </div>
       </div>
     </main>
+  </div>
+
+  <!-- AREA DE IMPRESIÓN PDF (Oculta hasta que se pide PDF) -->
+  <div id="printArea" class="hidden text-black font-sans">
+    <div class="text-center border-b-2 border-black pb-4 mb-4">
+      <h1 class="text-3xl font-black uppercase">Luis Transportes</h1>
+      <h2 class="text-xl font-bold mt-2">REPORTE DE ENVÍOS CORPORATIVOS</h2>
+      <p class="text-sm mt-1" id="printFecha"></p>
+    </div>
+    <div class="mb-6">
+      <p class="text-lg"><strong>Cliente / Empresa:</strong> <span id="printNombre"></span></p>
+      <p class="text-lg"><strong>RUC:</strong> <span id="printRuc"></span></p>
+    </div>
+    <table class="w-full text-left text-sm border-collapse border border-black mb-6">
+      <thead>
+        <tr class="bg-gray-200">
+          <th class="border border-black p-2 font-bold">ID Envío</th>
+          <th class="border border-black p-2 font-bold">Fecha</th>
+          <th class="border border-black p-2 font-bold">Destino</th>
+          <th class="border border-black p-2 font-bold">Detalle</th>
+          <th class="border border-black p-2 font-bold text-right">Costo</th>
+        </tr>
+      </thead>
+      <tbody id="printTabla"></tbody>
+      <tfoot>
+        <tr>
+          <td colspan="4" class="border border-black p-2 text-right font-black text-lg">TOTAL A PAGAR:</td>
+          <td class="border border-black p-2 text-right font-black text-lg">Gs. <span id="printTotal">0</span></td>
+        </tr>
+      </tfoot>
+    </table>
+    <div class="mt-20 flex justify-end">
+      <div class="text-center w-64 border-t-2 border-black pt-2">
+        <p class="font-bold">Firma y Aclaración</p>
+      </div>
+    </div>
   </div>
 
   <!-- MODAL NUEVO ENVÍO (TEXTOS NEGROS CLAROS Y FONDOS SÓLIDOS) -->
@@ -142,7 +212,7 @@
 
   <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbyAwM6OAW5u_jLp2y2iCdJZtK3P7yUONt2UEFIuVTRYNIrwQGMD03_uJyGpzJnxcKkYmQ/exec";
-    let usuarioActual = ""; let fotoRecBase64 = ""; let historialGlobal = []; 
+    let usuarioActual = ""; let fotoRecBase64 = ""; let historialGlobal = []; let pendientesDeudaGlobal = [];
 
     async function apiRequest(payload) {
       try { let res = await fetch(API_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) }); return await res.json(); } catch (e) { return { success: false, error: e.message }; }
@@ -161,8 +231,8 @@
     }
 
     function cambiarVistaPC(vista) {
-      ['vistaDashboard','vistaHistorial','vistaPersonal'].forEach(v => document.getElementById(v).classList.add('hidden'));
-      let titulos = { 'dashboard':'Panel de Control', 'historial':'Historial de Envíos', 'personal':'Gestión de Personal' };
+      ['vistaDashboard','vistaHistorial','vistaPersonal', 'vistaCobranzas'].forEach(v => document.getElementById(v).classList.add('hidden'));
+      let titulos = { 'dashboard':'Panel de Control', 'historial':'Historial de Envíos', 'personal':'Gestión de Personal', 'cobranzas':'Cobranzas Corporativas' };
       document.getElementById('vista' + vista.charAt(0).toUpperCase() + vista.slice(1)).classList.remove('hidden');
       document.getElementById('tituloHeader').innerText = titulos[vista];
       if(vista === 'dashboard') cargarDashboard(); if(vista === 'historial' && historialGlobal.length === 0) cargarHistorial(); if(vista === 'personal') cargarUsuarios();
@@ -230,6 +300,64 @@
       } else { div.innerHTML = "<tr><td colspan='6' class='p-6 text-center text-slate-500'>Sin resultados.</td></tr>"; }
     }
 
+    // --- COBRANZAS CORPORATIVAS ---
+    async function buscarDeuda() {
+      const ruc = document.getElementById('cobranzaRuc').value.trim();
+      if(!ruc) return alert("Ingrese el RUC del cliente.");
+      
+      document.getElementById('cobranzaResultados').classList.add('hidden');
+      const btn = event.currentTarget; btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Buscando..."; btn.disabled = true;
+      
+      const res = await apiRequest({ accion: 'getPendientes', ci: ruc });
+      btn.innerHTML = "<i class='fa-solid fa-search mr-2'></i> Buscar Deuda"; btn.disabled = false;
+      
+      if(res.success) {
+        pendientesDeudaGlobal = res.pendientes.map(p => p.id); // Guardar los IDs para liquidar luego
+        document.getElementById('cobranzaNombre').innerText = res.cliente;
+        document.getElementById('printNombre').innerText = res.cliente;
+        document.getElementById('printRuc').innerText = ruc;
+        document.getElementById('cobranzaMonto').innerText = res.total.toLocaleString('es-PY');
+        document.getElementById('printTotal').innerText = res.total.toLocaleString('es-PY');
+        
+        let tHtml = "";
+        let printHtml = "";
+        res.pendientes.forEach(p => {
+          tHtml += `<tr><td class="p-3 font-bold text-blue-700">${p.id}</td><td class="p-3">${p.fecha}</td><td class="p-3">${p.destino}</td><td class="p-3">${p.detalle}</td><td class="p-3 font-bold text-emerald-600 text-right">Gs. ${p.costo.toLocaleString('es-PY')}</td></tr>`;
+          printHtml += `<tr><td class="border border-black p-2 font-bold">${p.id}</td><td class="border border-black p-2">${p.fecha}</td><td class="border border-black p-2">${p.destino}</td><td class="border border-black p-2">${p.detalle}</td><td class="border border-black p-2 text-right">Gs. ${p.costo.toLocaleString('es-PY')}</td></tr>`;
+        });
+        
+        if(res.pendientes.length === 0) {
+          tHtml = "<tr><td colspan='5' class='p-6 text-center font-bold text-slate-500'>El cliente no tiene envíos pendientes de pago.</td></tr>";
+        }
+        
+        document.getElementById('tablaDeudas').innerHTML = tHtml;
+        document.getElementById('printTabla').innerHTML = printHtml;
+        document.getElementById('cobranzaResultados').classList.remove('hidden');
+      }
+    }
+
+    function imprimirPDF() {
+      if(pendientesDeudaGlobal.length === 0) return alert("No hay datos para imprimir.");
+      document.getElementById('printFecha').innerText = "Fecha de Emisión: " + new Date().toLocaleString('es-PY');
+      window.print();
+    }
+
+    async function liquidarDeuda() {
+      if(pendientesDeudaGlobal.length === 0) return alert("No hay envíos para liquidar.");
+      if(!confirm("¿Estás seguro de marcar todos estos envíos como PAGADOS? Esta acción los sumará a tu Dashboard.")) return;
+      
+      const res = await apiRequest({ accion: 'saldarDeuda', ids: pendientesDeudaGlobal });
+      if(res.success) {
+        alert("Deuda saldada con éxito. (" + res.actualizados + " envíos actualizados)");
+        document.getElementById('cobranzaResultados').classList.add('hidden');
+        document.getElementById('cobranzaRuc').value = '';
+        pendientesDeudaGlobal = [];
+        cargarDashboard();
+        historialGlobal = []; // Forzar recarga del historial
+      } else { alert("Error al procesar el pago."); }
+    }
+
+    // --- PERSONAL ---
     async function cargarUsuarios() {
       document.getElementById('tablaUsuarios').innerHTML = "<tr><td colspan='4' class='p-3 text-center'><i class='fa-solid fa-spinner fa-spin'></i></td></tr>";
       const res = await apiRequest({ accion: 'getUsuarios' });
