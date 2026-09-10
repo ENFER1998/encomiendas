@@ -12,37 +12,28 @@
   <div id="loginScreen" class="fixed inset-0 bg-blue-700 z-50 flex flex-col items-center justify-center text-white p-6">
     <i class="fa-solid fa-truck-fast text-6xl mb-4"></i>
     <h1 class="text-3xl font-bold mb-8">TSI APP</h1>
-    
     <div class="w-full max-w-xs space-y-4 mb-6">
-      <input type="text" id="userInput" placeholder="Usuario" class="w-full text-center text-xl p-4 rounded-xl text-slate-800" autocapitalize="none" autocomplete="off">
+      <input type="text" id="userInput" placeholder="Usuario" class="w-full text-center text-xl p-4 rounded-xl text-slate-800" autocapitalize="none">
       <input type="password" id="passInput" placeholder="Contraseña" class="w-full text-center text-xl p-4 rounded-xl text-slate-800">
     </div>
-    
-    <button onclick="ingresarAlSistema(this)" class="bg-slate-900 text-white w-full max-w-xs py-4 rounded-xl font-bold text-lg shadow-lg transition">ENTRAR</button>
+    <button onclick="ingresarAlSistema(this)" class="bg-slate-900 text-white w-full max-w-xs py-4 rounded-xl font-bold text-lg">ENTRAR</button>
   </div>
 
   <header class="bg-blue-700 text-white p-5 rounded-b-3xl shadow-md hidden" id="appHeader">
-    <h2 class="text-xl font-bold">Hola, <span id="userName">Agente</span></h2>
-    <p class="text-blue-200 text-sm">Operaciones en Ruta</p>
+    <h2 class="text-xl font-bold">Hola, <span id="userName">Agente</span></h2><p class="text-blue-200 text-sm">Operaciones en Ruta</p>
   </header>
 
   <main id="vistaEntregas" class="p-5 hidden">
     <div class="bg-white rounded-2xl shadow-sm p-6 mb-4">
       <h3 class="font-bold text-slate-800 mb-4"><i class="fa-solid fa-camera text-blue-600 mr-2"></i> Registrar Entrega</h3>
-      <input type="text" id="idEnvio" placeholder="ID (Ej: TSI-123456)" class="w-full border-2 border-slate-200 p-4 rounded-xl text-xl text-center font-bold mb-4 uppercase">
-      
-      <div class="border-2 border-dashed border-blue-300 bg-blue-50 p-6 text-center rounded-xl cursor-pointer" onclick="document.getElementById('camera').click()">
-        <i class="fa-solid fa-image text-3xl text-blue-500 mb-2"></i>
-        <p class="font-bold text-blue-700">Capturar Evidencia</p>
+      <input type="text" id="idEnvio" placeholder="ID (Ej: TSI-123456)" class="w-full border-2 p-4 rounded-xl text-xl text-center font-bold mb-4 uppercase">
+      <div class="border-2 border-dashed bg-blue-50 p-6 text-center rounded-xl" onclick="document.getElementById('camera').click()">
+        <p class="font-bold text-blue-700">📸 Capturar Evidencia</p>
         <input type="file" id="camera" accept="image/*" capture="environment" class="hidden" onchange="leerFoto(event)">
       </div>
       <img id="preview" class="mt-4 rounded-xl hidden w-full h-48 object-cover border">
-      
-      <button onclick="subirFoto()" class="w-full bg-emerald-500 text-white font-bold py-4 rounded-xl shadow-lg mt-4 text-lg">
-        Confirmar Entrega
-      </button>
+      <button onclick="subirFoto(this)" class="w-full bg-emerald-500 text-white font-bold py-4 rounded-xl shadow-lg mt-4 text-lg">Confirmar Entrega</button>
     </div>
-
     <div class="bg-white rounded-2xl shadow-sm p-6">
       <h3 class="font-bold text-slate-800 mb-4"><i class="fa-solid fa-print text-blue-600 mr-2"></i> Ticketera</h3>
       <div class="grid grid-cols-2 gap-3">
@@ -55,88 +46,62 @@
   <main id="vistaFinanzas" class="p-5 hidden">
     <h3 class="font-bold text-xl text-slate-800 mb-4">Balance General</h3>
     <div class="grid grid-cols-2 gap-4 mb-6">
-      <div class="bg-indigo-600 text-white p-4 rounded-2xl shadow">
-        <p class="text-sm opacity-80">En Tránsito</p>
-        <p class="text-2xl font-bold" id="mPendientes">0</p>
-      </div>
-      <div class="bg-emerald-500 text-white p-4 rounded-2xl shadow">
-        <p class="text-sm opacity-80">Ingresos Mes</p>
-        <p class="text-xl font-bold">Gs.<span id="mGanancia">0</span></p>
-      </div>
+      <div class="bg-indigo-600 text-white p-4 rounded-2xl"><p class="text-sm">En Tránsito</p><p class="text-2xl font-bold" id="mPendientes">0</p></div>
+      <div class="bg-emerald-500 text-white p-4 rounded-2xl"><p class="text-sm">Ingresos Mes</p><p class="text-xl font-bold">Gs.<span id="mGanancia">0</span></p></div>
     </div>
   </main>
 
   <nav id="bottomNav" class="fixed bottom-0 w-full bg-white border-t flex justify-around p-3 hidden pb-5">
-    <button onclick="cambiarVista('vistaEntregas')" class="flex flex-col items-center text-blue-600 w-1/2">
-      <i class="fa-solid fa-truck text-xl mb-1"></i><span class="text-xs font-bold">Operaciones</span>
-    </button>
-    <button id="btnFinanzas" onclick="cambiarVista('vistaFinanzas')" class="flex flex-col items-center text-slate-400 w-1/2 hidden">
-      <i class="fa-solid fa-chart-line text-xl mb-1"></i><span class="text-xs font-bold">Finanzas</span>
-    </button>
+    <button onclick="cambiarVista('vistaEntregas')" class="flex flex-col items-center text-blue-600 w-1/2"><i class="fa-solid fa-truck text-xl"></i></button>
+    <button id="btnFinanzas" onclick="cambiarVista('vistaFinanzas')" class="flex flex-col items-center text-slate-400 w-1/2 hidden"><i class="fa-solid fa-chart-line text-xl"></i></button>
   </nav>
 
   <script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbyAwM6OAW5u_jLp2y2iCdJZtK3P7yUONt2UEFIuVTRYNIrwQGMD03_uJyGpzJnxcKkYmQ/exec";
     let fotoData = "";
-    let usuarioActual = "";
+
+    async function apiRequest(payload) {
+      try {
+        let res = await fetch(API_URL, { method: "POST", body: JSON.stringify(payload) });
+        return await res.json();
+      } catch (e) { return { success: false, error: e.message }; }
+    }
     
-    function ingresarAlSistema(btn) {
+    async function ingresarAlSistema(btn) {
       const user = document.getElementById('userInput').value;
       const pass = document.getElementById('passInput').value;
+      if(!user || !pass) return alert("Faltan datos");
+      btn.innerHTML = "CONECTANDO..."; btn.disabled = true;
+
+      const res = await apiRequest({ accion: 'login', usuario: user, password: pass });
       
-      if(!user || !pass) {
-        alert("Atención: Ingrese Usuario y Contraseña");
-        return;
-      }
-
-      btn.innerHTML = "CONECTANDO...";
-      btn.disabled = true;
-
-      try {
-        google.script.run
-          .withSuccessHandler(function(res) {
-            btn.innerHTML = "ENTRAR";
-            btn.disabled = false;
-            
-            if(res.success) {
-              document.getElementById('loginScreen').style.display = 'none';
-              document.getElementById('appHeader').classList.remove('hidden');
-              document.getElementById('vistaEntregas').classList.remove('hidden');
-              document.getElementById('bottomNav').classList.remove('hidden');
-              document.getElementById('userName').innerText = res.nombre;
-              usuarioActual = res.nombre;
-              
-              if(res.rol === 'Dueño') {
-                document.getElementById('btnFinanzas').classList.remove('hidden');
-                cargarDashboardMovil();
-              }
-            } else {
-              alert("Aviso del sistema: " + res.error);
-            }
-          })
-          .withFailureHandler(function(err) {
-            btn.innerHTML = "ENTRAR";
-            btn.disabled = false;
-            alert("Bloqueo de Google detectado: " + err.message);
-          })
-          .iniciarSesion(user, pass);
-      } catch(e) {
-        alert("Error del navegador: " + e.message);
-      }
+      btn.innerHTML = "ENTRAR"; btn.disabled = false;
+      if(res.success) {
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('appHeader').classList.remove('hidden');
+        document.getElementById('vistaEntregas').classList.remove('hidden');
+        document.getElementById('bottomNav').classList.remove('hidden');
+        document.getElementById('userName').innerText = res.nombre;
+        
+        if(res.rol === 'Dueño') {
+          document.getElementById('btnFinanzas').classList.remove('hidden');
+          cargarDashboardMovil();
+        }
+      } else { alert(res.error); }
     }
 
     function cambiarVista(vista) {
       document.getElementById('vistaEntregas').classList.add('hidden');
       document.getElementById('vistaFinanzas').classList.add('hidden');
       document.getElementById(vista).classList.remove('hidden');
-      document.querySelectorAll('#bottomNav button').forEach(b => { b.classList.remove('text-blue-600'); b.classList.add('text-slate-400'); });
-      event.currentTarget.classList.remove('text-slate-400'); event.currentTarget.classList.add('text-blue-600');
     }
 
-    function cargarDashboardMovil() {
-      google.script.run.withSuccessHandler(data => {
-        document.getElementById('mPendientes').innerText = data.pendientes;
-        document.getElementById('mGanancia').innerText = data.gananciaMes.toLocaleString('es-PY');
-      }).getDatosDashboard();
+    async function cargarDashboardMovil() {
+      const res = await apiRequest({ accion: 'getDashboard' });
+      if(res.success) {
+        document.getElementById('mPendientes').innerText = res.pendientes;
+        document.getElementById('mGanancia').innerText = res.gananciaMes.toLocaleString('es-PY');
+      }
     }
 
     function leerFoto(e) {
@@ -147,15 +112,14 @@
       reader.readAsDataURL(file);
     }
 
-    function subirFoto() {
+    async function subirFoto(btn) {
       const id = document.getElementById('idEnvio').value.toUpperCase();
-      if(!id || !fotoData) return alert("Falta código o foto.");
-      document.getElementById('vistaEntregas').style.opacity = '0.5';
-      google.script.run.withSuccessHandler(res => {
-        document.getElementById('vistaEntregas').style.opacity = '1';
-        if(res.success) { alert("¡Entregado con éxito!"); document.getElementById('idEnvio').value=''; document.getElementById('preview').classList.add('hidden'); fotoData=""; }
-        else alert(res.error);
-      }).confirmarEntrega(id, fotoData);
+      if(!id || !fotoData) return alert("Falta código o foto");
+      btn.innerHTML = "Subiendo...";
+      const res = await apiRequest({ accion: 'confirmarEntrega', idEnvio: id, foto: fotoData });
+      btn.innerHTML = "Confirmar Entrega";
+      if(res.success) { alert("¡Entregado con éxito!"); document.getElementById('idEnvio').value=''; document.getElementById('preview').classList.add('hidden'); fotoData=""; }
+      else alert(res.error);
     }
 
     async function imprimirTicket(tipo) {
@@ -164,14 +128,12 @@
         const server = await device.gatt.connect();
         const service = await server.getPrimaryService('000018f0-0000-1000-8000-00805f9b34fb');
         const char = await service.getCharacteristic('00002af1-0000-1000-8000-00805f9b34fb');
-
         let texto = "--------------------------------\n      TRANSPORTADORA TSI\n--------------------------------\nCOMPROBANTE DE ENVIO\nFecha: " + new Date().toLocaleDateString() + "\n";
         if(tipo === 2) texto += "\n\nCOPIA EMPRESA\nFIRMA: _______________________\nACLARACION:\n";
         texto += "\n\n\n\n";
-        
         await char.writeValue(new TextEncoder().encode(texto));
         alert("Impresión enviada.");
-      } catch(e) { alert("Error Bluetooth. Asegurese de vincular la impresora."); }
+      } catch(e) { alert("Error Bluetooth."); }
     }
   </script>
 </body>
