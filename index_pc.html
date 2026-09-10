@@ -9,7 +9,7 @@
 </head>
 <body class="h-screen flex overflow-hidden">
 
-  <!-- PANTALLA DE LOGIN -->
+  <!-- LOGIN -->
   <div id="loginScreen" class="fixed inset-0 bg-slate-900 z-50 flex items-center justify-center">
     <div class="bg-white p-10 rounded-2xl shadow-2xl w-96 text-center">
       <h1 class="text-3xl font-bold text-slate-800 mb-2">TSI</h1>
@@ -28,52 +28,48 @@
       <div class="p-6 text-center border-b border-slate-700"><h2 class="text-2xl font-bold">TSI Admin</h2><p class="text-sm text-slate-400 mt-1" id="userLabel">Dueño</p></div>
       <nav class="flex-1 p-4 space-y-2">
         <button onclick="cambiarVistaPC('dashboard')" class="w-full text-left p-3 rounded-lg hover:bg-slate-800"><i class="fa-solid fa-chart-pie w-6"></i> Dashboard</button>
-        <button onclick="cambiarVistaPC('buscador')" class="w-full text-left p-3 rounded-lg hover:bg-slate-800"><i class="fa-solid fa-magnifying-glass w-6"></i> Buscar Envíos</button>
+        <button onclick="cambiarVistaPC('historial')" class="w-full text-left p-3 rounded-lg hover:bg-slate-800"><i class="fa-solid fa-list w-6"></i> Historial y Búsqueda</button>
       </nav>
       <div class="p-4 border-t border-slate-700"><button onclick="location.reload()" class="w-full text-left p-3 text-red-400 hover:bg-slate-800"><i class="fa-solid fa-power-off w-6"></i> Salir</button></div>
     </aside>
 
-    <!-- ÁREA PRINCIPAL -->
     <main class="flex-1 flex flex-col h-full overflow-y-auto">
       <header class="bg-white shadow-sm p-6 flex justify-between items-center">
         <h2 class="text-2xl font-bold text-slate-800" id="tituloHeader">Panel de Control</h2>
         <button onclick="document.getElementById('modalEnvio').classList.remove('hidden')" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold shadow hover:bg-blue-700"><i class="fa-solid fa-plus mr-2"></i> Nuevo Envío</button>
       </header>
 
-      <!-- VISTA DASHBOARD CON TABLA VISUAL -->
+      <!-- VISTA DASHBOARD -->
       <div id="vistaDashboard" class="p-8 space-y-8">
         <div class="grid grid-cols-3 gap-6">
           <div class="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-indigo-500"><p class="text-sm text-slate-500 font-semibold uppercase">Ingresos Mes</p><p class="text-3xl font-bold mt-2">Gs. <span id="dashGanancia">0</span></p></div>
           <div class="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-amber-500"><p class="text-sm text-slate-500 font-semibold uppercase">En Tránsito</p><p class="text-3xl font-bold mt-2" id="dashPendientes">0</p></div>
           <div class="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-emerald-500"><p class="text-sm text-slate-500 font-semibold uppercase">Entregados</p><p class="text-3xl font-bold mt-2" id="dashEntregados">0</p></div>
         </div>
-        
-        <!-- NUEVA TABLA: Aquí verás tus envíos listados -->
         <div class="bg-white rounded-2xl shadow-sm border p-6">
           <h3 class="font-bold text-slate-800 text-lg mb-4"><i class="fa-solid fa-list-ul mr-2 text-blue-600"></i> Últimos Envíos Registrados</h3>
           <div class="overflow-x-auto">
             <table class="w-full text-left">
               <thead class="bg-slate-50 border-b">
-                <tr>
-                  <th class="p-3 text-sm font-semibold text-slate-600">ID Envío</th>
-                  <th class="p-3 text-sm font-semibold text-slate-600">Fecha</th>
-                  <th class="p-3 text-sm font-semibold text-slate-600">Destino (CI/RUC)</th>
-                  <th class="p-3 text-sm font-semibold text-slate-600">Estado</th>
-                </tr>
+                <tr><th class="p-3 text-sm font-semibold text-slate-600">ID Envío</th><th class="p-3 text-sm font-semibold text-slate-600">Fecha</th><th class="p-3 text-sm font-semibold text-slate-600">Destino (CI/RUC)</th><th class="p-3 text-sm font-semibold text-slate-600">Estado</th></tr>
               </thead>
-              <tbody id="tablaDashboard" class="divide-y text-sm">
-                <!-- Se llena automáticamente con JS -->
-              </tbody>
+              <tbody id="tablaDashboard" class="divide-y text-sm"></tbody>
             </table>
           </div>
         </div>
       </div>
 
-      <!-- VISTA BUSCADOR -->
-      <div id="vistaBuscador" class="p-8 hidden">
-        <div class="bg-white p-6 rounded-2xl shadow-sm flex gap-4 mb-6">
-          <input type="text" id="inputBusqueda" placeholder="Ingrese ID (Ej: TSI-1234) o CI/RUC (Con o sin guion)" class="flex-1 border p-3 rounded-lg text-lg">
-          <button onclick="buscarHistorial(this)" class="bg-slate-800 text-white px-8 font-bold rounded-lg"><i class="fa-solid fa-search mr-2"></i> Buscar</button>
+      <!-- VISTA HISTORIAL Y BÚSQUEDA -->
+      <div id="vistaHistorial" class="p-8 hidden">
+        <div class="bg-white p-6 rounded-2xl shadow-sm flex gap-4 mb-6 items-center">
+          <input type="text" id="inputBusqueda" oninput="filtrarHistorial()" placeholder="Buscar por ID o CI/RUC..." class="flex-1 border p-3 rounded-lg text-lg">
+          <select id="filtroTiempo" onchange="filtrarHistorial()" class="border p-3 rounded-lg text-lg font-bold text-slate-700 bg-slate-50">
+            <option value="todos">Todos los tiempos</option>
+            <option value="hoy">Hoy</option>
+            <option value="semana">Últimos 7 días</option>
+            <option value="mes">Este mes</option>
+          </select>
+          <button onclick="cargarHistorial()" title="Actualizar Datos" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 font-bold rounded-lg transition"><i class="fa-solid fa-rotate-right"></i></button>
         </div>
         <div id="resultadosBusqueda" class="space-y-4"></div>
       </div>
@@ -110,17 +106,8 @@
         <div class="grid grid-cols-3 gap-6 bg-blue-50 p-6 rounded-xl border border-blue-100">
           <div class="col-span-2"><label class="text-sm font-semibold">Detalle del Paquete</label><input type="text" id="detalle" class="w-full border p-2 rounded" required></div>
           <div><label class="text-sm font-semibold">Costo Envío (Gs)</label><input type="number" id="costo" class="w-full border p-2 rounded" required></div>
-          <div class="col-span-2">
-            <label class="text-sm font-semibold">Foto del Paquete al Recibir (Opcional)</label>
-            <input type="file" id="fotoRecepcion" accept="image/*" onchange="leerFotoRec(event)" class="w-full border p-1 rounded bg-white">
-          </div>
-          <div class="col-span-1">
-            <label class="text-sm font-semibold">Modalidad de Pago</label>
-            <select id="tipoCli" class="w-full border p-2 rounded font-bold">
-              <option value="Contado">AL CONTADO</option>
-              <option value="Corporativo">CORPORATIVA</option>
-            </select>
-          </div>
+          <div class="col-span-2"><label class="text-sm font-semibold">Foto del Paquete al Recibir (Opcional)</label><input type="file" id="fotoRecepcion" accept="image/*" onchange="leerFotoRec(event)" class="w-full border p-1 rounded bg-white"></div>
+          <div class="col-span-1"><label class="text-sm font-semibold">Modalidad de Pago</label><select id="tipoCli" class="w-full border p-2 rounded font-bold"><option value="Contado">AL CONTADO</option><option value="Corporativo">CORPORATIVA</option></select></div>
         </div>
         <button id="btnRegistrar" type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg transition">REGISTRAR ENVÍO</button>
       </form>
@@ -131,22 +118,19 @@
     const API_URL = "https://script.google.com/macros/s/AKfycbyAwM6OAW5u_jLp2y2iCdJZtK3P7yUONt2UEFIuVTRYNIrwQGMD03_uJyGpzJnxcKkYmQ/exec";
     let usuarioActual = "";
     let fotoRecBase64 = "";
+    let historialGlobal = []; // Guarda todos los datos para filtrar rápido
 
     async function apiRequest(payload) {
       try {
-        let res = await fetch(API_URL, { 
-          method: "POST", 
-          headers: { "Content-Type": "text/plain;charset=utf-8" }, 
-          body: JSON.stringify(payload) 
-        });
+        let res = await fetch(API_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) });
         return await res.json();
-      } catch (e) { return { success: false, error: "Error de red: " + e.message }; }
+      } catch (e) { return { success: false, error: e.message }; }
     }
 
     async function ingresarAlSistema(btn) {
       const user = document.getElementById('userInput').value;
       const pass = document.getElementById('passInput').value;
-      if(!user || !pass) return alert("Ingrese Usuario y Contraseña");
+      if(!user || !pass) return;
       btn.innerHTML = "CONECTANDO..."; btn.disabled = true;
 
       const res = await apiRequest({ accion: 'login', usuario: user, password: pass });
@@ -164,14 +148,15 @@
 
     function cambiarVistaPC(vista) {
       document.getElementById('vistaDashboard').classList.add('hidden');
-      document.getElementById('vistaBuscador').classList.add('hidden');
+      document.getElementById('vistaHistorial').classList.add('hidden');
       if(vista === 'dashboard') {
         document.getElementById('vistaDashboard').classList.remove('hidden');
         document.getElementById('tituloHeader').innerText = "Panel de Control";
         cargarDashboard();
       } else {
-        document.getElementById('vistaBuscador').classList.remove('hidden');
-        document.getElementById('tituloHeader').innerText = "Buscador de Envíos";
+        document.getElementById('vistaHistorial').classList.remove('hidden');
+        document.getElementById('tituloHeader').innerText = "Historial de Envíos";
+        if(historialGlobal.length === 0) cargarHistorial(); // Carga automática al entrar
       }
     }
 
@@ -219,6 +204,7 @@
         fotoRecBase64 = "";
         document.getElementById('modalEnvio').classList.add('hidden');
         cargarDashboard();
+        historialGlobal = []; // Fuerza a recargar el historial la próxima vez
       }
     }
 
@@ -229,38 +215,76 @@
         document.getElementById('dashEntregados').innerText = res.entregados;
         document.getElementById('dashGanancia').innerText = res.gananciaMes.toLocaleString('es-PY');
         
-        // PINTAR LA TABLA VISUAL DE LOS PAQUETES
         const tbody = document.getElementById('tablaDashboard');
         tbody.innerHTML = "";
         if(res.lista && res.lista.length > 0) {
           res.lista.forEach(e => {
             let colorEstado = e.estado === 'Entregado' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700';
-            tbody.innerHTML += `
-              <tr class="hover:bg-slate-50 transition">
-                <td class="p-3 font-bold text-blue-600">${e.id}</td>
-                <td class="p-3 text-slate-600">${e.fecha}</td>
-                <td class="p-3 font-semibold">${e.destinatario}</td>
-                <td class="p-3"><span class="px-3 py-1 rounded-full text-xs font-bold ${colorEstado}">${e.estado}</span></td>
-              </tr>
-            `;
+            tbody.innerHTML += `<tr class="hover:bg-slate-50 border-b transition"><td class="p-3 font-bold text-blue-600">${e.id}</td><td class="p-3 text-slate-600">${e.fecha}</td><td class="p-3 font-semibold">${e.destinatario}</td><td class="p-3"><span class="px-3 py-1 rounded-full text-xs font-bold ${colorEstado}">${e.estado}</span></td></tr>`;
           });
-        } else {
-          tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-500">No hay envíos registrados aún.</td></tr>`;
-        }
+        } else { tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-500">No hay envíos registrados.</td></tr>`; }
       }
     }
 
-    async function buscarHistorial(btn) {
-      const crit = document.getElementById('inputBusqueda').value;
-      if(!crit) return;
-      btn.innerHTML = "Buscando...";
-      const res = await apiRequest({ accion: 'buscarEnvio', criterio: crit });
-      btn.innerHTML = "<i class='fa-solid fa-search mr-2'></i> Buscar";
-      
+    // --- LÓGICA DEL HISTORIAL Y FILTROS ---
+    function parsearFechaPY(fechaStr) {
+      if(!fechaStr) return new Date(0);
+      let p = fechaStr.split(',')[0].trim().split('/');
+      return (p.length === 3) ? new Date(p[2], p[1] - 1, p[0]) : new Date(fechaStr);
+    }
+
+    async function cargarHistorial() {
       const div = document.getElementById('resultadosBusqueda');
+      div.innerHTML = "<p class='text-blue-600 font-bold'><i class='fa-solid fa-spinner fa-spin mr-2'></i> Sincronizando historial...</p>";
+      const res = await apiRequest({ accion: 'getHistorial' });
+      if(res.success) {
+        historialGlobal = res.resultados;
+        filtrarHistorial(); // Renderiza todo por primera vez
+      }
+    }
+
+    function filtrarHistorial() {
+      const busq = document.getElementById('inputBusqueda').value.toLowerCase().trim();
+      const filtroT = document.getElementById('filtroTiempo').value;
+      const div = document.getElementById('resultadosBusqueda');
+      
+      let hoy = new Date();
+      hoy.setHours(0,0,0,0);
+
+      let filtrados = historialGlobal.filter(r => {
+        // 1. Filtro de Texto (Ignora guiones de RUC)
+        let matchText = true;
+        if(busq) {
+          let cRem = r.ciRem.toString().toLowerCase();
+          let cDest = r.ciDest.toString().toLowerCase();
+          matchText = (
+            r.id.toLowerCase().includes(busq) || 
+            cRem.includes(busq) || cRem.split('-')[0].includes(busq) || 
+            cDest.includes(busq) || cDest.split('-')[0].includes(busq)
+          );
+        }
+
+        // 2. Filtro de Fecha
+        let matchTime = true;
+        let fEnvio = parsearFechaPY(r.fecha);
+        fEnvio.setHours(0,0,0,0);
+
+        if (filtroT === 'hoy') {
+          matchTime = fEnvio.getTime() === hoy.getTime();
+        } else if (filtroT === 'semana') {
+          let diffDias = Math.floor((hoy - fEnvio) / (1000 * 60 * 60 * 24));
+          matchTime = diffDias <= 7 && diffDias >= 0;
+        } else if (filtroT === 'mes') {
+          matchTime = fEnvio.getMonth() === hoy.getMonth() && fEnvio.getFullYear() === hoy.getFullYear();
+        }
+
+        return matchText && matchTime;
+      });
+
+      // Dibujar en pantalla
       div.innerHTML = "";
-      if(res.success && res.resultados.length > 0) {
-        res.resultados.forEach(r => {
+      if(filtrados.length > 0) {
+        filtrados.forEach(r => {
           div.innerHTML += `
             <div class="bg-white border rounded-xl p-5 shadow-sm">
               <div class="flex justify-between items-center border-b pb-3 mb-3">
@@ -269,24 +293,23 @@
               </div>
               <div class="grid grid-cols-2 gap-4 mb-4">
                 <div><p class="text-sm text-slate-500">Fecha:</p><p class="font-semibold">${r.fecha}</p></div>
-                <div><p class="text-sm text-slate-500">Agente:</p><p class="font-semibold">${r.agente}</p></div>
-                <div><p class="text-sm text-slate-500">CI Remitente:</p><p class="font-semibold">${r.ciRem}</p></div>
-                <div><p class="text-sm text-slate-500">CI Destino:</p><p class="font-semibold">${r.ciDest}</p></div>
+                <div><p class="text-sm text-slate-500">Costo:</p><p class="font-semibold">Gs. ${Number(r.costo||0).toLocaleString('es-PY')}</p></div>
+                <div><p class="text-sm text-slate-500">Remitente:</p><p class="font-semibold">${r.ciRem}</p></div>
+                <div><p class="text-sm text-slate-500">Destino:</p><p class="font-semibold">${r.ciDest}</p></div>
+                <div class="col-span-2"><p class="text-sm text-slate-500">Detalle:</p><p class="font-semibold text-slate-700">${r.detalle}</p></div>
               </div>
               <div class="grid grid-cols-2 gap-4 mt-4 border-t pt-4">
-                <div>
-                  <p class="text-sm text-slate-500 mb-2">Foto al Recibir (Origen)</p>
+                <div><p class="text-sm text-slate-500 mb-2">Foto al Recibir (Origen)</p>
                   ${r.fotoRecepcion ? `<a href="${r.fotoRecepcion}" target="_blank" class="text-blue-500 underline font-bold"><i class="fa-solid fa-image"></i> Ver Foto</a>` : '<span class="text-slate-400 text-sm">Sin foto</span>'}
                 </div>
-                <div>
-                  <p class="text-sm text-slate-500 mb-2">Foto al Entregar (Destino)</p>
+                <div><p class="text-sm text-slate-500 mb-2">Foto al Entregar (Destino)</p>
                   ${r.fotoEntrega ? `<a href="${r.fotoEntrega}" target="_blank" class="text-blue-500 underline font-bold"><i class="fa-solid fa-image"></i> Ver Foto</a>` : '<span class="text-slate-400 text-sm">Sin foto</span>'}
                 </div>
               </div>
             </div>`;
         });
       } else {
-        div.innerHTML = "<p class='text-slate-500'>No se encontraron resultados.</p>";
+        div.innerHTML = "<p class='text-slate-500 text-lg'>No hay registros para este filtro.</p>";
       }
     }
   </script>
