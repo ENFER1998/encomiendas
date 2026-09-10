@@ -9,14 +9,10 @@
 </head>
 <body>
 
-  <!-- PANTALLA LOGIN -->
+  <!-- LOGIN -->
   <div id="loginScreen" class="fixed inset-0 bg-blue-700 z-50 flex flex-col items-center justify-center text-white p-6">
-    <i class="fa-solid fa-truck-fast text-6xl mb-4"></i>
-    <h1 class="text-3xl font-bold mb-8">TSI APP</h1>
-    <div class="w-full max-w-xs space-y-4 mb-6">
-      <input type="text" id="userInput" placeholder="Usuario" class="w-full text-center text-xl p-4 rounded-xl text-slate-800" autocapitalize="none">
-      <input type="password" id="passInput" placeholder="Contraseña" class="w-full text-center text-xl p-4 rounded-xl text-slate-800">
-    </div>
+    <i class="fa-solid fa-truck-fast text-6xl mb-4"></i><h1 class="text-3xl font-bold mb-8">TSI APP</h1>
+    <div class="w-full max-w-xs space-y-4 mb-6"><input type="text" id="userInput" placeholder="Usuario" class="w-full text-center text-xl p-4 rounded-xl text-slate-800" autocapitalize="none"><input type="password" id="passInput" placeholder="Contraseña" class="w-full text-center text-xl p-4 rounded-xl text-slate-800"></div>
     <button onclick="ingresarAlSistema(this)" class="bg-slate-900 text-white w-full max-w-xs py-4 rounded-xl font-bold text-lg">ENTRAR</button>
   </div>
 
@@ -36,13 +32,7 @@
       <img id="previewEntrega" class="mt-4 rounded-xl hidden w-full h-48 object-cover border">
       <button onclick="subirFoto(this)" class="w-full bg-emerald-500 text-white font-bold py-4 rounded-xl shadow-lg mt-4 text-lg">Confirmar Entrega</button>
     </div>
-    <div class="bg-white rounded-2xl shadow-sm p-6">
-      <h3 class="font-bold text-slate-800 mb-4"><i class="fa-solid fa-print text-blue-600 mr-2"></i> Ticketera</h3>
-      <div class="grid grid-cols-2 gap-3">
-        <button onclick="imprimirTicket(1)" class="bg-slate-800 text-white py-3 rounded-lg font-semibold">Cliente</button>
-        <button onclick="imprimirTicket(2)" class="bg-blue-600 text-white py-3 rounded-lg font-semibold">Empresa</button>
-      </div>
-    </div>
+    <div class="bg-white rounded-2xl shadow-sm p-6"><h3 class="font-bold text-slate-800 mb-4"><i class="fa-solid fa-print text-blue-600 mr-2"></i> Ticketera</h3><div class="grid grid-cols-2 gap-3"><button onclick="imprimirTicket(1)" class="bg-slate-800 text-white py-3 rounded-lg font-semibold">Cliente</button><button onclick="imprimirTicket(2)" class="bg-blue-600 text-white py-3 rounded-lg font-semibold">Empresa</button></div></div>
   </main>
 
   <!-- PESTAÑA: NUEVO ENVÍO MÓVIL -->
@@ -50,44 +40,32 @@
     <div class="bg-white rounded-2xl shadow-sm p-6">
       <h3 class="font-bold text-slate-800 mb-4 border-b pb-2"><i class="fa-solid fa-box text-blue-600 mr-2"></i> Recibir Paquete</h3>
       <form onsubmit="guardarEnvioMovil(event)" class="space-y-4">
-        
-        <p class="font-bold text-sm text-blue-600">Remitente</p>
-        <input type="text" id="m_ciRem" onblur="buscarM('Rem')" placeholder="CI/RUC Remitente" class="w-full border p-3 rounded-lg bg-slate-50" required>
-        <input type="text" id="m_nomRem" placeholder="Nombre Remitente" class="w-full border p-3 rounded-lg" required>
-        <input type="text" id="m_telRem" placeholder="Teléfono" class="w-full border p-3 rounded-lg" required>
-        
-        <p class="font-bold text-sm text-blue-600 mt-4">Destinatario</p>
-        <input type="text" id="m_ciDest" onblur="buscarM('Dest')" placeholder="CI/RUC Destino" class="w-full border p-3 rounded-lg bg-slate-50" required>
-        <input type="text" id="m_nomDest" placeholder="Nombre Destinatario" class="w-full border p-3 rounded-lg" required>
-        <input type="text" id="m_telDest" placeholder="Teléfono" class="w-full border p-3 rounded-lg">
-        <input type="text" id="m_dirDest" placeholder="Dirección Destino" class="w-full border p-3 rounded-lg">
-        
-        <p class="font-bold text-sm text-blue-600 mt-4">Detalles y Foto</p>
-        <input type="text" id="m_detalle" placeholder="¿Qué se envía?" class="w-full border p-3 rounded-lg" required>
-        <input type="number" id="m_costo" placeholder="Costo Gs." class="w-full border p-3 rounded-lg font-bold" required>
-        <select id="m_tipoCli" class="w-full border p-3 rounded-lg font-bold">
-          <option value="Contado">PAGO AL CONTADO</option>
-          <option value="Corporativo">CUENTA CORPORATIVA</option>
-        </select>
-        
-        <div class="border-2 border-dashed bg-slate-50 p-4 text-center rounded-xl" onclick="document.getElementById('cameraRecepcion').click()">
-          <p class="font-bold text-slate-600"><i class="fa-solid fa-camera mb-1 text-xl"></i><br>Foto del Paquete</p>
-          <input type="file" id="cameraRecepcion" accept="image/*" capture="environment" class="hidden" onchange="leerFoto(event, 'previewRecepcion', 2)">
-        </div>
+        <p class="font-bold text-sm text-blue-600">Remitente</p><input type="text" id="m_ciRem" onblur="buscarM('Rem')" placeholder="CI/RUC Remitente" class="w-full border p-3 rounded-lg bg-slate-50" required><input type="text" id="m_nomRem" placeholder="Nombre Remitente" class="w-full border p-3 rounded-lg" required><input type="text" id="m_telRem" placeholder="Teléfono" class="w-full border p-3 rounded-lg" required>
+        <p class="font-bold text-sm text-blue-600 mt-4">Destinatario</p><input type="text" id="m_ciDest" onblur="buscarM('Dest')" placeholder="CI/RUC Destino" class="w-full border p-3 rounded-lg bg-slate-50" required><input type="text" id="m_nomDest" placeholder="Nombre Destinatario" class="w-full border p-3 rounded-lg" required><input type="text" id="m_telDest" placeholder="Teléfono" class="w-full border p-3 rounded-lg"><input type="text" id="m_dirDest" placeholder="Dirección Destino" class="w-full border p-3 rounded-lg">
+        <p class="font-bold text-sm text-blue-600 mt-4">Detalles y Foto</p><input type="text" id="m_detalle" placeholder="¿Qué se envía?" class="w-full border p-3 rounded-lg" required><input type="number" id="m_costo" placeholder="Costo Gs." class="w-full border p-3 rounded-lg font-bold" required>
+        <select id="m_tipoCli" class="w-full border p-3 rounded-lg font-bold"><option value="Contado">PAGO AL CONTADO</option><option value="Corporativo">CUENTA CORPORATIVA</option></select>
+        <div class="border-2 border-dashed bg-slate-50 p-4 text-center rounded-xl" onclick="document.getElementById('cameraRecepcion').click()"><p class="font-bold text-slate-600"><i class="fa-solid fa-camera mb-1 text-xl"></i><br>Foto del Paquete</p><input type="file" id="cameraRecepcion" accept="image/*" capture="environment" class="hidden" onchange="leerFoto(event, 'previewRecepcion', 2)"></div>
         <img id="previewRecepcion" class="mt-2 rounded-xl hidden w-full h-32 object-cover border">
-
         <button type="submit" id="btnRegMovil" class="w-full bg-blue-600 text-white font-bold py-4 rounded-xl shadow-lg mt-4">GUARDAR ENVÍO</button>
       </form>
     </div>
   </main>
 
-  <!-- PESTAÑA: BUSCADOR -->
-  <main id="vistaBuscar" class="p-5 hidden">
+  <!-- PESTAÑA: HISTORIAL Y BÚSQUEDA MÓVIL -->
+  <main id="vistaHistorial" class="p-5 hidden">
     <div class="bg-white rounded-2xl shadow-sm p-6">
-      <h3 class="font-bold text-slate-800 mb-4"><i class="fa-solid fa-magnifying-glass text-blue-600 mr-2"></i> Buscar Envío</h3>
-      <div class="flex gap-2 mb-4">
-        <input type="text" id="m_buscarInput" placeholder="ID o CI/RUC" class="w-full border p-3 rounded-lg text-lg">
-        <button onclick="buscarHistorialMovil(this)" class="bg-slate-800 text-white px-4 rounded-lg"><i class="fa-solid fa-search"></i></button>
+      <h3 class="font-bold text-slate-800 mb-4"><i class="fa-solid fa-list text-blue-600 mr-2"></i> Historial Envíos</h3>
+      <div class="flex flex-col gap-3 mb-4">
+        <input type="text" id="m_inputBusqueda" oninput="filtrarHistorialMovil()" placeholder="Buscar ID o CI/RUC..." class="w-full border p-3 rounded-lg">
+        <div class="flex gap-2">
+          <select id="m_filtroTiempo" onchange="filtrarHistorialMovil()" class="flex-1 border p-3 rounded-lg font-bold text-slate-700 bg-slate-50">
+            <option value="todos">Todos</option>
+            <option value="hoy">Hoy</option>
+            <option value="semana">7 Días</option>
+            <option value="mes">Este Mes</option>
+          </select>
+          <button onclick="cargarHistorialMovil()" class="bg-blue-600 text-white px-4 rounded-lg"><i class="fa-solid fa-rotate-right"></i></button>
+        </div>
       </div>
       <div id="m_resultados" class="space-y-4"></div>
     </div>
@@ -96,17 +74,14 @@
   <!-- PESTAÑA: FINANZAS -->
   <main id="vistaFinanzas" class="p-5 hidden">
     <h3 class="font-bold text-xl text-slate-800 mb-4">Balance General</h3>
-    <div class="grid grid-cols-2 gap-4 mb-6">
-      <div class="bg-indigo-600 text-white p-4 rounded-2xl"><p class="text-sm">En Tránsito</p><p class="text-2xl font-bold" id="mPendientes">0</p></div>
-      <div class="bg-emerald-500 text-white p-4 rounded-2xl"><p class="text-sm">Ingresos Mes</p><p class="text-xl font-bold">Gs.<span id="mGanancia">0</span></p></div>
-    </div>
+    <div class="grid grid-cols-2 gap-4 mb-6"><div class="bg-indigo-600 text-white p-4 rounded-2xl"><p class="text-sm">En Tránsito</p><p class="text-2xl font-bold" id="mPendientes">0</p></div><div class="bg-emerald-500 text-white p-4 rounded-2xl"><p class="text-sm">Ingresos Mes</p><p class="text-xl font-bold">Gs.<span id="mGanancia">0</span></p></div></div>
   </main>
 
   <!-- NAVEGACIÓN INFERIOR (4 Botones) -->
   <nav id="bottomNav" class="fixed bottom-0 w-full bg-white border-t flex p-3 hidden pb-5">
     <button onclick="cambiarVista('vistaEntregas')" class="flex flex-col items-center text-blue-600 w-1/4 btnNav"><i class="fa-solid fa-check-double text-xl"></i><span class="text-[10px] font-bold mt-1">Entrega</span></button>
     <button onclick="cambiarVista('vistaNuevo')" class="flex flex-col items-center text-slate-400 w-1/4 btnNav"><i class="fa-solid fa-box-open text-xl"></i><span class="text-[10px] font-bold mt-1">Recibir</span></button>
-    <button onclick="cambiarVista('vistaBuscar')" class="flex flex-col items-center text-slate-400 w-1/4 btnNav"><i class="fa-solid fa-search text-xl"></i><span class="text-[10px] font-bold mt-1">Buscar</span></button>
+    <button onclick="cambiarVista('vistaHistorial')" class="flex flex-col items-center text-slate-400 w-1/4 btnNav"><i class="fa-solid fa-list text-xl"></i><span class="text-[10px] font-bold mt-1">Historial</span></button>
     <button id="btnFinanzas" onclick="cambiarVista('vistaFinanzas')" class="flex flex-col items-center text-slate-400 w-1/4 btnNav hidden"><i class="fa-solid fa-chart-line text-xl"></i><span class="text-[10px] font-bold mt-1">Finanzas</span></button>
   </nav>
 
@@ -115,15 +90,11 @@
     let usuarioActual = "";
     let fotoEntregaData = "";
     let fotoRecepcionData = "";
+    let historialGlobalM = [];
 
-    // BLINDAJE DE CORS PARA CELULARES
     async function apiRequest(payload) {
       try {
-        let res = await fetch(API_URL, { 
-          method: "POST", 
-          headers: { "Content-Type": "text/plain;charset=utf-8" }, 
-          body: JSON.stringify(payload) 
-        });
+        let res = await fetch(API_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) });
         return await res.json();
       } catch (e) { return { success: false, error: "Error de red: " + e.message }; }
     }
@@ -131,11 +102,9 @@
     async function ingresarAlSistema(btn) {
       const user = document.getElementById('userInput').value;
       const pass = document.getElementById('passInput').value;
-      if(!user || !pass) return alert("Faltan datos");
+      if(!user || !pass) return;
       btn.innerHTML = "CONECTANDO..."; btn.disabled = true;
-
       const res = await apiRequest({ accion: 'login', usuario: user, password: pass });
-      
       btn.innerHTML = "ENTRAR"; btn.disabled = false;
       if(res.success) {
         document.getElementById('loginScreen').style.display = 'none';
@@ -149,18 +118,16 @@
     }
 
     function cambiarVista(vista) {
-      ['vistaEntregas','vistaNuevo','vistaBuscar','vistaFinanzas'].forEach(v => document.getElementById(v).classList.add('hidden'));
+      ['vistaEntregas','vistaNuevo','vistaHistorial','vistaFinanzas'].forEach(v => document.getElementById(v).classList.add('hidden'));
       document.getElementById(vista).classList.remove('hidden');
       document.querySelectorAll('.btnNav').forEach(b => { b.classList.remove('text-blue-600'); b.classList.add('text-slate-400'); });
       event.currentTarget.classList.remove('text-slate-400'); event.currentTarget.classList.add('text-blue-600');
+      if(vista === 'vistaHistorial' && historialGlobalM.length === 0) cargarHistorialMovil();
     }
 
     async function cargarDashboardMovil() {
       const res = await apiRequest({ accion: 'getDashboard' });
-      if(res.success) {
-        document.getElementById('mPendientes').innerText = res.pendientes;
-        document.getElementById('mGanancia').innerText = res.gananciaMes.toLocaleString('es-PY');
-      }
+      if(res.success) { document.getElementById('mPendientes').innerText = res.pendientes; document.getElementById('mGanancia').innerText = res.gananciaMes.toLocaleString('es-PY'); }
     }
 
     function leerFoto(e, imgId, tipoVar) {
@@ -168,10 +135,8 @@
       if(!file) return;
       const reader = new FileReader();
       reader.onload = ev => { 
-        document.getElementById(imgId).src = ev.target.result; 
-        document.getElementById(imgId).classList.remove('hidden'); 
-        if(tipoVar === 1) fotoEntregaData = ev.target.result;
-        if(tipoVar === 2) fotoRecepcionData = ev.target.result;
+        document.getElementById(imgId).src = ev.target.result; document.getElementById(imgId).classList.remove('hidden'); 
+        if(tipoVar === 1) fotoEntregaData = ev.target.result; if(tipoVar === 2) fotoRecepcionData = ev.target.result;
       };
       reader.readAsDataURL(file);
     }
@@ -182,7 +147,7 @@
       btn.innerHTML = "Subiendo..."; btn.disabled = true;
       const res = await apiRequest({ accion: 'confirmarEntrega', idEnvio: id, foto: fotoEntregaData });
       btn.innerHTML = "Confirmar Entrega"; btn.disabled = false;
-      if(res.success) { alert("¡Entregado!"); document.getElementById('idEnvio').value=''; document.getElementById('previewEntrega').classList.add('hidden'); fotoEntregaData=""; }
+      if(res.success) { alert("¡Entregado!"); document.getElementById('idEnvio').value=''; document.getElementById('previewEntrega').classList.add('hidden'); fotoEntregaData=""; historialGlobalM=[]; }
       else alert(res.error);
     }
 
@@ -193,8 +158,7 @@
       const res = await apiRequest({ accion: 'buscarCliente', ci: ci });
       document.getElementById('m_ci' + tipo).classList.remove('bg-yellow-100');
       if(res.encontrado) {
-        document.getElementById('m_nom' + tipo).value = res.nombre;
-        document.getElementById('m_tel' + tipo).value = res.telefono;
+        document.getElementById('m_nom' + tipo).value = res.nombre; document.getElementById('m_tel' + tipo).value = res.telefono;
         if(tipo === 'Dest') { document.getElementById('m_dirDest').value = res.direccion; document.getElementById('m_tipoCli').value = res.tipo; }
       }
     }
@@ -210,28 +174,53 @@
       const res = await apiRequest({ accion: 'guardarEnvio', datos: datos, agente: usuarioActual, fotoRecepcion: fotoRecepcionData });
       document.getElementById('btnRegMovil').innerHTML = "GUARDAR ENVÍO";
       if(res.success) {
-        alert("CREADO: " + res.id);
-        e.target.reset();
-        document.getElementById('previewRecepcion').classList.add('hidden');
-        fotoRecepcionData = "";
-        cambiarVista('vistaEntregas');
+        alert("CREADO: " + res.id); e.target.reset(); document.getElementById('previewRecepcion').classList.add('hidden'); fotoRecepcionData = ""; historialGlobalM = []; cambiarVista('vistaEntregas');
       }
     }
 
-    async function buscarHistorialMovil(btn) {
-      const crit = document.getElementById('m_buscarInput').value;
-      if(!crit) return;
-      btn.innerHTML = "...";
-      const res = await apiRequest({ accion: 'buscarEnvio', criterio: crit });
-      btn.innerHTML = "<i class='fa-solid fa-search'></i>";
-      
+    // --- LÓGICA DE HISTORIAL MÓVIL ---
+    function parsearFechaPY(fechaStr) {
+      if(!fechaStr) return new Date(0);
+      let p = fechaStr.split(',')[0].trim().split('/');
+      return (p.length === 3) ? new Date(p[2], p[1] - 1, p[0]) : new Date(fechaStr);
+    }
+
+    async function cargarHistorialMovil() {
       const div = document.getElementById('m_resultados');
+      div.innerHTML = "<p class='text-blue-600 font-bold text-center'><i class='fa-solid fa-spinner fa-spin'></i> Cargando...</p>";
+      const res = await apiRequest({ accion: 'getHistorial' });
+      if(res.success) { historialGlobalM = res.resultados; filtrarHistorialMovil(); }
+    }
+
+    function filtrarHistorialMovil() {
+      const busq = document.getElementById('m_inputBusqueda').value.toLowerCase().trim();
+      const filtroT = document.getElementById('m_filtroTiempo').value;
+      const div = document.getElementById('m_resultados');
+      
+      let hoy = new Date(); hoy.setHours(0,0,0,0);
+
+      let filtrados = historialGlobalM.filter(r => {
+        let matchText = true;
+        if(busq) {
+          let cRem = r.ciRem.toString().toLowerCase(); let cDest = r.ciDest.toString().toLowerCase();
+          matchText = (r.id.toLowerCase().includes(busq) || cRem.includes(busq) || cRem.split('-')[0].includes(busq) || cDest.includes(busq) || cDest.split('-')[0].includes(busq));
+        }
+        let matchTime = true;
+        let fEnvio = parsearFechaPY(r.fecha); fEnvio.setHours(0,0,0,0);
+        if (filtroT === 'hoy') matchTime = fEnvio.getTime() === hoy.getTime();
+        else if (filtroT === 'semana') { let diffDias = Math.floor((hoy - fEnvio) / (1000 * 60 * 60 * 24)); matchTime = diffDias <= 7 && diffDias >= 0; }
+        else if (filtroT === 'mes') matchTime = fEnvio.getMonth() === hoy.getMonth() && fEnvio.getFullYear() === hoy.getFullYear();
+
+        return matchText && matchTime;
+      });
+
       div.innerHTML = "";
-      if(res.success && res.resultados.length > 0) {
-        res.resultados.forEach(r => {
+      if(filtrados.length > 0) {
+        filtrados.forEach(r => {
           div.innerHTML += `
             <div class="border rounded-xl p-4 shadow-sm mb-4 border-l-4 ${r.estado==='Entregado'?'border-green-500':'border-amber-500'}">
               <p class="font-bold text-blue-700">${r.id} <span class="float-right text-sm font-bold ${r.estado==='Entregado'?'text-green-600':'text-amber-600'}">${r.estado}</span></p>
+              <p class="text-xs text-slate-500 mb-2">${r.fecha} - Costo: Gs. ${Number(r.costo||0).toLocaleString('es-PY')}</p>
               <p class="text-sm mt-2"><b>De:</b> ${r.ciRem} <br><b>Para:</b> ${r.ciDest}</p>
               <div class="mt-3 flex gap-2">
                 ${r.fotoRecepcion ? `<a href="${r.fotoRecepcion}" target="_blank" class="text-xs bg-slate-100 p-2 rounded font-bold block text-center w-1/2">Foto Origen</a>` : ''}
