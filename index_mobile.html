@@ -12,7 +12,8 @@
   <!-- LOGIN -->
   <div id="loginScreen" class="fixed inset-0 bg-blue-700 z-50 flex flex-col items-center justify-between text-white p-6 overflow-y-auto">
     <div class="w-full flex flex-col items-center mt-12">
-      <img src="logo.jpeg" onerror="this.style.display='none'" alt="Logo" class="mx-auto h-28 mb-4 rounded-xl object-contain bg-white p-2 shadow-xl">
+      <!-- Mix Blend Screen permite que logos oscuros con fondo blanco se transparenten en fondos oscuros -->
+      <div class="bg-white p-2 rounded-xl mb-4 shadow-xl"><img src="logo.png" onerror="this.src='logo.jpeg'" alt="Logo" class="mx-auto h-24 object-contain"></div>
       <h1 class="text-3xl font-bold mb-8">Luis Transportes</h1>
       <div class="w-full max-w-xs space-y-4 mb-6">
         <input type="text" id="userInput" placeholder="Usuario" class="w-full text-center text-xl p-4 rounded-xl text-slate-800" autocapitalize="none">
@@ -20,7 +21,6 @@
       </div>
       <button onclick="ingresarAlSistema(this)" class="bg-slate-900 text-white w-full max-w-xs py-4 rounded-xl font-bold text-lg shadow-lg">ENTRAR</button>
     </div>
-    <!-- TEXTO FIJO DENTRO DE ESTA PANTALLA, NO FLOTA -->
     <p class="text-[10px] text-blue-200 uppercase font-bold mt-10 mb-4 text-center">Desarrollado Por Fernando Rodriguez 2026</p>
   </div>
 
@@ -28,7 +28,7 @@
     <h2 class="text-xl font-bold">Hola, <span id="userName">Agente</span></h2><p class="text-blue-200 text-sm">Operaciones en Ruta</p>
   </header>
 
-  <!-- PESTAÑA 1: NUEVO ENVÍO (Arranca aquí) -->
+  <!-- PESTAÑA 1: NUEVO ENVÍO -->
   <main id="vistaNuevo" class="p-5 hidden">
     <div class="bg-white rounded-2xl shadow-sm p-6 mb-6">
       <h3 class="font-bold text-slate-800 mb-4 border-b pb-2"><i class="fa-solid fa-box text-blue-600 mr-2"></i> Recibir Nuevo Paquete</h3>
@@ -50,10 +50,7 @@
     <div class="bg-white rounded-2xl shadow-sm p-6 mb-4">
       <h3 class="font-bold text-slate-800 mb-4"><i class="fa-solid fa-house-chimney text-blue-600 mr-2"></i> Registrar Entrega</h3>
       <input type="text" id="idEnvio" placeholder="ID (Ej: LT-1234)" class="w-full border-2 p-4 rounded-xl text-xl text-center font-bold mb-4 uppercase text-blue-800">
-      <div class="border-2 border-dashed bg-blue-50 border-blue-300 p-6 text-center rounded-xl" onclick="document.getElementById('cameraEntrega').click()">
-        <p class="font-bold text-blue-700"><i class="fa-solid fa-camera mb-2 text-3xl"></i><br>Foto Destino (Obligatorio)</p>
-        <input type="file" id="cameraEntrega" accept="image/*" capture="environment" class="hidden" onchange="leerFoto(event, 'previewEntrega', 1)">
-      </div>
+      <div class="border-2 border-dashed bg-blue-50 border-blue-300 p-6 text-center rounded-xl" onclick="document.getElementById('cameraEntrega').click()"><p class="font-bold text-blue-700"><i class="fa-solid fa-camera mb-2 text-3xl"></i><br>Foto Destino (Obligatorio)</p><input type="file" id="cameraEntrega" accept="image/*" capture="environment" class="hidden" onchange="leerFoto(event, 'previewEntrega', 1)"></div>
       <img id="previewEntrega" class="mt-4 rounded-xl hidden w-full h-48 object-cover border border-blue-200 shadow">
       <button onclick="subirFoto(this)" class="w-full bg-emerald-500 text-white font-bold py-4 rounded-xl shadow-lg mt-4 text-lg">Confirmar Entrega</button>
     </div>
@@ -71,12 +68,7 @@
       <div class="flex flex-col gap-3 mb-4">
         <input type="text" id="m_inputBusqueda" oninput="filtrarHistorialMovil()" placeholder="Buscar ID o CI/RUC..." class="w-full border-2 p-3 rounded-lg font-semibold">
         <div class="flex gap-2">
-          <select id="m_filtroTiempo" onchange="filtrarHistorialMovil()" class="flex-1 border p-3 rounded-lg font-bold text-slate-700 bg-slate-50">
-            <option value="todos">Todos</option>
-            <option value="hoy">Hoy</option>
-            <option value="semana">7 Días</option>
-            <option value="mes">Este Mes</option>
-          </select>
+          <select id="m_filtroTiempo" onchange="filtrarHistorialMovil()" class="flex-1 border p-3 rounded-lg font-bold text-slate-700 bg-slate-50"><option value="todos">Todos</option><option value="hoy">Hoy</option><option value="semana">7 Días</option><option value="mes">Este Mes</option></select>
           <button onclick="cargarHistorialMovil()" class="bg-blue-600 text-white px-4 rounded-lg shadow"><i class="fa-solid fa-rotate-right"></i></button>
         </div>
       </div>
@@ -92,7 +84,7 @@
     <p class="text-center text-[10px] text-slate-400 uppercase font-bold pb-4">Desarrollado Por Fernando Rodriguez 2026</p>
   </main>
 
-  <!-- NAVEGACIÓN INFERIOR (VistaNuevo es la predeterminada visualmente) -->
+  <!-- NAVEGACIÓN INFERIOR -->
   <nav id="bottomNav" class="fixed bottom-0 w-full bg-white border-t flex p-3 hidden pb-5 z-50">
     <button id="btnNavNuevo" onclick="cambiarVista('vistaNuevo')" class="flex flex-col items-center text-blue-600 w-1/4 btnNav"><i class="fa-solid fa-box-open text-xl"></i><span class="text-[10px] font-bold mt-1">Recibir</span></button>
     <button id="btnNavEntrega" onclick="cambiarVista('vistaEntregas')" class="flex flex-col items-center text-slate-400 w-1/4 btnNav"><i class="fa-solid fa-check-double text-xl"></i><span class="text-[10px] font-bold mt-1">Entregar</span></button>
@@ -102,177 +94,90 @@
 
   <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbyAwM6OAW5u_jLp2y2iCdJZtK3P7yUONt2UEFIuVTRYNIrwQGMD03_uJyGpzJnxcKkYmQ/exec";
-    let usuarioActual = "";
-    let fotoEntregaData = "";
-    let fotoRecepcionData = "";
-    let historialGlobalM = [];
+    let usuarioActual = ""; let fotoEntregaData = ""; let fotoRecepcionData = ""; let historialGlobalM = [];
 
     async function apiRequest(payload) {
-      try {
-        let res = await fetch(API_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) });
-        return await res.json();
-      } catch (e) { return { success: false, error: "Error de red: " + e.message }; }
+      try { let res = await fetch(API_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) }); return await res.json(); } catch (e) { return { success: false, error: "Error de red: " + e.message }; }
     }
     
     async function ingresarAlSistema(btn) {
-      const user = document.getElementById('userInput').value;
-      const pass = document.getElementById('passInput').value;
-      if(!user || !pass) return;
-      btn.innerHTML = "CONECTANDO..."; btn.disabled = true;
-
+      const user = document.getElementById('userInput').value; const pass = document.getElementById('passInput').value;
+      if(!user || !pass) return; btn.innerHTML = "CONECTANDO..."; btn.disabled = true;
       const res = await apiRequest({ accion: 'login', usuario: user, password: pass });
-      
       btn.innerHTML = "ENTRAR"; btn.disabled = false;
       if(res.success) {
-        document.getElementById('loginScreen').style.display = 'none';
-        document.getElementById('appHeader').classList.remove('hidden');
-        document.getElementById('vistaNuevo').classList.remove('hidden'); // Inicia en Nuevo
-        document.getElementById('bottomNav').classList.remove('hidden');
-        document.getElementById('userName').innerText = res.nombre;
-        usuarioActual = res.nombre;
-        
-        if(res.rol === 'Dueño') { 
-          document.getElementById('btnNavFinanzas').classList.remove('hidden'); 
-          cargarDashboardMovil(); 
-        }
+        document.getElementById('loginScreen').style.display = 'none'; document.getElementById('appHeader').classList.remove('hidden'); document.getElementById('vistaNuevo').classList.remove('hidden'); document.getElementById('bottomNav').classList.remove('hidden'); document.getElementById('userName').innerText = res.nombre; usuarioActual = res.nombre;
+        if(res.rol === 'Dueño') { document.getElementById('btnNavFinanzas').classList.remove('hidden'); cargarDashboardMovil(); }
       } else { alert("Aviso: " + res.error); }
     }
 
     function cambiarVista(vista) {
       ['vistaEntregas','vistaNuevo','vistaHistorial','vistaFinanzas'].forEach(v => document.getElementById(v).classList.add('hidden'));
       document.getElementById(vista).classList.remove('hidden');
-      
       document.querySelectorAll('.btnNav').forEach(b => { b.classList.remove('text-blue-600'); b.classList.add('text-slate-400'); });
       let mapBtns = { 'vistaNuevo':'btnNavNuevo', 'vistaEntregas':'btnNavEntrega', 'vistaHistorial':'btnNavHistorial', 'vistaFinanzas':'btnNavFinanzas' };
-      document.getElementById(mapBtns[vista]).classList.remove('text-slate-400');
-      document.getElementById(mapBtns[vista]).classList.add('text-blue-600');
-      
+      document.getElementById(mapBtns[vista]).classList.remove('text-slate-400'); document.getElementById(mapBtns[vista]).classList.add('text-blue-600');
       if(vista === 'vistaHistorial' && historialGlobalM.length === 0) cargarHistorialMovil();
     }
 
-    async function cargarDashboardMovil() {
-      const res = await apiRequest({ accion: 'getDashboard' });
-      if(res.success) { document.getElementById('mPendientes').innerText = res.pendientes; document.getElementById('mGanancia').innerText = res.gananciaMes.toLocaleString('es-PY'); }
-    }
-
-    function leerFoto(e, imgId, tipoVar) {
-      const file = e.target.files[0];
-      if(!file) return;
-      const reader = new FileReader();
-      reader.onload = ev => { 
-        document.getElementById(imgId).src = ev.target.result; document.getElementById(imgId).classList.remove('hidden'); 
-        if(tipoVar === 1) fotoEntregaData = ev.target.result; if(tipoVar === 2) fotoRecepcionData = ev.target.result;
-      };
-      reader.readAsDataURL(file);
-    }
+    async function cargarDashboardMovil() { const res = await apiRequest({ accion: 'getDashboard' }); if(res.success) { document.getElementById('mPendientes').innerText = res.pendientes; document.getElementById('mGanancia').innerText = res.gananciaMes.toLocaleString('es-PY'); } }
+    function leerFoto(e, imgId, tipoVar) { const file = e.target.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = ev => { document.getElementById(imgId).src = ev.target.result; document.getElementById(imgId).classList.remove('hidden'); if(tipoVar === 1) fotoEntregaData = ev.target.result; if(tipoVar === 2) fotoRecepcionData = ev.target.result; }; reader.readAsDataURL(file); }
 
     async function subirFoto(btn) {
-      const id = document.getElementById('idEnvio').value.toUpperCase();
-      if(!id || !fotoEntregaData) return alert("Falta código o foto");
+      const id = document.getElementById('idEnvio').value.toUpperCase(); if(!id || !fotoEntregaData) return alert("Falta código o foto");
       btn.innerHTML = "Subiendo..."; btn.disabled = true;
       const res = await apiRequest({ accion: 'confirmarEntrega', idEnvio: id, foto: fotoEntregaData });
       btn.innerHTML = "Confirmar Entrega"; btn.disabled = false;
-      if(res.success) { alert("¡Entregado!"); document.getElementById('idEnvio').value=''; document.getElementById('previewEntrega').classList.add('hidden'); fotoEntregaData=""; historialGlobalM=[]; }
-      else alert(res.error);
+      if(res.success) { alert("¡Entregado!"); document.getElementById('idEnvio').value=''; document.getElementById('previewEntrega').classList.add('hidden'); fotoEntregaData=""; historialGlobalM=[]; } else alert(res.error);
     }
 
     async function buscarM(tipo) {
-      const ci = document.getElementById('m_ci' + tipo).value;
-      if(!ci) return;
-      document.getElementById('m_ci' + tipo).classList.add('bg-yellow-100');
-      const res = await apiRequest({ accion: 'buscarCliente', ci: ci });
-      document.getElementById('m_ci' + tipo).classList.remove('bg-yellow-100');
-      if(res.encontrado) {
-        document.getElementById('m_nom' + tipo).value = res.nombre; document.getElementById('m_tel' + tipo).value = res.telefono;
-        if(tipo === 'Dest') { document.getElementById('m_dirDest').value = res.direccion; document.getElementById('m_tipoCli').value = res.tipo; }
-      }
+      const ci = document.getElementById('m_ci' + tipo).value; if(!ci) return; document.getElementById('m_ci' + tipo).classList.add('bg-yellow-100');
+      const res = await apiRequest({ accion: 'buscarCliente', ci: ci }); document.getElementById('m_ci' + tipo).classList.remove('bg-yellow-100');
+      if(res.encontrado) { document.getElementById('m_nom' + tipo).value = res.nombre; document.getElementById('m_tel' + tipo).value = res.telefono; if(tipo === 'Dest') { document.getElementById('m_dirDest').value = res.direccion; document.getElementById('m_tipoCli').value = res.tipo; } }
     }
 
     async function guardarEnvioMovil(e) {
-      e.preventDefault();
-      document.getElementById('btnRegMovil').innerHTML = "CARGANDO...";
-      const datos = {
-        ciRem: document.getElementById('m_ciRem').value, nomRem: document.getElementById('m_nomRem').value, telRem: document.getElementById('m_telRem').value,
-        ciDest: document.getElementById('m_ciDest').value, nomDest: document.getElementById('m_nomDest').value, telDest: document.getElementById('m_telDest').value, dirDest: document.getElementById('m_dirDest').value,
-        detalle: document.getElementById('m_detalle').value, costo: document.getElementById('m_costo').value, tipoCli: document.getElementById('m_tipoCli').value
-      };
+      e.preventDefault(); document.getElementById('btnRegMovil').innerHTML = "CARGANDO...";
+      const datos = { ciRem: document.getElementById('m_ciRem').value, nomRem: document.getElementById('m_nomRem').value, telRem: document.getElementById('m_telRem').value, ciDest: document.getElementById('m_ciDest').value, nomDest: document.getElementById('m_nomDest').value, telDest: document.getElementById('m_telDest').value, dirDest: document.getElementById('m_dirDest').value, detalle: document.getElementById('m_detalle').value, costo: document.getElementById('m_costo').value, tipoCli: document.getElementById('m_tipoCli').value };
       const res = await apiRequest({ accion: 'guardarEnvio', datos: datos, agente: usuarioActual, fotoRecepcion: fotoRecepcionData });
       document.getElementById('btnRegMovil').innerHTML = "GUARDAR ENVÍO";
-      if(res.success) {
-        alert("CREADO: " + res.id); e.target.reset(); document.getElementById('previewRecepcion').classList.add('hidden'); fotoRecepcionData = ""; historialGlobalM = []; cambiarVista('vistaEntregas');
-      }
+      if(res.success) { alert("CREADO: " + res.id); e.target.reset(); document.getElementById('previewRecepcion').classList.add('hidden'); fotoRecepcionData = ""; historialGlobalM = []; cambiarVista('vistaEntregas'); }
     }
 
-    // Miniaturas para el celular
     function generarRenderFoto(url) {
       if(!url) return '<div class="h-12 flex items-center justify-center bg-slate-100 border rounded text-slate-400 text-[10px] w-full font-bold">Sin foto</div>';
-      let id = "";
-      if (url.includes('/file/d/')) id = url.split('/file/d/')[1].split('/')[0];
-      else if (url.includes('id=')) id = url.split('id=')[1].split('&')[0];
-      else return `<a href="${url}" target="_blank" class="text-blue-500 underline text-xs">Ver Foto</a>`;
-
-      return `
-        <div class="border rounded bg-white overflow-hidden shadow-sm flex flex-col w-full">
-          <img src="https://drive.google.com/thumbnail?id=${id}&sz=w400" class="w-full h-16 object-cover" onerror="this.src='https://via.placeholder.com/150?text=Error';">
-          <a href="https://drive.google.com/uc?export=download&id=${id}" target="_blank" class="block w-full text-center bg-slate-800 text-white font-bold py-1 text-[10px]"><i class="fa-solid fa-download"></i> Bajar</a>
-        </div>`;
+      let id = ""; if (url.includes('/file/d/')) id = url.split('/file/d/')[1].split('/')[0]; else if (url.includes('id=')) id = url.split('id=')[1].split('&')[0]; else return `<a href="${url}" target="_blank" class="text-blue-500 underline text-xs">Ver Foto</a>`;
+      return `<div class="border rounded bg-white overflow-hidden shadow-sm flex flex-col w-full"><img src="https://drive.google.com/thumbnail?id=${id}&sz=w400" class="w-full h-16 object-cover"><a href="https://drive.google.com/uc?export=download&id=${id}" target="_blank" class="block w-full text-center bg-slate-800 text-white font-bold py-1 text-[10px]"><i class="fa-solid fa-download"></i> Bajar</a></div>`;
     }
-
-    function parsearFechaPY(fechaStr) {
-      if(!fechaStr) return new Date(0);
-      let p = fechaStr.split(',')[0].trim().split('/');
-      return (p.length === 3) ? new Date(p[2], p[1] - 1, p[0]) : new Date(fechaStr);
-    }
+    function parsearFechaPY(fechaStr) { if(!fechaStr) return new Date(0); let p = fechaStr.split(',')[0].trim().split('/'); return (p.length === 3) ? new Date(p[2], p[1] - 1, p[0]) : new Date(fechaStr); }
 
     async function cargarHistorialMovil() {
-      const div = document.getElementById('m_resultados');
-      div.innerHTML = "<p class='text-blue-600 font-bold text-center'><i class='fa-solid fa-spinner fa-spin'></i> Cargando...</p>";
+      document.getElementById('m_resultados').innerHTML = "<p class='text-blue-600 font-bold text-center'><i class='fa-solid fa-spinner fa-spin'></i> Cargando...</p>";
       const res = await apiRequest({ accion: 'getHistorial' });
       if(res.success) { historialGlobalM = res.resultados; filtrarHistorialMovil(); }
     }
 
     function filtrarHistorialMovil() {
-      const busq = document.getElementById('m_inputBusqueda').value.toLowerCase().trim();
-      const filtroT = document.getElementById('m_filtroTiempo').value;
-      const div = document.getElementById('m_resultados');
-      
-      let hoy = new Date(); hoy.setHours(0,0,0,0);
-
+      const busq = document.getElementById('m_inputBusqueda').value.toLowerCase().trim(); const filtroT = document.getElementById('m_filtroTiempo').value; const div = document.getElementById('m_resultados'); let hoy = new Date(); hoy.setHours(0,0,0,0);
       let filtrados = historialGlobalM.filter(r => {
-        let matchText = true;
-        if(busq) {
-          let cRem = r.ciRem.toString().toLowerCase(); let cDest = r.ciDest.toString().toLowerCase();
-          matchText = (r.id.toLowerCase().includes(busq) || cRem.includes(busq) || cRem.split('-')[0].includes(busq) || cDest.includes(busq) || cDest.split('-')[0].includes(busq));
-        }
-        let matchTime = true;
-        let fEnvio = parsearFechaPY(r.fecha); fEnvio.setHours(0,0,0,0);
-        if (filtroT === 'hoy') matchTime = fEnvio.getTime() === hoy.getTime();
-        else if (filtroT === 'semana') { let diffDias = Math.floor((hoy - fEnvio) / (1000 * 60 * 60 * 24)); matchTime = diffDias <= 7 && diffDias >= 0; }
-        else if (filtroT === 'mes') matchTime = fEnvio.getMonth() === hoy.getMonth() && fEnvio.getFullYear() === hoy.getFullYear();
-
+        let matchText = true; if(busq) { let cRem = r.ciRem.toString().toLowerCase(); let cDest = r.ciDest.toString().toLowerCase(); matchText = (r.id.toLowerCase().includes(busq) || cRem.includes(busq) || cRem.split('-')[0].includes(busq) || cDest.includes(busq) || cDest.split('-')[0].includes(busq)); }
+        let matchTime = true; let fEnvio = parsearFechaPY(r.fecha); fEnvio.setHours(0,0,0,0);
+        if (filtroT === 'hoy') matchTime = fEnvio.getTime() === hoy.getTime(); else if (filtroT === 'semana') { let diffDias = Math.floor((hoy - fEnvio) / (1000 * 60 * 60 * 24)); matchTime = diffDias <= 7 && diffDias >= 0; } else if (filtroT === 'mes') matchTime = fEnvio.getMonth() === hoy.getMonth() && fEnvio.getFullYear() === hoy.getFullYear();
         return matchText && matchTime;
       });
-
       div.innerHTML = "";
       if(filtrados.length > 0) {
         filtrados.forEach(r => {
           div.innerHTML += `
             <div class="border rounded-lg p-3 shadow-sm flex flex-col bg-white border-l-4 ${r.estado==='Entregado'?'border-green-500':'border-amber-500'}">
-              <div class="flex justify-between items-center border-b pb-1 mb-2">
-                <span class="font-bold text-blue-700 text-sm">${r.id}</span>
-                <span class="text-[10px] font-bold ${r.estado==='Entregado'?'text-green-600':'text-amber-600'} bg-slate-50 p-1 rounded">${r.estado}</span>
-              </div>
+              <div class="flex justify-between items-center border-b pb-1 mb-2"><span class="font-bold text-blue-700 text-sm">${r.id}</span><span class="text-[10px] font-bold ${r.estado==='Entregado'?'text-green-600':'text-amber-600'} bg-slate-50 p-1 rounded">${r.estado}</span></div>
               <p class="text-[10px] text-slate-500 mb-2 font-bold"><i class="fa-regular fa-clock"></i> ${r.fecha} - Gs. ${Number(r.costo||0).toLocaleString('es-PY')}</p>
-              
               <div class="grid grid-cols-2 gap-2 text-xs">
                 <div><p class="text-[9px] text-slate-400 uppercase font-bold">De:</p><p class="font-bold leading-tight truncate">${r.nombreRem}</p><p class="text-[9px] text-slate-500">${r.ciRem}<br><i class="fa-solid fa-phone"></i> ${r.telRem}</p></div>
                 <div><p class="text-[9px] text-slate-400 uppercase font-bold">Para:</p><p class="font-bold leading-tight truncate">${r.nombreDest}</p><p class="text-[9px] text-slate-500">${r.ciDest}<br><i class="fa-solid fa-phone"></i> ${r.telDest}</p></div>
               </div>
-              
-              <div class="grid grid-cols-2 gap-2 mt-2 pt-2 border-t">
-                <div class="flex gap-2 items-center"><div class="w-full">${generarRenderFoto(r.fotoRecepcion)}</div></div>
-                <div class="flex gap-2 items-center"><div class="w-full">${generarRenderFoto(r.fotoEntrega)}</div></div>
-              </div>
+              <div class="grid grid-cols-2 gap-2 mt-2 pt-2 border-t"><div class="flex gap-2 items-center"><div class="w-full">${generarRenderFoto(r.fotoRecepcion)}</div></div><div class="flex gap-2 items-center"><div class="w-full">${generarRenderFoto(r.fotoEntrega)}</div></div></div>
             </div>`;
         });
       } else { div.innerHTML = "<p class='text-sm text-slate-500 text-center mt-4'>Sin resultados</p>"; }
@@ -280,15 +185,9 @@
 
     async function imprimirTicket(tipo) {
       try {
-        const device = await navigator.bluetooth.requestDevice({ acceptAllDevices: true, optionalServices: ['000018f0-0000-1000-8000-00805f9b34fb'] });
-        const server = await device.gatt.connect();
-        const service = await server.getPrimaryService('000018f0-0000-1000-8000-00805f9b34fb');
-        const char = await service.getCharacteristic('00002af1-0000-1000-8000-00805f9b34fb');
-        let texto = "--------------------------------\n        LUIS TRANSPORTES\n--------------------------------\nCOMPROBANTE DE ENVIO\nFecha: " + new Date().toLocaleDateString() + "\n";
-        if(tipo === 2) texto += "\n\nCOPIA EMPRESA\nFIRMA: _______________________\nACLARACION:\n";
-        texto += "\n\n\n\n";
-        await char.writeValue(new TextEncoder().encode(texto));
-        alert("Imprimiendo...");
+        const device = await navigator.bluetooth.requestDevice({ acceptAllDevices: true, optionalServices: ['000018f0-0000-1000-8000-00805f9b34fb'] }); const server = await device.gatt.connect(); const service = await server.getPrimaryService('000018f0-0000-1000-8000-00805f9b34fb'); const char = await service.getCharacteristic('00002af1-0000-1000-8000-00805f9b34fb');
+        let texto = "--------------------------------\n        LUIS TRANSPORTES\n--------------------------------\nCOMPROBANTE DE ENVIO\nFecha: " + new Date().toLocaleDateString() + "\n"; if(tipo === 2) texto += "\n\nCOPIA EMPRESA\nFIRMA: _______________________\nACLARACION:\n"; texto += "\n\n\n\n";
+        await char.writeValue(new TextEncoder().encode(texto)); alert("Imprimiendo...");
       } catch(e) { alert("Error Bluetooth."); }
     }
   </script>
