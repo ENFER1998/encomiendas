@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>TSI Admin Panel</title>
+  <title>Luis Transportes - Panel</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style> body { background-color: #f1f5f9; font-family: 'Segoe UI', sans-serif; } </style>
@@ -12,25 +12,34 @@
   <!-- LOGIN -->
   <div id="loginScreen" class="fixed inset-0 bg-slate-900 z-50 flex items-center justify-center">
     <div class="bg-white p-10 rounded-2xl shadow-2xl w-96 text-center">
-      <h1 class="text-3xl font-bold text-slate-800 mb-2">TSI</h1>
-      <p class="text-slate-500 mb-8">Sistema Logístico Central</p>
+      <div class="bg-blue-600 text-white rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4 text-3xl shadow-lg"><i class="fa-solid fa-truck-fast"></i></div>
+      <h1 class="text-2xl font-bold text-slate-800 mb-1">Luis Transportes</h1>
+      <p class="text-slate-500 mb-8 font-semibold">Sistema Logístico</p>
       <div class="space-y-4 mb-6">
         <input type="text" id="userInput" placeholder="Usuario" class="w-full text-center text-xl border-b-2 border-blue-500 p-2 focus:outline-none bg-slate-50">
         <input type="password" id="passInput" placeholder="Contraseña" class="w-full text-center text-xl border-b-2 border-blue-500 p-2 focus:outline-none bg-slate-50">
       </div>
       <button onclick="ingresarAlSistema(this)" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg"><i class="fa-solid fa-right-to-bracket mr-2"></i> INGRESAR</button>
+      <p class="text-xs text-slate-400 mt-6">Desarrollado Por Fernando Rodriguez 2026</p>
     </div>
   </div>
 
   <div id="appContainer" class="flex w-full h-full hidden">
     <!-- MENÚ LATERAL -->
-    <aside class="w-64 bg-slate-900 text-white flex flex-col">
-      <div class="p-6 text-center border-b border-slate-700"><h2 class="text-2xl font-bold">TSI Admin</h2><p class="text-sm text-slate-400 mt-1" id="userLabel">Dueño</p></div>
-      <nav class="flex-1 p-4 space-y-2">
-        <button onclick="cambiarVistaPC('dashboard')" class="w-full text-left p-3 rounded-lg hover:bg-slate-800"><i class="fa-solid fa-chart-pie w-6"></i> Dashboard</button>
-        <button onclick="cambiarVistaPC('historial')" class="w-full text-left p-3 rounded-lg hover:bg-slate-800"><i class="fa-solid fa-list w-6"></i> Historial y Búsqueda</button>
-      </nav>
-      <div class="p-4 border-t border-slate-700"><button onclick="location.reload()" class="w-full text-left p-3 text-red-400 hover:bg-slate-800"><i class="fa-solid fa-power-off w-6"></i> Salir</button></div>
+    <aside class="w-64 bg-slate-900 text-white flex flex-col justify-between">
+      <div>
+        <div class="p-6 text-center border-b border-slate-700">
+          <h2 class="text-xl font-bold">Luis Transportes</h2><p class="text-sm text-blue-400 mt-1 font-semibold" id="userLabel">Dueño</p>
+        </div>
+        <nav class="p-4 space-y-2">
+          <button onclick="cambiarVistaPC('dashboard')" class="w-full text-left p-3 rounded-lg hover:bg-slate-800"><i class="fa-solid fa-chart-pie w-6"></i> Dashboard</button>
+          <button onclick="cambiarVistaPC('historial')" class="w-full text-left p-3 rounded-lg hover:bg-slate-800"><i class="fa-solid fa-list w-6"></i> Historial Envíos</button>
+        </nav>
+      </div>
+      <div>
+        <div class="p-4 border-t border-slate-700"><button onclick="location.reload()" class="w-full text-left p-3 text-red-400 hover:bg-slate-800"><i class="fa-solid fa-power-off w-6"></i> Cerrar Sesión</button></div>
+        <div class="text-center p-3 text-slate-500 text-xs bg-slate-950">Desarrollado Por Fernando Rodriguez 2026</div>
+      </div>
     </aside>
 
     <main class="flex-1 flex flex-col h-full overflow-y-auto">
@@ -51,7 +60,7 @@
           <div class="overflow-x-auto">
             <table class="w-full text-left">
               <thead class="bg-slate-50 border-b">
-                <tr><th class="p-3 text-sm font-semibold text-slate-600">ID Envío</th><th class="p-3 text-sm font-semibold text-slate-600">Fecha</th><th class="p-3 text-sm font-semibold text-slate-600">Destino (CI/RUC)</th><th class="p-3 text-sm font-semibold text-slate-600">Estado</th></tr>
+                <tr><th class="p-3 text-sm font-semibold text-slate-600">ID Envío</th><th class="p-3 text-sm font-semibold text-slate-600">Fecha</th><th class="p-3 text-sm font-semibold text-slate-600">Destinatario</th><th class="p-3 text-sm font-semibold text-slate-600">Estado</th></tr>
               </thead>
               <tbody id="tablaDashboard" class="divide-y text-sm"></tbody>
             </table>
@@ -59,7 +68,7 @@
         </div>
       </div>
 
-      <!-- VISTA HISTORIAL Y BÚSQUEDA -->
+      <!-- VISTA HISTORIAL -->
       <div id="vistaHistorial" class="p-8 hidden">
         <div class="bg-white p-6 rounded-2xl shadow-sm flex gap-4 mb-6 items-center">
           <input type="text" id="inputBusqueda" oninput="filtrarHistorial()" placeholder="Buscar por ID o CI/RUC..." class="flex-1 border p-3 rounded-lg text-lg">
@@ -69,7 +78,7 @@
             <option value="semana">Últimos 7 días</option>
             <option value="mes">Este mes</option>
           </select>
-          <button onclick="cargarHistorial()" title="Actualizar Datos" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 font-bold rounded-lg transition"><i class="fa-solid fa-rotate-right"></i></button>
+          <button onclick="cargarHistorial()" title="Actualizar Datos" class="bg-blue-600 text-white px-6 py-3 font-bold rounded-lg hover:bg-blue-700"><i class="fa-solid fa-rotate-right"></i></button>
         </div>
         <div id="resultadosBusqueda" class="space-y-4"></div>
       </div>
@@ -118,7 +127,7 @@
     const API_URL = "https://script.google.com/macros/s/AKfycbyAwM6OAW5u_jLp2y2iCdJZtK3P7yUONt2UEFIuVTRYNIrwQGMD03_uJyGpzJnxcKkYmQ/exec";
     let usuarioActual = "";
     let fotoRecBase64 = "";
-    let historialGlobal = []; // Guarda todos los datos para filtrar rápido
+    let historialGlobal = []; 
 
     async function apiRequest(payload) {
       try {
@@ -156,7 +165,7 @@
       } else {
         document.getElementById('vistaHistorial').classList.remove('hidden');
         document.getElementById('tituloHeader').innerText = "Historial de Envíos";
-        if(historialGlobal.length === 0) cargarHistorial(); // Carga automática al entrar
+        if(historialGlobal.length === 0) cargarHistorial();
       }
     }
 
@@ -204,7 +213,7 @@
         fotoRecBase64 = "";
         document.getElementById('modalEnvio').classList.add('hidden');
         cargarDashboard();
-        historialGlobal = []; // Fuerza a recargar el historial la próxima vez
+        historialGlobal = []; 
       }
     }
 
@@ -226,7 +235,24 @@
       }
     }
 
-    // --- LÓGICA DEL HISTORIAL Y FILTROS ---
+    // --- MANEJO DE FOTOS DIRECTAS ---
+    function generarRenderFoto(url) {
+      if(!url) return '<span class="text-slate-400 text-sm">Sin foto</span>';
+      let id = "";
+      if (url.includes('/file/d/')) id = url.split('/file/d/')[1].split('/')[0];
+      else if (url.includes('id=')) id = url.split('id=')[1].split('&')[0];
+      else return `<a href="${url}" target="_blank" class="text-blue-500 underline">Ver Foto</a>`;
+
+      let imgUrl = `https://drive.google.com/uc?export=view&id=${id}`;
+      let dlUrl = `https://drive.google.com/uc?export=download&id=${id}`;
+      
+      return `
+        <div class="mt-2 border rounded p-2 bg-slate-50">
+          <img src="${imgUrl}" class="w-full h-40 object-cover rounded shadow-sm mb-2" alt="Foto Paquete">
+          <a href="${dlUrl}" target="_blank" class="block text-center bg-slate-800 text-white font-bold py-2 rounded text-sm hover:bg-slate-700 transition"><i class="fa-solid fa-download"></i> Descargar</a>
+        </div>`;
+    }
+
     function parsearFechaPY(fechaStr) {
       if(!fechaStr) return new Date(0);
       let p = fechaStr.split(',')[0].trim().split('/');
@@ -239,7 +265,7 @@
       const res = await apiRequest({ accion: 'getHistorial' });
       if(res.success) {
         historialGlobal = res.resultados;
-        filtrarHistorial(); // Renderiza todo por primera vez
+        filtrarHistorial();
       }
     }
 
@@ -248,40 +274,25 @@
       const filtroT = document.getElementById('filtroTiempo').value;
       const div = document.getElementById('resultadosBusqueda');
       
-      let hoy = new Date();
-      hoy.setHours(0,0,0,0);
+      let hoy = new Date(); hoy.setHours(0,0,0,0);
 
       let filtrados = historialGlobal.filter(r => {
-        // 1. Filtro de Texto (Ignora guiones de RUC)
         let matchText = true;
         if(busq) {
           let cRem = r.ciRem.toString().toLowerCase();
           let cDest = r.ciDest.toString().toLowerCase();
-          matchText = (
-            r.id.toLowerCase().includes(busq) || 
-            cRem.includes(busq) || cRem.split('-')[0].includes(busq) || 
-            cDest.includes(busq) || cDest.split('-')[0].includes(busq)
-          );
+          matchText = (r.id.toLowerCase().includes(busq) || cRem.includes(busq) || cRem.split('-')[0].includes(busq) || cDest.includes(busq) || cDest.split('-')[0].includes(busq));
         }
 
-        // 2. Filtro de Fecha
         let matchTime = true;
-        let fEnvio = parsearFechaPY(r.fecha);
-        fEnvio.setHours(0,0,0,0);
-
-        if (filtroT === 'hoy') {
-          matchTime = fEnvio.getTime() === hoy.getTime();
-        } else if (filtroT === 'semana') {
-          let diffDias = Math.floor((hoy - fEnvio) / (1000 * 60 * 60 * 24));
-          matchTime = diffDias <= 7 && diffDias >= 0;
-        } else if (filtroT === 'mes') {
-          matchTime = fEnvio.getMonth() === hoy.getMonth() && fEnvio.getFullYear() === hoy.getFullYear();
-        }
+        let fEnvio = parsearFechaPY(r.fecha); fEnvio.setHours(0,0,0,0);
+        if (filtroT === 'hoy') matchTime = fEnvio.getTime() === hoy.getTime();
+        else if (filtroT === 'semana') { let diffDias = Math.floor((hoy - fEnvio) / (1000 * 60 * 60 * 24)); matchTime = diffDias <= 7 && diffDias >= 0; }
+        else if (filtroT === 'mes') matchTime = fEnvio.getMonth() === hoy.getMonth() && fEnvio.getFullYear() === hoy.getFullYear();
 
         return matchText && matchTime;
       });
 
-      // Dibujar en pantalla
       div.innerHTML = "";
       if(filtrados.length > 0) {
         filtrados.forEach(r => {
@@ -293,18 +304,16 @@
               </div>
               <div class="grid grid-cols-2 gap-4 mb-4">
                 <div><p class="text-sm text-slate-500">Fecha:</p><p class="font-semibold">${r.fecha}</p></div>
-                <div><p class="text-sm text-slate-500">Costo:</p><p class="font-semibold">Gs. ${Number(r.costo||0).toLocaleString('es-PY')}</p></div>
-                <div><p class="text-sm text-slate-500">Remitente:</p><p class="font-semibold">${r.ciRem}</p></div>
-                <div><p class="text-sm text-slate-500">Destino:</p><p class="font-semibold">${r.ciDest}</p></div>
-                <div class="col-span-2"><p class="text-sm text-slate-500">Detalle:</p><p class="font-semibold text-slate-700">${r.detalle}</p></div>
+                <div><p class="text-sm text-slate-500">Costo:</p><p class="font-semibold text-emerald-600">Gs. ${Number(r.costo||0).toLocaleString('es-PY')}</p></div>
+                
+                <!-- MOSTRAR NOMBRES AHORA -->
+                <div><p class="text-sm text-slate-500">De (Remitente):</p><p class="font-semibold">${r.nombreRem} <span class="text-xs text-slate-400 block">${r.ciRem}</span></p></div>
+                <div><p class="text-sm text-slate-500">Para (Destino):</p><p class="font-semibold">${r.nombreDest} <span class="text-xs text-slate-400 block">${r.ciDest}</span></p></div>
+                <div class="col-span-2"><p class="text-sm text-slate-500">Detalle:</p><p class="font-semibold text-slate-700 bg-slate-50 p-2 rounded">${r.detalle}</p></div>
               </div>
               <div class="grid grid-cols-2 gap-4 mt-4 border-t pt-4">
-                <div><p class="text-sm text-slate-500 mb-2">Foto al Recibir (Origen)</p>
-                  ${r.fotoRecepcion ? `<a href="${r.fotoRecepcion}" target="_blank" class="text-blue-500 underline font-bold"><i class="fa-solid fa-image"></i> Ver Foto</a>` : '<span class="text-slate-400 text-sm">Sin foto</span>'}
-                </div>
-                <div><p class="text-sm text-slate-500 mb-2">Foto al Entregar (Destino)</p>
-                  ${r.fotoEntrega ? `<a href="${r.fotoEntrega}" target="_blank" class="text-blue-500 underline font-bold"><i class="fa-solid fa-image"></i> Ver Foto</a>` : '<span class="text-slate-400 text-sm">Sin foto</span>'}
-                </div>
+                <div><p class="text-sm text-slate-500 font-bold mb-1"><i class="fa-solid fa-box-open text-amber-500 mr-1"></i> Foto de Recepción</p>${generarRenderFoto(r.fotoRecepcion)}</div>
+                <div><p class="text-sm text-slate-500 font-bold mb-1"><i class="fa-solid fa-house-chimney text-green-500 mr-1"></i> Foto de Entrega</p>${generarRenderFoto(r.fotoEntrega)}</div>
               </div>
             </div>`;
         });
