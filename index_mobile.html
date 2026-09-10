@@ -7,56 +7,53 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style> body { background-color: #f1f5f9; font-family: 'Segoe UI', sans-serif; } </style>
 </head>
-<body class="pt-28 pb-6">
+<body class="pt-20 pb-6">
 
-  <!-- MODAL VISOR DE FOTOS -->
+  <!-- MODAL VISOR DE FOTOS REPARADO -->
   <div id="modalVisorFoto" class="hidden fixed inset-0 bg-slate-900 bg-opacity-95 z-[60] flex flex-col items-center justify-center p-4">
-    <button onclick="document.getElementById('modalVisorFoto').classList.add('hidden')" class="absolute top-6 right-6 text-white text-4xl hover:text-red-500"><i class="fa-solid fa-xmark"></i></button>
+    <button onclick="document.getElementById('modalVisorFoto').classList.add('hidden')" class="absolute top-6 right-6 text-white text-4xl hover:text-red-500 transition"><i class="fa-solid fa-xmark"></i></button>
     <img id="visorFotoImg" src="" class="max-w-full max-h-[70vh] object-contain rounded-lg shadow-2xl mb-6 bg-slate-800">
     <a id="visorFotoDownload" href="#" target="_blank" class="bg-blue-600 text-white font-bold py-3 px-8 rounded-full shadow-lg"><i class="fa-solid fa-download mr-2"></i> Descargar</a>
   </div>
 
   <!-- LOGIN DE CELULAR (Solucionado lo del teclado empujando el texto) -->
-  <div id="loginScreen" class="fixed inset-0 bg-white z-50 flex flex-col justify-between items-center p-6 overflow-y-auto min-h-screen">
-    <div class="w-full"></div> <!-- Espaciador Superior -->
-    <div class="w-full flex flex-col items-center max-w-sm">
-      <img src="logo.png" onerror="this.src='logo.jpeg'" alt="Logo" class="w-48 h-auto mb-8 object-contain">
+  <div id="loginScreen" class="fixed inset-0 bg-white z-50 flex flex-col justify-between items-center p-6 overflow-y-auto">
+    <div class="flex-1 w-full flex flex-col items-center justify-center max-w-sm">
+      <img src="logo.png" onerror="this.src='logo.jpeg'" alt="Logo" class="w-48 h-auto mb-8 object-contain mix-blend-multiply">
       <div class="w-full space-y-4 mb-8">
         <input type="text" id="userInput" placeholder="Usuario" class="w-full text-center text-xl p-4 rounded-xl border-2 border-slate-200 focus:border-blue-800 focus:outline-none" autocapitalize="none">
         <input type="password" id="passInput" placeholder="Contraseña" class="w-full text-center text-xl p-4 rounded-xl border-2 border-slate-200 focus:border-blue-800 focus:outline-none">
       </div>
       <button onclick="ingresarAlSistema(this)" class="bg-blue-900 hover:bg-slate-900 text-white w-full py-4 rounded-xl font-bold text-lg shadow-xl transition">ENTRAR</button>
     </div>
-    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest text-center mt-12 pb-4">Desarrollado Por Fernando Rodriguez 2026</p>
+    <!-- mt-auto y sin position fixed/absolute hace que el teclado fluya naturalmente sin tapar nada -->
+    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest text-center mt-auto pb-4 pt-8">Desarrollado Por Fernando Rodriguez 2026</p>
   </div>
 
-  <!-- BARRA SUPERIOR ESTILO TOTAL NOTE -->
-  <header class="bg-[#111827] text-white p-4 shadow-xl hidden flex-col items-center justify-center fixed top-0 w-full z-40 rounded-b-3xl" id="appHeader">
-    <div class="w-full flex items-center justify-between px-2">
-      <button onclick="toggleMenu()" class="text-3xl focus:outline-none"><i class="fa-solid fa-bars"></i></button>
-      <div class="flex flex-col items-center flex-1">
-        <div class="flex items-center gap-2">
-          <img src="logo.png" onerror="this.src='logo.jpeg'" class="h-8 bg-white rounded p-1 object-contain">
-          <h2 class="text-xl font-bold tracking-wide">Luis Transportes</h2>
-        </div>
-        <p class="text-[10px] text-slate-400 mt-1 font-bold tracking-widest uppercase">Desarrollado por Fernando Rodriguez</p>
-      </div>
-      <div class="w-8 text-center text-blue-400"><i class="fa-solid fa-user-circle text-2xl"></i></div>
+  <!-- BARRA SUPERIOR (Limpia, blanca, solo logo centrado) -->
+  <header class="bg-white text-slate-800 p-4 shadow-sm hidden flex-row items-center justify-between fixed top-0 w-full z-40 border-b" id="appHeader">
+    <button onclick="toggleMenu()" class="text-2xl focus:outline-none text-blue-900 w-10 text-left"><i class="fa-solid fa-bars"></i></button>
+    <div class="flex-1 flex justify-center">
+      <img src="logo.png" onerror="this.src='logo.jpeg'" alt="Logo" class="h-10 object-contain mix-blend-multiply">
     </div>
+    <div class="w-10"></div> <!-- Espacio fantasma para balancear el centro -->
   </header>
 
-  <!-- MENÚ LATERAL DESPLEGABLE -->
+  <!-- MENÚ LATERAL DESPLEGABLE (Con el Perfil Adentro) -->
   <div id="sideMenu" class="fixed inset-y-0 left-0 w-64 bg-white transform -translate-x-full transition-transform duration-300 z-50 shadow-2xl flex flex-col">
-    <div class="p-6 bg-slate-50 border-b flex flex-col items-center">
-      <img src="logo.png" onerror="this.src='logo.jpeg'" alt="Logo" class="h-12 object-contain mb-2">
-      <p class="text-xs font-bold text-blue-700" id="userName">Agente</p>
+    <div class="p-6 bg-slate-50 border-b flex flex-col items-center mt-4">
+      <img src="logo.png" onerror="this.src='logo.jpeg'" alt="Logo" class="h-14 object-contain mb-4 mix-blend-multiply">
+      <div class="flex items-center gap-2 bg-blue-100 text-blue-800 px-4 py-2 rounded-full w-full justify-center">
+        <i class="fa-solid fa-user-circle text-xl"></i>
+        <p class="text-sm font-bold truncate" id="userName">Agente</p>
+      </div>
     </div>
-    <nav class="flex-1 p-4 space-y-2 font-bold text-slate-600">
-      <button onclick="cambiarVista('vistaNuevo', 'Nuevo Envío')" class="w-full text-left p-4 rounded-xl bg-blue-50 text-blue-800 navBtn"><i class="fa-solid fa-box-open w-6"></i> Recibir Paquete</button>
-      <button onclick="cambiarVista('vistaEntregas', 'Confirmar Entrega')" class="w-full text-left p-4 rounded-xl hover:bg-slate-100 navBtn"><i class="fa-solid fa-house-circle-check w-6"></i> Entregar</button>
-      <button onclick="cambiarVista('vistaHistorial', 'Historial')" class="w-full text-left p-4 rounded-xl hover:bg-slate-100 navBtn"><i class="fa-solid fa-list w-6"></i> Historial</button>
-      <button id="btnNavFinanzas" onclick="cambiarVista('vistaFinanzas', 'Finanzas')" class="w-full text-left p-4 rounded-xl hover:bg-slate-100 navBtn hidden"><i class="fa-solid fa-chart-line w-6"></i> Balance General</button>
-      <button id="btnNavPersonal" onclick="cambiarVista('vistaPersonal', 'Gestión Personal')" class="w-full text-left p-4 rounded-xl hover:bg-slate-100 navBtn hidden text-amber-600"><i class="fa-solid fa-users w-6"></i> Personal</button>
+    <nav class="flex-1 p-4 space-y-2 font-bold text-slate-600 overflow-y-auto">
+      <button onclick="cambiarVista('vistaNuevo')" class="w-full text-left p-4 rounded-xl bg-blue-50 text-blue-800 navBtn"><i class="fa-solid fa-box-open w-6"></i> Recibir Paquete</button>
+      <button onclick="cambiarVista('vistaEntregas')" class="w-full text-left p-4 rounded-xl hover:bg-slate-100 navBtn"><i class="fa-solid fa-house-circle-check w-6"></i> Entregar</button>
+      <button onclick="cambiarVista('vistaHistorial')" class="w-full text-left p-4 rounded-xl hover:bg-slate-100 navBtn"><i class="fa-solid fa-list w-6"></i> Historial</button>
+      <button id="btnNavFinanzas" onclick="cambiarVista('vistaFinanzas')" class="w-full text-left p-4 rounded-xl hover:bg-slate-100 navBtn hidden"><i class="fa-solid fa-chart-line w-6"></i> Balance</button>
+      <button id="btnNavPersonal" onclick="cambiarVista('vistaPersonal')" class="w-full text-left p-4 rounded-xl hover:bg-slate-100 navBtn hidden text-amber-600"><i class="fa-solid fa-users w-6"></i> Personal</button>
     </nav>
     <div class="p-4 border-t"><button onclick="location.reload()" class="w-full text-left p-4 rounded-xl text-red-500 hover:bg-red-50 font-bold"><i class="fa-solid fa-power-off w-6"></i> Cerrar Sesión</button></div>
   </div>
@@ -65,7 +62,7 @@
   <!-- VISTA NUEVO ENVÍO -->
   <main id="vistaNuevo" class="px-4 hidden">
     <div class="bg-white rounded-2xl shadow-sm p-5">
-      <h3 class="font-black text-slate-800 text-lg mb-4" id="tituloApp">Recibir Nuevo Paquete</h3>
+      <h3 class="font-black text-slate-800 text-lg mb-4 text-center border-b pb-3 text-blue-900 uppercase">Recibir Nuevo Paquete</h3>
       <form onsubmit="guardarEnvioMovil(event)" class="space-y-4">
         <p class="font-bold text-[10px] text-slate-400 uppercase tracking-widest">Remitente</p>
         <input type="text" id="m_ciRem" onblur="buscarM('Rem')" placeholder="CI/RUC Remitente" class="w-full border-b-2 border-slate-200 p-2 font-bold text-blue-800 bg-slate-50 focus:outline-none" required>
@@ -97,14 +94,14 @@
   <!-- VISTA ENTREGAS -->
   <main id="vistaEntregas" class="px-4 hidden">
     <div class="bg-white rounded-2xl shadow-sm p-5 mb-4">
-      <h3 class="font-bold text-slate-400 text-[10px] uppercase tracking-widest mb-4 text-center">Escanear o Escribir</h3>
+      <h3 class="font-black text-slate-800 text-lg mb-4 text-center border-b pb-3 text-blue-900 uppercase">Confirmar Entrega</h3>
       <input type="text" id="idEnvio" placeholder="Ej: LT-123456" class="w-full border-b-4 border-blue-800 p-4 text-2xl text-center font-black mb-6 uppercase text-blue-900 bg-slate-50 focus:outline-none rounded-t-xl">
       <div class="border-2 border-dashed bg-blue-50 border-blue-300 p-8 text-center rounded-xl active:bg-blue-100 transition" onclick="document.getElementById('cameraEntrega').click()">
         <p class="font-bold text-blue-800 text-lg"><i class="fa-solid fa-camera mb-2 text-5xl"></i><br>Foto Destino / Firma</p>
         <input type="file" id="cameraEntrega" accept="image/*" capture="environment" class="hidden" onchange="leerFoto(event, 'previewEntrega', 1)">
       </div>
       <img id="previewEntrega" class="mt-4 rounded-xl hidden w-full h-48 object-cover border border-blue-200 shadow-md">
-      <button onclick="subirFoto(this)" class="w-full bg-emerald-500 text-white font-bold py-5 rounded-xl shadow-lg mt-6 text-lg tracking-widest active:scale-95 transition">ENTREGAR</button>
+      <button onclick="subirFoto(this)" class="w-full bg-emerald-500 text-white font-bold py-5 rounded-xl shadow-lg mt-6 text-lg tracking-widest active:scale-95 transition">ENTREGAR PAQUETE</button>
     </div>
     <div class="bg-white rounded-2xl shadow-sm p-5">
       <h3 class="font-bold text-slate-400 text-[10px] uppercase tracking-widest mb-3 text-center">Ticketera Bluetooth</h3>
@@ -112,14 +109,14 @@
     </div>
   </main>
 
-  <!-- VISTA HISTORIAL (Tarjetas con Visor) -->
+  <!-- VISTA HISTORIAL -->
   <main id="vistaHistorial" class="px-4 hidden">
     <div class="flex gap-2 mb-4">
       <input type="text" id="m_inputBusqueda" oninput="filtrarHistorialMovil()" placeholder="Buscar CI/Nombre..." class="w-1/2 border p-3 rounded-xl text-sm focus:outline-none shadow-sm">
       <select id="m_filtroTiempo" onchange="filtrarHistorialMovil()" class="w-1/4 border p-2 rounded-xl text-xs font-bold text-slate-700 bg-white focus:outline-none shadow-sm"><option value="todos">Últimos</option><option value="hoy">Hoy</option></select>
       <button onclick="cargarHistorialMovil()" class="w-1/4 bg-[#111827] text-white rounded-xl text-sm shadow-sm active:scale-95 transition"><i class="fa-solid fa-rotate-right"></i></button>
     </div>
-    <div id="m_resultados" class="space-y-3"></div>
+    <div id="m_resultados" class="space-y-3 pb-8"></div>
   </main>
 
   <!-- VISTA FINANZAS -->
@@ -136,7 +133,7 @@
   <!-- VISTA PERSONAL (Para el Dueño en Móvil) -->
   <main id="vistaPersonal" class="px-4 hidden">
     <div class="bg-white rounded-2xl shadow-sm p-5 mb-4">
-      <h3 class="font-bold text-slate-800 text-lg mb-4 border-b pb-2">Nuevo Empleado</h3>
+      <h3 class="font-black text-slate-800 text-lg mb-4 text-center border-b pb-3 text-blue-900 uppercase">Nuevo Empleado</h3>
       <form onsubmit="crearUser(event)" class="space-y-3">
         <input type="text" id="nu_user" placeholder="Usuario" class="w-full border-b-2 p-2 bg-slate-50 focus:outline-none" required>
         <input type="text" id="nu_pass" placeholder="Contraseña" class="w-full border-b-2 p-2 bg-slate-50 focus:outline-none" required>
@@ -175,11 +172,11 @@
         document.getElementById('loginScreen').style.display = 'none'; document.getElementById('appHeader').classList.remove('hidden'); document.getElementById('appHeader').classList.add('flex');
         document.getElementById('userName').innerText = res.nombre; usuarioActual = res.nombre;
         if(res.rol === 'Dueño') { document.getElementById('btnNavFinanzas').classList.remove('hidden'); document.getElementById('btnNavPersonal').classList.remove('hidden'); cargarDashboardMovil(); }
-        cambiarVista('vistaNuevo', 'Recibir Paquete');
+        cambiarVista('vistaNuevo');
       } else { alert("Aviso: " + res.error); }
     }
 
-    function cambiarVista(vista, titulo) {
+    function cambiarVista(vista) {
       ['vistaEntregas','vistaNuevo','vistaHistorial','vistaFinanzas','vistaPersonal'].forEach(v => document.getElementById(v).classList.add('hidden'));
       document.getElementById(vista).classList.remove('hidden');
       
@@ -191,11 +188,11 @@
       if(vista === 'vistaPersonal') cargarUsuarios();
     }
 
-    // VISOR DE FOTOS FLOTANTE (Móvil)
+    // VISOR DE FOTOS REPARADO (Usa Thumbnail High-Res)
     function abrirVisorFoto(urlDrive) {
       let id = extraerIdDrive(urlDrive);
       if(!id) return;
-      document.getElementById('visorFotoImg').src = `https://drive.google.com/uc?export=view&id=${id}`;
+      document.getElementById('visorFotoImg').src = `https://drive.google.com/thumbnail?id=${id}&sz=w1000`;
       document.getElementById('visorFotoDownload').href = `https://drive.google.com/uc?export=download&id=${id}`;
       document.getElementById('modalVisorFoto').classList.remove('hidden');
     }
@@ -208,7 +205,7 @@
       const id = document.getElementById('idEnvio').value.toUpperCase(); if(!id || !fotoEntregaData) return alert("Falta código o foto");
       btn.innerHTML = "Subiendo..."; btn.disabled = true;
       const res = await apiRequest({ accion: 'confirmarEntrega', idEnvio: id, foto: fotoEntregaData });
-      btn.innerHTML = "ENTREGAR"; btn.disabled = false;
+      btn.innerHTML = "ENTREGAR PAQUETE"; btn.disabled = false;
       if(res.success) { alert("¡Entregado!"); document.getElementById('idEnvio').value=''; document.getElementById('previewEntrega').classList.add('hidden'); fotoEntregaData=""; historialGlobalM=[]; } else alert(res.error);
     }
 
@@ -222,8 +219,8 @@
       e.preventDefault(); document.getElementById('btnRegMovil').innerHTML = "CARGANDO...";
       const datos = { ciRem: document.getElementById('m_ciRem').value, nomRem: document.getElementById('m_nomRem').value, telRem: document.getElementById('m_telRem').value, ciDest: document.getElementById('m_ciDest').value, nomDest: document.getElementById('m_nomDest').value, telDest: document.getElementById('m_telDest').value, dirDest: document.getElementById('m_dirDest').value, detalle: document.getElementById('m_detalle').value, costo: document.getElementById('m_costo').value, tipoCli: document.getElementById('m_tipoCli').value };
       const res = await apiRequest({ accion: 'guardarEnvio', datos: datos, agente: usuarioActual, fotoRecepcion: fotoRecepcionData });
-      document.getElementById('btnRegMovil').innerHTML = "GUARDAR EN BASE";
-      if(res.success) { alert("CREADO: " + res.id); e.target.reset(); document.getElementById('previewRecepcion').classList.add('hidden'); fotoRecepcionData = ""; historialGlobalM = []; document.getElementById('idEnvio').value = res.id; cambiarVista('vistaEntregas', 'Confirmar Entrega'); }
+      document.getElementById('btnRegMovil').innerHTML = "GUARDAR";
+      if(res.success) { alert("CREADO: " + res.id); e.target.reset(); document.getElementById('previewRecepcion').classList.add('hidden'); fotoRecepcionData = ""; historialGlobalM = []; document.getElementById('idEnvio').value = res.id; cambiarVista('vistaEntregas'); }
     }
 
     function extraerIdDrive(url) { if(!url) return null; let m1 = url.match(/id=([^&]+)/); if (m1) return m1[1]; let m2 = url.match(/\/d\/([a-zA-Z0-9_-]+)/); if (m2) return m2[1]; return null; }
@@ -232,7 +229,7 @@
       let id = extraerIdDrive(url);
       if(!id) return `<div class="w-12 h-12 bg-slate-100 border rounded-xl flex items-center justify-center text-[8px] text-slate-400 font-bold shadow-sm">N/A</div>`;
       let imgUrl = `https://drive.google.com/thumbnail?id=${id}&sz=w150`;
-      return `<img src="${imgUrl}" onclick="abrirVisorFoto('${url}')" class="w-12 h-12 object-cover rounded-xl border border-slate-300 shadow-sm active:opacity-50">`;
+      return `<img src="${imgUrl}" onclick="abrirVisorFoto('${url}')" class="w-12 h-12 object-cover rounded-xl border border-slate-300 shadow-sm active:opacity-50 cursor-pointer">`;
     }
 
     function parsearFechaPY(fechaStr) { if(!fechaStr) return new Date(0); let p = fechaStr.split(',')[0].trim().split('/'); return (p.length === 3) ? new Date(p[2], p[1] - 1, p[0]) : new Date(fechaStr); }
@@ -273,7 +270,6 @@
       } else { div.innerHTML = "<p class='text-sm text-slate-400 text-center mt-8 font-bold'>No hay resultados.</p>"; }
     }
 
-    // --- GESTIÓN DE USUARIOS MÓVIL ---
     async function cargarUsuarios() {
       document.getElementById('m_listaUsuarios').innerHTML = "<p class='text-center'><i class='fa-solid fa-spinner fa-spin'></i></p>";
       const res = await apiRequest({ accion: 'getUsuarios' });
