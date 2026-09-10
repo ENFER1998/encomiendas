@@ -40,19 +40,39 @@
         <button onclick="document.getElementById('modalEnvio').classList.remove('hidden')" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold shadow hover:bg-blue-700"><i class="fa-solid fa-plus mr-2"></i> Nuevo Envío</button>
       </header>
 
-      <!-- VISTA DASHBOARD -->
+      <!-- VISTA DASHBOARD CON TABLA VISUAL -->
       <div id="vistaDashboard" class="p-8 space-y-8">
         <div class="grid grid-cols-3 gap-6">
           <div class="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-indigo-500"><p class="text-sm text-slate-500 font-semibold uppercase">Ingresos Mes</p><p class="text-3xl font-bold mt-2">Gs. <span id="dashGanancia">0</span></p></div>
           <div class="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-amber-500"><p class="text-sm text-slate-500 font-semibold uppercase">En Tránsito</p><p class="text-3xl font-bold mt-2" id="dashPendientes">0</p></div>
           <div class="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-emerald-500"><p class="text-sm text-slate-500 font-semibold uppercase">Entregados</p><p class="text-3xl font-bold mt-2" id="dashEntregados">0</p></div>
         </div>
+        
+        <!-- NUEVA TABLA: Aquí verás tus envíos listados -->
+        <div class="bg-white rounded-2xl shadow-sm border p-6">
+          <h3 class="font-bold text-slate-800 text-lg mb-4"><i class="fa-solid fa-list-ul mr-2 text-blue-600"></i> Últimos Envíos Registrados</h3>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left">
+              <thead class="bg-slate-50 border-b">
+                <tr>
+                  <th class="p-3 text-sm font-semibold text-slate-600">ID Envío</th>
+                  <th class="p-3 text-sm font-semibold text-slate-600">Fecha</th>
+                  <th class="p-3 text-sm font-semibold text-slate-600">Destino (CI/RUC)</th>
+                  <th class="p-3 text-sm font-semibold text-slate-600">Estado</th>
+                </tr>
+              </thead>
+              <tbody id="tablaDashboard" class="divide-y text-sm">
+                <!-- Se llena automáticamente con JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
 
       <!-- VISTA BUSCADOR -->
       <div id="vistaBuscador" class="p-8 hidden">
         <div class="bg-white p-6 rounded-2xl shadow-sm flex gap-4 mb-6">
-          <input type="text" id="inputBusqueda" placeholder="Ingrese ID (Ej: TSI-1234) o número de CI/RUC" class="flex-1 border p-3 rounded-lg text-lg">
+          <input type="text" id="inputBusqueda" placeholder="Ingrese ID (Ej: TSI-1234) o CI/RUC (Con o sin guion)" class="flex-1 border p-3 rounded-lg text-lg">
           <button onclick="buscarHistorial(this)" class="bg-slate-800 text-white px-8 font-bold rounded-lg"><i class="fa-solid fa-search mr-2"></i> Buscar</button>
         </div>
         <div id="resultadosBusqueda" class="space-y-4"></div>
@@ -114,9 +134,13 @@
 
     async function apiRequest(payload) {
       try {
-        let res = await fetch(API_URL, { method: "POST", body: JSON.stringify(payload) });
+        let res = await fetch(API_URL, { 
+          method: "POST", 
+          headers: { "Content-Type": "text/plain;charset=utf-8" }, 
+          body: JSON.stringify(payload) 
+        });
         return await res.json();
-      } catch (e) { return { success: false, error: e.message }; }
+      } catch (e) { return { success: false, error: "Error de red: " + e.message }; }
     }
 
     async function ingresarAlSistema(btn) {
@@ -204,6 +228,25 @@
         document.getElementById('dashPendientes').innerText = res.pendientes;
         document.getElementById('dashEntregados').innerText = res.entregados;
         document.getElementById('dashGanancia').innerText = res.gananciaMes.toLocaleString('es-PY');
+        
+        // PINTAR LA TABLA VISUAL DE LOS PAQUETES
+        const tbody = document.getElementById('tablaDashboard');
+        tbody.innerHTML = "";
+        if(res.lista && res.lista.length > 0) {
+          res.lista.forEach(e => {
+            let colorEstado = e.estado === 'Entregado' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700';
+            tbody.innerHTML += `
+              <tr class="hover:bg-slate-50 transition">
+                <td class="p-3 font-bold text-blue-600">${e.id}</td>
+                <td class="p-3 text-slate-600">${e.fecha}</td>
+                <td class="p-3 font-semibold">${e.destinatario}</td>
+                <td class="p-3"><span class="px-3 py-1 rounded-full text-xs font-bold ${colorEstado}">${e.estado}</span></td>
+              </tr>
+            `;
+          });
+        } else {
+          tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-500">No hay envíos registrados aún.</td></tr>`;
+        }
       }
     }
 
@@ -233,11 +276,11 @@
               <div class="grid grid-cols-2 gap-4 mt-4 border-t pt-4">
                 <div>
                   <p class="text-sm text-slate-500 mb-2">Foto al Recibir (Origen)</p>
-                  ${r.fotoRecepcion ? `<a href="${r.fotoRecepcion}" target="_blank" class="text-blue-500 underline"><i class="fa-solid fa-image"></i> Ver Foto</a>` : '<span class="text-slate-400">Sin foto</span>'}
+                  ${r.fotoRecepcion ? `<a href="${r.fotoRecepcion}" target="_blank" class="text-blue-500 underline font-bold"><i class="fa-solid fa-image"></i> Ver Foto</a>` : '<span class="text-slate-400 text-sm">Sin foto</span>'}
                 </div>
                 <div>
                   <p class="text-sm text-slate-500 mb-2">Foto al Entregar (Destino)</p>
-                  ${r.fotoEntrega ? `<a href="${r.fotoEntrega}" target="_blank" class="text-blue-500 underline"><i class="fa-solid fa-image"></i> Ver Foto</a>` : '<span class="text-slate-400">Sin foto</span>'}
+                  ${r.fotoEntrega ? `<a href="${r.fotoEntrega}" target="_blank" class="text-blue-500 underline font-bold"><i class="fa-solid fa-image"></i> Ver Foto</a>` : '<span class="text-slate-400 text-sm">Sin foto</span>'}
                 </div>
               </div>
             </div>`;
