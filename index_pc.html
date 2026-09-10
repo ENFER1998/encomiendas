@@ -7,11 +7,15 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style> 
     body { background-color: #f1f5f9; font-family: 'Segoe UI', sans-serif; } 
-    /* CSS PARA IMPRESIÓN DINÁMICA (Cobranzas y Hoja de Ruta) */
+    
+    /* BLOQUEA QUE SE VEA EN PANTALLA NORMAL */
+    @media screen { .print-area { display: none !important; } }
+    
+    /* PERMITE QUE SE VEA SOLO EN LA IMPRESORA / PDF */
     @media print {
       body * { visibility: hidden; }
-      .print-section, .print-section * { visibility: visible; }
-      .print-section { position: absolute; left: 0; top: 0; width: 100%; height: auto; background: white; padding: 20px; display: block !important; }
+      .print-area.active-print, .print-area.active-print * { visibility: visible; }
+      .print-area.active-print { position: absolute; left: 0; top: 0; width: 100%; background: white; padding: 20px; display: block !important; }
       #loginScreen, #appContainer, #modalVisorFoto, #modalEnvio { display: none !important; }
     }
   </style>
@@ -30,8 +34,8 @@
     <div class="p-10 rounded-2xl w-96 text-center">
       <img src="logo.png" onerror="this.src='logo.jpeg'" alt="Logo" class="mx-auto h-32 mb-6 object-contain mix-blend-multiply">
       <div class="space-y-4 mb-6">
-        <input type="text" id="userInput" placeholder="Usuario" class="w-full text-center text-xl border-2 border-slate-300 p-3 rounded-lg font-bold text-slate-900 focus:outline-none focus:border-blue-600 bg-white" autocomplete="off">
-        <input type="password" id="passInput" placeholder="Contraseña" class="w-full text-center text-xl border-2 border-slate-300 p-3 rounded-lg font-bold text-slate-900 focus:outline-none focus:border-blue-600 bg-white">
+        <input type="text" id="userInput" placeholder="Usuario" class="w-full text-center text-xl border-b-2 border-slate-300 p-3 rounded-lg font-bold text-slate-900 focus:outline-none focus:border-blue-600 bg-white" autocomplete="off">
+        <input type="password" id="passInput" placeholder="Contraseña" class="w-full text-center text-xl border-b-2 border-slate-300 p-3 rounded-lg font-bold text-slate-900 focus:outline-none focus:border-blue-600 bg-white">
       </div>
       <button onclick="ingresarAlSistema(this)" class="w-full bg-blue-900 hover:bg-slate-900 text-white font-bold py-4 rounded-lg shadow-lg tracking-widest"><i class="fa-solid fa-right-to-bracket mr-2"></i> INGRESAR</button>
     </div>
@@ -42,9 +46,7 @@
     <!-- MENÚ LATERAL -->
     <aside class="w-64 bg-slate-900 text-white flex flex-col justify-between shadow-2xl z-20">
       <div>
-        <div class="p-6 text-center border-b border-slate-700 bg-white">
-          <img src="logo.png" onerror="this.src='logo.jpeg'" alt="Logo" class="mx-auto h-16 object-contain mix-blend-multiply">
-        </div>
+        <div class="p-6 text-center border-b border-slate-700 bg-white"><img src="logo.png" onerror="this.src='logo.jpeg'" alt="Logo" class="mx-auto h-16 object-contain mix-blend-multiply"></div>
         <nav class="p-4 space-y-2 mt-4">
           <button onclick="cambiarVistaPC('dashboard')" class="w-full text-left p-3 rounded-lg hover:bg-slate-800 navBtnPC"><i class="fa-solid fa-chart-pie w-6"></i> Dashboard</button>
           <button onclick="cambiarVistaPC('ruta')" class="w-full text-left p-3 rounded-lg hover:bg-slate-800 text-blue-300 navBtnPC"><i class="fa-solid fa-route w-6"></i> Hoja de Ruta</button>
@@ -54,9 +56,7 @@
           <button onclick="cambiarVistaPC('personal')" class="w-full text-left p-3 rounded-lg hover:bg-slate-800 text-amber-400 navBtnPC"><i class="fa-solid fa-users w-6"></i> Personal</button>
         </nav>
       </div>
-      <div>
-        <div class="p-4 border-t border-slate-700"><p class="text-xs text-blue-400 font-bold mb-3 text-center" id="userLabel">Admin</p><button onclick="location.reload()" class="w-full text-left p-3 text-red-400 hover:bg-slate-800 rounded font-bold"><i class="fa-solid fa-power-off w-6"></i> Cerrar Sesión</button></div>
-      </div>
+      <div><div class="p-4 border-t border-slate-700"><p class="text-xs text-blue-400 font-bold mb-3 text-center" id="userLabel">Admin</p><button onclick="location.reload()" class="w-full text-left p-3 text-red-400 hover:bg-slate-800 rounded font-bold"><i class="fa-solid fa-power-off w-6"></i> Cerrar Sesión</button></div></div>
     </aside>
 
     <main class="flex-1 flex flex-col h-full overflow-y-auto">
@@ -72,7 +72,6 @@
           <div class="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-amber-500"><p class="text-xs text-slate-500 font-bold uppercase">En Tránsito</p><p class="text-3xl font-black mt-2 text-slate-800" id="dashPendientes">0</p></div>
           <div class="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-emerald-500"><p class="text-xs text-slate-500 font-bold uppercase">Entregados</p><p class="text-3xl font-black mt-2 text-slate-800" id="dashEntregados">0</p></div>
         </div>
-        
         <div class="grid grid-cols-2 gap-6">
           <div class="bg-white rounded-2xl shadow-sm border overflow-hidden">
             <div class="p-4 border-b bg-slate-50"><h3 class="font-black text-slate-800 uppercase text-sm"><i class="fa-solid fa-truck-fast mr-2 text-blue-700"></i> Últimos 15 Envíos</h3></div>
@@ -85,43 +84,30 @@
         </div>
       </div>
 
-      <!-- VISTA CONFIRMAR ENTREGA (NUEVA EN PC) -->
+      <!-- VISTA CONFIRMAR ENTREGA -->
       <div id="vistaEntregas" class="p-8 hidden">
         <div class="bg-white rounded-2xl shadow-sm border p-8 max-w-2xl mx-auto">
           <h3 class="font-black text-slate-800 text-xl mb-6 text-center border-b pb-4 text-blue-900 uppercase">Confirmar Entrega de Paquete</h3>
-          
           <div class="flex gap-4 mb-6">
             <input type="text" id="idEnvioBuscar" placeholder="Ingrese ID (Ej: LT-123456)" class="flex-1 border-2 border-slate-300 p-4 rounded-xl text-xl text-center font-black uppercase text-slate-900 bg-white placeholder-slate-400 focus:border-blue-600 focus:outline-none">
             <button onclick="buscarDetalleEnvioPC(this)" class="bg-blue-800 hover:bg-slate-900 text-white font-black py-4 px-8 rounded-xl shadow-lg transition"><i class="fa-solid fa-search"></i> Buscar</button>
           </div>
-
           <div id="pc_detalleEnvio" class="hidden bg-slate-50 p-6 rounded-xl border-2 border-slate-200 mb-6">
             <div class="grid grid-cols-2 gap-4">
               <div><p class="text-xs font-black text-slate-500 uppercase">Destinatario</p><p class="font-bold text-slate-900 text-lg" id="pc_e_destinatario">--</p></div>
               <div><p class="text-xs font-black text-slate-500 uppercase">Dirección</p><p class="font-bold text-slate-900 text-lg truncate" id="pc_e_direccion">--</p></div>
               <div class="col-span-2"><p class="text-xs font-black text-slate-500 uppercase">Detalle del Paquete</p><p class="font-bold text-slate-900 text-lg" id="pc_e_detalle">--</p></div>
               <div class="col-span-2 border-t border-slate-300 pt-4 mt-2">
-                <div class="flex justify-between items-center">
-                  <div>
-                    <p class="text-xs font-black text-slate-500 uppercase mb-1">Estado de Pago</p>
-                    <div id="pc_e_pagoStr">--</div>
-                  </div>
-                  <div class="text-right">
-                    <p class="text-xs font-black text-slate-500 uppercase mb-1">Monto a Cobrar Ahora</p>
-                    <p class="text-3xl font-black text-emerald-600">Gs. <span id="pc_e_cobrar">0</span></p>
-                  </div>
-                </div>
+                <div class="flex justify-between items-center"><div><p class="text-xs font-black text-slate-500 uppercase mb-1">Estado de Pago</p><div id="pc_e_pagoStr">--</div></div><div class="text-right"><p class="text-xs font-black text-slate-500 uppercase mb-1">Monto a Cobrar Ahora</p><p class="text-3xl font-black text-emerald-600">Gs. <span id="pc_e_cobrar">0</span></p></div></div>
               </div>
             </div>
           </div>
-
           <div id="pc_areaEntrega" class="hidden">
             <div class="border-2 border-dashed border-slate-300 bg-slate-50 p-6 text-center rounded-xl mb-6 cursor-pointer hover:bg-slate-100 transition" onclick="document.getElementById('cameraEntregaPC').click()">
               <p class="font-bold text-slate-600"><i class="fa-solid fa-camera mb-2 text-3xl text-blue-500 block"></i>Subir Foto de Destino / Firma (OPCIONAL)</p>
               <input type="file" id="cameraEntregaPC" accept="image/*" class="hidden" onchange="leerFotoEntregaPC(event)">
             </div>
             <img id="previewEntregaPC" class="mt-4 mb-6 rounded-xl hidden w-full h-48 object-cover border-2 border-blue-300 shadow-md">
-            
             <button onclick="subirFotoPC(this)" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black py-5 rounded-xl shadow-lg text-lg tracking-widest transition">REGISTRAR ENTREGA</button>
           </div>
         </div>
@@ -130,23 +116,16 @@
       <!-- VISTA HOJA DE RUTA -->
       <div id="vistaRuta" class="p-8 hidden">
         <div class="bg-white p-6 rounded-2xl shadow-sm border mb-6 flex gap-4 items-end">
-          <div class="flex-1">
-            <label class="text-xs font-black text-slate-800 uppercase">Filtrar por Destino o Ciudad</label>
-            <input type="text" id="rutaDestino" placeholder="Ej: Santa Rita, CDE, etc." class="w-full border-2 border-slate-300 p-3 rounded-lg font-bold text-slate-900 focus:border-blue-600 focus:outline-none mt-2">
-          </div>
+          <div class="flex-1"><label class="text-xs font-black text-slate-800 uppercase">Filtrar por Destino o Ciudad</label><input type="text" id="rutaDestino" placeholder="Ej: Santa Rita, CDE, etc." class="w-full border-2 border-slate-300 p-3 rounded-lg font-bold text-slate-900 focus:border-blue-600 focus:outline-none mt-2"></div>
           <button onclick="buscarRuta(this)" class="bg-blue-800 hover:bg-slate-900 text-white font-black py-3 px-8 rounded-lg transition tracking-widest"><i class="fa-solid fa-search mr-2"></i> FILTRAR CARGAS</button>
         </div>
-        
         <div id="rutaResultados" class="hidden bg-white p-6 rounded-2xl shadow-sm border">
           <div class="flex justify-between items-center mb-4 border-b pb-4">
             <h3 class="font-black text-xl text-slate-800 uppercase">Lista de Envíos en Tránsito</h3>
             <button onclick="imprimirPDFRuta()" class="bg-slate-800 hover:bg-black text-white font-bold py-2 px-6 rounded-lg shadow"><i class="fa-solid fa-file-pdf mr-2"></i> Hoja de Ruta PDF</button>
           </div>
           <div class="overflow-x-auto">
-            <table class="w-full text-left text-sm whitespace-nowrap mb-4">
-              <thead class="bg-slate-100 border-b text-slate-600"><tr><th class="p-3 font-bold">ID</th><th class="p-3 font-bold">Destinatario / Tel</th><th class="p-3 font-bold">Dirección</th><th class="p-3 font-bold">Detalle</th><th class="p-3 font-bold">Modalidad</th><th class="p-3 font-bold text-right">Monto a Cobrar</th></tr></thead>
-              <tbody id="tablaRuta" class="divide-y text-slate-800 font-semibold"></tbody>
-            </table>
+            <table class="w-full text-left text-sm whitespace-nowrap mb-4"><thead class="bg-slate-100 border-b text-slate-600"><tr><th class="p-3 font-bold">ID</th><th class="p-3 font-bold">Destinatario / Tel</th><th class="p-3 font-bold">Dirección</th><th class="p-3 font-bold">Detalle</th><th class="p-3 font-bold">Modalidad</th><th class="p-3 font-bold text-right">Monto a Cobrar</th></tr></thead><tbody id="tablaRuta" class="divide-y text-slate-800 font-semibold"></tbody></table>
             <div class="text-right"><p class="text-2xl font-black text-emerald-600">Total a Cobrar en Ruta: Gs. <span id="rutaTotalCobrar">0</span></p></div>
           </div>
         </div>
@@ -156,33 +135,22 @@
       <div id="vistaHistorial" class="p-8 hidden">
         <div class="bg-white p-4 rounded-xl shadow-sm border flex gap-4 mb-4 items-center">
           <input type="text" id="inputBusqueda" oninput="filtrarHistorial()" placeholder="Buscar por ID, Nombre o CI/RUC..." class="flex-1 border-2 border-slate-300 p-2 rounded-lg text-sm bg-white font-bold text-slate-900 focus:outline-none focus:border-blue-600">
-          <select id="filtroTiempo" onchange="filtrarHistorial()" class="border-2 border-slate-300 p-2 rounded-lg text-sm font-bold text-slate-900 bg-white focus:outline-none">
-            <option value="todos">Últimos 150</option><option value="hoy">Hoy</option><option value="semana">7 días</option><option value="mes">Este mes</option>
-          </select>
+          <select id="filtroTiempo" onchange="filtrarHistorial()" class="border-2 border-slate-300 p-2 rounded-lg text-sm font-bold text-slate-900 bg-white focus:outline-none"><option value="todos">Últimos 150</option><option value="hoy">Hoy</option><option value="semana">7 días</option><option value="mes">Este mes</option></select>
           <button onclick="cargarHistorial()" class="bg-slate-800 text-white px-4 py-2 font-bold rounded-lg text-sm hover:bg-slate-700 shadow"><i class="fa-solid fa-rotate-right mr-1"></i> Refrescar</button>
         </div>
         <div class="bg-white rounded-xl shadow-sm border overflow-x-auto">
-          <table class="w-full text-left text-xs whitespace-nowrap">
-            <thead class="bg-slate-100 border-b text-slate-600"><tr><th class="p-3 font-bold">ID / Fecha</th><th class="p-3 font-bold">Remitente</th><th class="p-3 font-bold">Destinatario</th><th class="p-3 font-bold">Detalle y Costo</th><th class="p-3 font-bold text-center">Estado</th><th class="p-3 font-bold text-center">Fotos</th></tr></thead>
-            <tbody id="resultadosBusqueda" class="divide-y text-slate-800 font-semibold"></tbody>
-          </table>
+          <table class="w-full text-left text-xs whitespace-nowrap"><thead class="bg-slate-100 border-b text-slate-600"><tr><th class="p-3 font-bold">ID / Fecha</th><th class="p-3 font-bold">Remitente</th><th class="p-3 font-bold">Destinatario</th><th class="p-3 font-bold">Detalle y Costo</th><th class="p-3 font-bold text-center">Estado</th><th class="p-3 font-bold text-center">Fotos</th></tr></thead><tbody id="resultadosBusqueda" class="divide-y text-slate-800 font-semibold"></tbody></table>
         </div>
       </div>
 
       <!-- VISTA COBRANZAS CORPORATIVAS -->
       <div id="vistaCobranzas" class="p-8 hidden">
         <div class="bg-white p-6 rounded-2xl shadow-sm border mb-6 flex gap-4 items-end">
-          <div class="flex-1">
-            <label class="text-xs font-black text-slate-800 uppercase">CI/RUC de la Empresa/Cliente</label>
-            <input type="text" id="cobranzaRuc" placeholder="Ej: 1234567" class="w-full border-2 border-slate-300 p-3 rounded-lg font-bold text-slate-900 focus:border-emerald-600 focus:outline-none mt-2">
-          </div>
+          <div class="flex-1"><label class="text-xs font-black text-slate-800 uppercase">CI/RUC de la Empresa/Cliente</label><input type="text" id="cobranzaRuc" placeholder="Ej: 1234567" class="w-full border-2 border-slate-300 p-3 rounded-lg font-bold text-slate-900 focus:border-emerald-600 focus:outline-none mt-2"></div>
           <button onclick="buscarDeuda()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-black py-3 px-8 rounded-lg transition tracking-widest"><i class="fa-solid fa-search mr-2"></i> BUSCAR DEUDA</button>
         </div>
         <div id="cobranzaResultados" class="hidden bg-white p-6 rounded-2xl shadow-sm border">
-          <div class="flex justify-between items-center mb-6 border-b pb-4">
-            <div><h3 class="font-black text-2xl text-slate-800 uppercase" id="cobranzaNombre">Empresa S.A.</h3><p class="text-sm font-bold text-slate-500">Deuda Total Acumulada</p></div>
-            <div class="text-right"><p class="text-4xl font-black text-emerald-600">Gs. <span id="cobranzaMonto">0</span></p></div>
-          </div>
+          <div class="flex justify-between items-center mb-6 border-b pb-4"><div><h3 class="font-black text-2xl text-slate-800 uppercase" id="cobranzaNombre">Empresa S.A.</h3><p class="text-sm font-bold text-slate-500">Deuda Total Acumulada</p></div><div class="text-right"><p class="text-4xl font-black text-emerald-600">Gs. <span id="cobranzaMonto">0</span></p></div></div>
           <table class="w-full text-left text-sm mb-6"><thead class="bg-slate-50 border-b"><tr><th class="p-3 font-bold">ID Envío</th><th class="p-3 font-bold">Fecha</th><th class="p-3 font-bold">Destino</th><th class="p-3 font-bold">Detalle</th><th class="p-3 font-bold text-right">Costo</th></tr></thead><tbody id="tablaDeudas" class="divide-y font-semibold text-slate-700"></tbody></table>
           <div class="flex justify-end gap-4">
             <button onclick="imprimirPDFCobranza()" class="bg-slate-800 hover:bg-black text-white font-bold py-3 px-6 rounded-lg shadow"><i class="fa-solid fa-file-pdf mr-2"></i> Generar Reporte / PDF</button>
@@ -198,7 +166,7 @@
             <h3 class="font-black text-slate-800 mb-4 uppercase text-lg border-b pb-2"><i class="fa-solid fa-user-plus mr-2 text-blue-700"></i> Nuevo Empleado</h3>
             <form onsubmit="crearUser(event)" class="space-y-4 text-sm">
               <input type="text" id="nu_user" placeholder="Usuario de Ingreso" class="w-full border-2 border-slate-300 p-3 rounded-lg font-bold text-slate-900 bg-white focus:outline-none focus:border-blue-600" required>
-              <input type="text" id="nu_pass" placeholder="Contraseña" class="w-full border-2 border-slate-300 p-3 rounded-lg font-bold text-slate-900 bg-white focus:outline-none focus:border-blue-600" required>
+              <input type="password" id="nu_pass" placeholder="Contraseña" class="w-full border-2 border-slate-300 p-3 rounded-lg font-bold text-slate-900 bg-white focus:outline-none focus:border-blue-600" required>
               <input type="text" id="nu_nombre" placeholder="Nombre Completo" class="w-full border-2 border-slate-300 p-3 rounded-lg font-bold text-slate-900 bg-white focus:outline-none focus:border-blue-600" required>
               <select id="nu_rol" class="w-full border-2 border-slate-300 p-3 rounded-lg font-bold text-slate-800 bg-white focus:outline-none focus:border-blue-600"><option value="Empleado">Empleado (Chofer)</option><option value="Dueño">Dueño (Admin)</option></select>
               <button type="submit" class="w-full bg-blue-800 text-white font-black py-3 rounded-lg tracking-widest shadow">CREAR USUARIO</button>
@@ -213,47 +181,26 @@
     </main>
   </div>
 
-  <!-- AREAS DE IMPRESIÓN (Mismo formato que antes) -->
-  <div id="printAreaCobranzas" class="hidden print-section text-black font-sans">
-    <div class="flex items-center justify-between border-b-4 border-blue-900 pb-4 mb-6">
-      <img src="logo.png" onerror="this.src='logo.jpeg'" style="max-height: 90px; object-fit: contain;">
-      <div class="text-right">
-        <h1 class="text-3xl font-black uppercase text-blue-900">Luis Transportes</h1>
-        <h2 class="text-lg font-bold mt-1 text-slate-700">EXTRACTO DE CUENTA CORPORATIVA</h2>
-        <p class="text-sm font-semibold mt-1" id="printCobFecha"></p>
-      </div>
-    </div>
-    <div class="mb-6 text-sm leading-relaxed">
-      <p class="text-lg"><strong>Cliente / Empresa:</strong> <span id="printCobNombre" class="uppercase font-bold"></span></p>
-      <p class="text-lg"><strong>RUC:</strong> <span id="printCobRuc" class="font-bold"></span></p>
-      <p class="mt-4 text-justify">Detalle de extracto de cuenta correspondiente a los servicios de logística pendientes de cobro.</p>
-    </div>
-    <table class="w-full text-left text-xs border-collapse border border-slate-400 mb-6">
-      <thead><tr class="bg-slate-200"><th class="border border-slate-400 p-2 font-bold">ID Envío</th><th class="border border-slate-400 p-2 font-bold">Fecha</th><th class="border border-slate-400 p-2 font-bold">Destino</th><th class="border border-slate-400 p-2 font-bold">Detalle de Carga</th><th class="border border-slate-400 p-2 font-bold text-right">Costo (Gs.)</th></tr></thead><tbody id="printCobTabla"></tbody>
+  <!-- AREA PDF COBRANZAS (Invisibles en Pantalla) -->
+  <div id="printAreaCobranzas" class="print-area text-black font-sans">
+    <div class="flex items-center justify-between border-b-4 border-blue-900 pb-4 mb-6"><img src="logo.png" onerror="this.src='logo.jpeg'" style="max-height: 90px; object-fit: contain;"><div class="text-right"><h1 class="text-3xl font-black uppercase text-blue-900">Luis Transportes</h1><h2 class="text-lg font-bold mt-1 text-slate-700">EXTRACTO DE CUENTA CORPORATIVA</h2><p class="text-sm font-semibold mt-1" id="printCobFecha"></p></div></div>
+    <div class="mb-6 text-sm leading-relaxed"><p class="text-lg"><strong>Cliente / Empresa:</strong> <span id="printCobNombre" class="uppercase font-bold"></span></p><p class="text-lg"><strong>RUC:</strong> <span id="printCobRuc" class="font-bold"></span></p><p class="mt-4 text-justify">Por medio de la presente, se detalla el extracto de cuenta correspondiente a los servicios de logística y transporte prestados por <strong>Luis Transportes</strong>.</p></div>
+    <table class="w-full text-left text-xs border-collapse border border-slate-400 mb-6"><thead><tr class="bg-slate-200"><th class="border border-slate-400 p-2 font-bold">ID Envío</th><th class="border border-slate-400 p-2 font-bold">Fecha</th><th class="border border-slate-400 p-2 font-bold">Destino</th><th class="border border-slate-400 p-2 font-bold">Detalle de Carga</th><th class="border border-slate-400 p-2 font-bold text-right">Costo (Gs.)</th></tr></thead><tbody id="printCobTabla"></tbody>
       <tfoot><tr class="bg-slate-100"><td colspan="4" class="border border-slate-400 p-3 text-right font-black text-lg text-blue-900">TOTAL A PAGAR:</td><td class="border border-slate-400 p-3 text-right font-black text-lg text-blue-900">Gs. <span id="printCobTotal">0</span></td></tr></tfoot>
     </table>
     <div class="mt-24 flex justify-center"><div class="text-center w-64 border-t border-black pt-2"><p class="font-bold text-sm">Firma Autorizada</p><p class="text-xs">Luis Transportes</p></div></div>
   </div>
 
-  <div id="printAreaRuta" class="hidden print-section text-black font-sans">
-    <div class="flex items-center justify-between border-b-4 border-blue-900 pb-4 mb-6">
-      <img src="logo.png" onerror="this.src='logo.jpeg'" style="max-height: 70px; object-fit: contain;">
-      <div class="text-right">
-        <h1 class="text-2xl font-black uppercase text-blue-900">Luis Transportes</h1>
-        <h2 class="text-lg font-bold mt-1 text-slate-700">HOJA DE RUTA / CARGAS</h2>
-        <p class="text-sm font-semibold mt-1" id="printRutaFecha"></p>
-      </div>
-    </div>
-    <div class="mb-4">
-      <p class="text-lg"><strong>Filtro / Destino:</strong> <span id="printRutaDestino" class="uppercase font-bold"></span></p>
-    </div>
-    <table class="w-full text-left text-xs border-collapse border border-slate-400 mb-6">
-      <thead><tr class="bg-slate-200"><th class="border border-slate-400 p-2 font-bold">ID</th><th class="border border-slate-400 p-2 font-bold">Destinatario / Tel</th><th class="border border-slate-400 p-2 font-bold">Dirección</th><th class="border border-slate-400 p-2 font-bold">Detalle</th><th class="border border-slate-400 p-2 font-bold">Modalidad Pago</th><th class="border border-slate-400 p-2 font-bold text-right">A Cobrar</th></tr></thead><tbody id="printRutaTabla"></tbody>
+  <!-- AREA PDF HOJA DE RUTA -->
+  <div id="printAreaRuta" class="print-area text-black font-sans">
+    <div class="flex items-center justify-between border-b-4 border-blue-900 pb-4 mb-6"><img src="logo.png" onerror="this.src='logo.jpeg'" style="max-height: 70px; object-fit: contain;"><div class="text-right"><h1 class="text-2xl font-black uppercase text-blue-900">Luis Transportes</h1><h2 class="text-lg font-bold mt-1 text-slate-700">HOJA DE RUTA / CARGAS</h2><p class="text-sm font-semibold mt-1" id="printRutaFecha"></p></div></div>
+    <div class="mb-4"><p class="text-lg"><strong>Filtro / Destino:</strong> <span id="printRutaDestino" class="uppercase font-bold"></span></p></div>
+    <table class="w-full text-left text-xs border-collapse border border-slate-400 mb-6"><thead><tr class="bg-slate-200"><th class="border border-slate-400 p-2 font-bold">ID</th><th class="border border-slate-400 p-2 font-bold">Destinatario / Tel</th><th class="border border-slate-400 p-2 font-bold">Dirección</th><th class="border border-slate-400 p-2 font-bold">Detalle</th><th class="border border-slate-400 p-2 font-bold">Modalidad Pago</th><th class="border border-slate-400 p-2 font-bold text-right">A Cobrar</th></tr></thead><tbody id="printRutaTabla"></tbody>
       <tfoot><tr class="bg-slate-100"><td colspan="5" class="border border-slate-400 p-2 text-right font-black text-sm text-blue-900">TOTAL EFECTIVO A RENDIR:</td><td class="border border-slate-400 p-2 text-right font-black text-sm text-blue-900">Gs. <span id="printRutaTotal">0</span></td></tr></tfoot>
     </table>
   </div>
 
-  <!-- MODAL NUEVO ENVÍO (Mismo diseño oscuro/claro) -->
+  <!-- MODAL NUEVO ENVÍO -->
   <div id="modalEnvio" class="hidden fixed inset-0 bg-slate-900 bg-opacity-75 z-50 flex justify-center items-center overflow-y-auto p-4">
     <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl p-8 my-8">
       <div class="flex justify-between items-center mb-6 border-b pb-4"><h2 class="text-2xl font-black text-blue-900 uppercase tracking-widest"><i class="fa-solid fa-box mr-2"></i> Registrar Encomienda</h2><button onclick="document.getElementById('modalEnvio').classList.add('hidden')" class="text-slate-800 hover:text-red-500"><i class="fa-solid fa-xmark text-3xl"></i></button></div>
@@ -281,11 +228,7 @@
           <div class="col-span-2"><label class="text-xs font-black text-blue-900 uppercase">Detalle del Paquete</label><input type="text" id="detalle" class="w-full border-2 border-slate-300 p-3 rounded-lg font-bold text-slate-900 focus:border-blue-600 focus:outline-none bg-white" required></div>
           <div class="col-span-1"><label class="text-xs font-black text-blue-900 uppercase">Costo Gs.</label><input type="number" id="costo" class="w-full border-2 border-emerald-400 p-3 rounded-lg font-black text-emerald-700 focus:outline-none bg-white" required></div>
           <div class="col-span-1"><label class="text-xs font-black text-blue-900 uppercase">Modalidad de Pago</label>
-            <select id="tipoCli" class="w-full border-2 border-slate-300 p-3 rounded-lg font-bold text-slate-900 focus:outline-none bg-white">
-              <option value="Contado">Paga el que ENVÍA</option>
-              <option value="Destino">Paga el que RECIBE</option>
-              <option value="Corporativo">Cuenta CORPORATIVA</option>
-            </select>
+            <select id="tipoCli" class="w-full border-2 border-slate-300 p-3 rounded-lg font-bold text-slate-900 focus:outline-none bg-white"><option value="Contado">Paga el que ENVÍA</option><option value="Destino">Paga el que RECIBE</option><option value="Corporativo">Cuenta CORPORATIVA</option></select>
           </div>
           <div class="col-span-4 mt-2"><label class="text-xs font-black text-slate-800 uppercase">Foto del Paquete al Recibir (Opcional)</label><input type="file" id="fotoRecepcion" accept="image/*" onchange="leerFotoRec(event)" class="w-full border-2 border-slate-300 p-2 rounded-lg bg-white text-slate-900 font-bold"></div>
         </div>
@@ -338,7 +281,6 @@
       if(res.success) { alert("CREADO: " + res.id); document.getElementById('formEnvio').reset(); fotoRecBase64 = ""; document.getElementById('modalEnvio').classList.add('hidden'); cargarDashboard(); historialGlobal = []; }
     }
 
-    // --- NUEVO MÓDULO DE ENTREGA PARA PC ---
     function formatPagoVisual(modo) {
       if(modo === 'Cobro en Destino') return '<span class="text-rose-600 font-black">Paga el que RECIBE</span>';
       if(modo === 'Pendiente Fin de Mes') return '<span class="text-blue-600 font-black">Cuenta Corporativa</span>';
@@ -347,41 +289,24 @@
 
     async function buscarDetalleEnvioPC(btn) {
       let idBuscado = document.getElementById('idEnvioBuscar').value.trim();
-      if(!idBuscado) return alert("Ingrese un ID");
-      if(!idBuscado.toUpperCase().startsWith("LT-")) idBuscado = "LT-" + idBuscado;
-      
-      document.getElementById('pc_detalleEnvio').classList.add('hidden');
-      document.getElementById('pc_areaEntrega').classList.add('hidden');
-      
+      if(!idBuscado) return alert("Ingrese un ID"); if(!idBuscado.toUpperCase().startsWith("LT-")) idBuscado = "LT-" + idBuscado;
+      document.getElementById('pc_detalleEnvio').classList.add('hidden'); document.getElementById('pc_areaEntrega').classList.add('hidden');
       let tOri = btn.innerHTML; btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Buscando..."; btn.disabled = true;
       const res = await apiRequest({ accion: 'getDetalleEnvio', idBuscado: idBuscado });
       btn.innerHTML = tOri; btn.disabled = false;
       
       if(res.success) {
         if(res.envio.estado === 'Entregado') return alert("Este paquete YA FUE ENTREGADO.");
-        
         idEntregaActivoPC = res.envio.id;
-        document.getElementById('pc_e_destinatario').innerText = res.envio.destinatario;
-        document.getElementById('pc_e_direccion').innerText = res.envio.direccion;
-        document.getElementById('pc_e_detalle').innerText = res.envio.detalle;
-        document.getElementById('pc_e_pagoStr').innerHTML = formatPagoVisual(res.envio.pagoAviso);
-        
-        let aCobrar = (res.envio.pagoAviso === 'Cobro en Destino') ? res.envio.costo : 0;
-        document.getElementById('pc_e_cobrar').innerText = aCobrar.toLocaleString('es-PY');
-        
-        document.getElementById('idEnvioBuscar').value = res.envio.id;
-        document.getElementById('pc_detalleEnvio').classList.remove('hidden');
-        document.getElementById('pc_areaEntrega').classList.remove('hidden');
+        document.getElementById('pc_e_destinatario').innerText = res.envio.destinatario; document.getElementById('pc_e_direccion').innerText = res.envio.direccion; document.getElementById('pc_e_detalle').innerText = res.envio.detalle; document.getElementById('pc_e_pagoStr').innerHTML = formatPagoVisual(res.envio.pagoAviso);
+        let aCobrar = (res.envio.pagoAviso === 'Cobro en Destino') ? res.envio.costo : 0; document.getElementById('pc_e_cobrar').innerText = aCobrar.toLocaleString('es-PY');
+        document.getElementById('idEnvioBuscar').value = res.envio.id; document.getElementById('pc_detalleEnvio').classList.remove('hidden'); document.getElementById('pc_areaEntrega').classList.remove('hidden');
       } else { alert("ID NO ENCONTRADO."); }
     }
 
     function leerFotoEntregaPC(e) {
       const file = e.target.files[0]; if(!file) return; const reader = new FileReader(); 
-      reader.onload = ev => { 
-        fotoEntregaPCBase64 = ev.target.result; 
-        document.getElementById('previewEntregaPC').src = ev.target.result;
-        document.getElementById('previewEntregaPC').classList.remove('hidden');
-      }; 
+      reader.onload = ev => { fotoEntregaPCBase64 = ev.target.result; document.getElementById('previewEntregaPC').src = ev.target.result; document.getElementById('previewEntregaPC').classList.remove('hidden'); }; 
       reader.readAsDataURL(file);
     }
 
@@ -390,16 +315,8 @@
       let tOri = btn.innerHTML; btn.innerHTML = "REGISTRANDO..."; btn.disabled = true;
       const res = await apiRequest({ accion: 'confirmarEntrega', idEnvio: idEntregaActivoPC, foto: fotoEntregaPCBase64 });
       btn.innerHTML = tOri; btn.disabled = false;
-      if(res.success) { 
-        alert("¡Paquete ENTREGADO con éxito!"); 
-        document.getElementById('idEnvioBuscar').value = ''; 
-        document.getElementById('pc_detalleEnvio').classList.add('hidden'); 
-        document.getElementById('pc_areaEntrega').classList.add('hidden'); 
-        document.getElementById('previewEntregaPC').classList.add('hidden');
-        fotoEntregaPCBase64 = ""; idEntregaActivoPC = ""; historialGlobal = []; cargarDashboard();
-      } else alert(res.error);
+      if(res.success) { alert("¡Paquete ENTREGADO con éxito!"); document.getElementById('idEnvioBuscar').value = ''; document.getElementById('pc_detalleEnvio').classList.add('hidden'); document.getElementById('pc_areaEntrega').classList.add('hidden'); document.getElementById('previewEntregaPC').classList.add('hidden'); fotoEntregaPCBase64 = ""; idEntregaActivoPC = ""; historialGlobal = []; cargarDashboard(); } else alert(res.error);
     }
-    // ----------------------------------------
 
     async function cargarDashboard() {
       const res = await apiRequest({ accion: 'getDashboard' });
@@ -407,7 +324,6 @@
         document.getElementById('dashPendientes').innerText = res.pendientes; document.getElementById('dashEntregados').innerText = res.entregados; document.getElementById('dashGanancia').innerText = res.gananciaMes.toLocaleString('es-PY');
         const tbody = document.getElementById('tablaDashboard'); tbody.innerHTML = "";
         if(res.lista && res.lista.length > 0) { res.lista.forEach(e => { let colorEstado = e.estado === 'Entregado' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'; tbody.innerHTML += `<tr class="hover:bg-slate-50 transition"><td class="p-3 font-black text-blue-800">${e.id}</td><td class="p-3 font-bold text-slate-800">${e.destinatario}</td><td class="p-3"><span class="px-2 py-1 rounded text-xs font-bold ${colorEstado}">${e.estado}</span></td></tr>`; }); }
-        
         const tbD = document.getElementById('tablaDeudasDashboard'); tbD.innerHTML = "";
         if(res.deudas && res.deudas.length > 0) { res.deudas.forEach(d => { tbD.innerHTML += `<tr class="hover:bg-rose-50 transition border-b"><td class="p-3 font-black text-slate-800 uppercase">${d.empresa}</td><td class="p-3 font-black text-rose-600">Gs. ${d.total.toLocaleString('es-PY')}</td><td class="p-3 text-xs text-slate-500 font-bold">Hace ${d.dias} Días</td></tr>`; }); } else { tbD.innerHTML = "<tr><td colspan='3' class='p-6 text-center text-slate-400 font-bold'>No hay empresas con deuda.</td></tr>"; }
       }
@@ -440,20 +356,18 @@
       if(filtrados.length > 0) {
         filtrados.forEach(r => {
           let colorEst = r.estado==='Entregado' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700';
-          div.innerHTML += `<tr class="hover:bg-slate-50 transition"><td class="p-3"><p class="font-black text-blue-800">${r.id}</p><p class="text-[10px] text-slate-500 font-bold">${r.fecha}</p></td><td class="p-3"><p class="font-bold text-slate-800 truncate w-32" title="${r.nombreRem}">${r.nombreRem}</p><p class="text-[10px] text-slate-500">${r.ciRem} | <i class="fa-solid fa-phone"></i> ${r.telRem}</p></td><td class="p-3"><p class="font-bold text-slate-800 truncate w-32" title="${r.nombreDest}">${r.nombreDest}</p><p class="text-[10px] text-slate-500">${r.ciDest} | <i class="fa-solid fa-phone"></i> ${r.telDest}</p></td><td class="p-3"><p class="font-black text-slate-800">Gs. ${Number(r.costo||0).toLocaleString('es-PY')}</p><p class="text-[10px] text-slate-500 truncate w-32 font-bold" title="${r.detalle}">${r.detalle}</p></td><td class="p-3 text-center"><span class="px-2 py-1 rounded text-[10px] font-bold ${colorEst}">${r.estado}</span></td><td class="p-3 text-center"><div class="flex justify-center gap-2">${generarMiniatura(r.fotoRecepcion, 'Origen')}${generarMiniatura(r.fotoEntrega, 'Destino')}</div></td></tr>`;
+          div.innerHTML += `<tr class="hover:bg-slate-50 transition"><td class="p-3"><p class="font-black text-blue-800">${r.id}</p><p class="text-[10px] text-slate-500">${r.fecha}</p></td><td class="p-3"><p class="font-bold text-slate-800 truncate w-32" title="${r.nombreRem}">${r.nombreRem}</p><p class="text-[10px] text-slate-500">${r.ciRem} | <i class="fa-solid fa-phone"></i> ${r.telRem}</p></td><td class="p-3"><p class="font-bold text-slate-800 truncate w-32" title="${r.nombreDest}">${r.nombreDest}</p><p class="text-[10px] text-slate-500">${r.ciDest} | <i class="fa-solid fa-phone"></i> ${r.telDest}</p></td><td class="p-3"><p class="font-black text-slate-800">Gs. ${Number(r.costo||0).toLocaleString('es-PY')}</p><p class="text-[10px] text-slate-500 truncate w-32 font-bold" title="${r.detalle}">${r.detalle}</p></td><td class="p-3 text-center"><span class="px-2 py-1 rounded text-[10px] font-bold ${colorEst}">${r.estado}</span></td><td class="p-3 text-center"><div class="flex justify-center gap-2">${generarMiniatura(r.fotoRecepcion, 'Origen')}${generarMiniatura(r.fotoEntrega, 'Destino')}</div></td></tr>`;
         });
       } else { div.innerHTML = "<tr><td colspan='6' class='p-6 text-center text-slate-500 font-bold'>Sin resultados.</td></tr>"; }
     }
 
     async function buscarRuta(btn) {
-      const dest = document.getElementById('rutaDestino').value.trim();
-      document.getElementById('rutaResultados').classList.add('hidden');
+      const dest = document.getElementById('rutaDestino').value.trim(); document.getElementById('rutaResultados').classList.add('hidden');
       const textOri = btn.innerHTML; btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> CARGANDO..."; btn.disabled = true;
       const res = await apiRequest({ accion: 'getHojaRuta', destino: dest });
       btn.innerHTML = textOri; btn.disabled = false;
       if(res.success) {
-        document.getElementById('printRutaDestino').innerText = dest || "TODOS LOS DESTINOS";
-        document.getElementById('printRutaFecha').innerText = "Fecha: " + new Date().toLocaleString('es-PY');
+        document.getElementById('printRutaDestino').innerText = dest || "TODOS LOS DESTINOS"; document.getElementById('printRutaFecha').innerText = "Fecha: " + new Date().toLocaleString('es-PY');
         let tHtml = ""; let pHtml = ""; let totalCobrar = 0;
         res.hoja.forEach(p => {
           totalCobrar += p.aCobrar;
@@ -467,9 +381,10 @@
       }
     }
 
+    // IMPRESIONES DE PC DEBEN REMOVER LAS CLASES "active-print" DE LAS DEMÁS ÁREAS
     function imprimirPDFRuta() {
-      document.getElementById('printAreaCobranzas').classList.remove('print-section'); document.getElementById('printAreaCobranzas').classList.add('hidden');
-      document.getElementById('printAreaRuta').classList.remove('hidden'); document.getElementById('printAreaRuta').classList.add('print-section');
+      document.getElementById('printAreaCobranzas').classList.remove('active-print');
+      document.getElementById('printAreaRuta').classList.add('active-print');
       window.print();
     }
 
@@ -496,8 +411,8 @@
     function imprimirPDFCobranza() {
       if(pendientesDeudaGlobal.length === 0) return alert("No hay datos para imprimir.");
       document.getElementById('printCobFecha').innerText = "Fecha de Emisión: " + new Date().toLocaleString('es-PY');
-      document.getElementById('printAreaRuta').classList.remove('print-section'); document.getElementById('printAreaRuta').classList.add('hidden');
-      document.getElementById('printAreaCobranzas').classList.remove('hidden'); document.getElementById('printAreaCobranzas').classList.add('print-section');
+      document.getElementById('printAreaRuta').classList.remove('active-print');
+      document.getElementById('printAreaCobranzas').classList.add('active-print');
       window.print();
     }
 
