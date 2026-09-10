@@ -1,134 +1,128 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>App Repartidor</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 p-4">
-
-  <div class="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden p-5">
-    <h2 class="text-xl font-bold text-center text-gray-800 mb-6">Entrega de Encomiendas</h2>
-
-    <div class="mb-4">
-      <label class="block text-sm font-medium text-gray-700">ID del Envío (Ej: ENV-1234)</label>
-      <input type="text" id="idEnvio" class="mt-1 w-full border rounded-lg p-3 text-lg">
+  <div class="max-w-md mx-auto">
+    
+    <!-- Encabezado de Usuario -->
+    <div class="bg-white rounded-xl shadow-md p-5 mb-4 text-center">
+      <h2 class="text-xl font-bold text-gray-800">TSI Logística</h2>
+      <p class="text-sm text-gray-500">Usuario: <?= usuario ?></p>
+      <p class="text-sm">Rol: <span class="font-bold text-blue-600"><?= rol ?></span></p>
     </div>
 
-    <!-- Integración de Cámara -->
-    <div class="mb-6">
-      <label class="block text-sm font-medium text-gray-700 mb-2">Foto del Paquete (Evidencia)</label>
-      <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center cursor-pointer hover:bg-gray-50 transition" onclick="document.getElementById('camera').click()">
-        <span class="text-blue-500 font-bold">📸 Abrir Cámara</span>
-        <input type="file" id="camera" accept="image/*" capture="environment" class="hidden" onchange="previewImage(event)">
+    <!-- MÓDULO DUEÑO: Dashboard Financiero Móvil -->
+    <div class="solo-dueno mb-4 space-y-3">
+      <div class="bg-white p-4 rounded-xl shadow border-l-4 border-blue-500 flex justify-between items-center">
+        <span class="font-bold text-gray-600">En Tránsito:</span>
+        <span class="text-2xl font-bold text-gray-800" id="dashPendientes">...</span>
       </div>
-      <img id="preview" class="mt-3 rounded-lg hidden w-full h-48 object-cover">
+      <div class="bg-white p-4 rounded-xl shadow border-l-4 border-green-500 flex justify-between items-center">
+        <span class="font-bold text-gray-600">Entregados:</span>
+        <span class="text-2xl font-bold text-gray-800" id="dashEntregados">...</span>
+      </div>
+      <div class="bg-white p-4 rounded-xl shadow border-l-4 border-yellow-500 text-center">
+        <span class="font-bold text-gray-600 block mb-1">Cuentas por Cobrar</span>
+        <span class="text-2xl font-bold text-gray-800">Gs. <span id="dashCobrar">...</span></span>
+      </div>
+      <button onclick="window.open('https://docs.google.com/spreadsheets/d/1dAhefOk9MTmJRSL560K_KcmnOWRzazHJJVnbAdvM130/export?format=csv&gid=0')" class="w-full bg-green-600 text-white font-bold py-3 rounded-xl shadow">
+        📊 Descargar Reporte (CSV)
+      </button>
     </div>
 
-    <button onclick="confirmarEntrega()" class="w-full bg-green-500 text-white font-bold py-3 rounded-lg mb-4 shadow-lg active:bg-green-600">
-      ✅ Confirmar Entrega
-    </button>
+    <!-- MÓDULO OPERATIVO: Entregas (Visible para Dueño y Empleados) -->
+    <div class="bg-white rounded-xl shadow-md p-5">
+      <h3 class="font-bold text-gray-800 mb-4 text-center">Registro de Entrega</h3>
+      
+      <div class="mb-4">
+        <label class="block font-bold text-sm text-gray-700">ID del Envío</label>
+        <input type="text" id="idEnvio" placeholder="Ej: ENV-123..." class="w-full border p-3 mt-1 rounded-lg text-lg">
+      </div>
 
-    <hr class="my-6">
+      <div class="mb-4">
+        <div class="border-2 border-dashed border-gray-300 p-4 text-center cursor-pointer rounded-lg bg-gray-50" onclick="document.getElementById('camera').click()">
+          <span class="text-blue-500 font-bold">📸 Tomar Foto</span>
+          <input type="file" id="camera" accept="image/*" capture="environment" class="hidden" onchange="leerFoto(event)">
+        </div>
+        <img id="preview" class="mt-3 rounded-lg hidden w-full h-48 object-cover">
+      </div>
 
-    <!-- Impresión Térmica Bluetooth -->
-    <h3 class="text-md font-bold text-gray-700 mb-2">Impresión de Tickets (TSI)</h3>
-    <button onclick="conectarEImprimir(false)" class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg mb-2 shadow-lg">
-      🖨️ Imprimir Ticket (Cliente)
-    </button>
-    <button onclick="conectarEImprimir(true)" class="w-full bg-indigo-800 text-white font-bold py-3 rounded-lg shadow-lg">
-      🖨️ Imprimir Ticket (Empresa con Firma)
-    </button>
+      <button onclick="subirFoto()" class="w-full bg-green-500 text-white font-bold py-3 rounded-lg shadow mb-6">
+        ✅ Guardar Entrega
+      </button>
+
+      <hr class="mb-4">
+
+      <h3 class="font-bold text-gray-700 mb-2">Impresora Térmica</h3>
+      <button onclick="imprimirTicket()" class="w-full bg-blue-600 text-white py-3 rounded-lg shadow">
+        🖨️ Imprimir Comprobante
+      </button>
+    </div>
   </div>
 
   <script>
-    let base64Photo = "";
+    // Control de Vistas y Carga de Datos
+    document.addEventListener("DOMContentLoaded", () => {
+      const rol = "<?= rol ?>";
+      if (rol === 'Empleado') {
+        document.querySelectorAll('.solo-dueno').forEach(el => el.style.display = 'none');
+      } else {
+        google.script.run.withSuccessHandler(data => {
+          document.getElementById('dashPendientes').innerText = data.pendientes;
+          document.getElementById('dashEntregados').innerText = data.entregados;
+          document.getElementById('dashCobrar').innerText = data.porCobrar.toLocaleString('es-PY');
+        }).getDashboardData();
+      }
+    });
 
-    // Convertir foto a Base64 para enviarla al backend
-    function previewImage(event) {
-      const file = event.target.files[0];
+    let fotoData = "";
+
+    function leerFoto(e) {
+      const file = e.target.files[0];
       if(!file) return;
       const reader = new FileReader();
-      reader.onload = function(e) {
-        document.getElementById('preview').src = e.target.result;
+      reader.onload = function(ev) {
+        document.getElementById('preview').src = ev.target.result;
         document.getElementById('preview').classList.remove('hidden');
-        base64Photo = e.target.result;
+        fotoData = ev.target.result;
       };
       reader.readAsDataURL(file);
     }
 
-    function confirmarEntrega() {
+    function subirFoto() {
       const id = document.getElementById('idEnvio').value;
-      if(!id || !base64Photo) return alert("Falta el ID o la foto.");
+      if(!id || !fotoData) return alert("Falta el ID o la foto.");
+      document.body.style.opacity = '0.5';
       
-      document.body.style.opacity = '0.5'; // Loading state
       google.script.run.withSuccessHandler(res => {
         document.body.style.opacity = '1';
         if(res.success) {
-          alert("Entrega confirmada y foto guardada.");
+          alert("Entrega registrada correctamente.");
           document.getElementById('preview').classList.add('hidden');
-          base64Photo = "";
+          document.getElementById('idEnvio').value = '';
+          fotoData = "";
         } else {
-          alert("Error: " + res.error);
+          alert("Error: Verifica que el ID sea correcto.");
         }
-      }).confirmarEntrega(id, base64Photo);
+      }).confirmarEntrega(id, fotoData);
     }
 
-    // LÓGICA BLUETOOTH IMPRESORA TÉRMICA (Comandos ESC/POS)
-    async function conectarEImprimir(esCopiaEmpresa) {
+    async function imprimirTicket() {
       try {
-        // Solicita conectar al dispositivo (requiere Chrome en Android)
-        const device = await navigator.bluetooth.requestDevice({
-          acceptAllDevices: true,
-          optionalServices: ['000018f0-0000-1000-8000-00805f9b34fb'] // UUID genérico de impresoras
-        });
-        
+        const device = await navigator.bluetooth.requestDevice({ acceptAllDevices: true, optionalServices: ['000018f0-0000-1000-8000-00805f9b34fb'] });
         const server = await device.gatt.connect();
         const service = await server.getPrimaryService('000018f0-0000-1000-8000-00805f9b34fb');
-        const characteristic = await service.getCharacteristic('00002af1-0000-1000-8000-00805f9b34fb');
+        const char = await service.getCharacteristic('00002af1-0000-1000-8000-00805f9b34fb');
 
-        // Formato exacto del ticket TSI en texto plano
-        let ticketTexto = 
-          "--------------------------------\n" +
-          "   TRANSPORTADORA SAN IGNACIO   \n" +
-          "      ENCOMIENDAS Y CARGAS      \n" +
-          " RUC: 80051359-2                \n" +
-          "--------------------------------\n" +
-          "      COMPROBANTE DE ENVIO      \n" +
-          "--------------------------------\n" +
-          "ORIGEN: CDE\n" +
-          "FECHA: " + new Date().toLocaleDateString() + "\n" +
-          "AGENTE: FERNANDO RODRIGUEZ\n" +
-          "--------------------------------\n" +
-          "DESTINO: ASUNCION\n" +
-          "--------------------------------\n" +
-          "REMITENTE: \n" +
-          "DESTINATARIO: \n" +
-          "--------------------------------\n" +
-          "DETALLE:\n" +
-          "1 (UNO) PAQUETE\n" +
-          "--------------------------------\n" +
-          "COSTO Gs: 25.000\n" +
-          "PAGO: COBRO EN DESTINO\n";
-
-        if (esCopiaEmpresa) {
-          ticketTexto += "\n\nFIRMA: _______________________\nACLARACION:\n";
-        }
+        let texto = "TRANSPORTADORA TSI\nCOMPROBANTE DE ENVIO\n----------------------\nAgente: <?= usuario ?>\nFecha: " + new Date().toLocaleDateString() + "\n----------------------\nFIRMA: ______________\n\n\n";
         
-        ticketTexto += "\n\n\n"; // Avance de papel
-
-        // Convertir texto a bytes para enviar a la impresora
-        let encoder = new TextEncoder("utf-8");
-        let data = encoder.encode(ticketTexto);
-        
-        // Enviar en chunks si es muy grande (Bluetooth BLE limita a 512 bytes usualmente)
-        await characteristic.writeValue(data);
-        alert("Ticket impreso correctamente.");
-
-      } catch (error) {
-        console.error("Error Bluetooth:", error);
-        alert("Fallo la conexión Bluetooth. Asegúrate de tener el GPS y Bluetooth activados, y usar Chrome en Android.");
+        await char.writeValue(new TextEncoder().encode(texto));
+        alert("Impreso con éxito");
+      } catch(e) {
+        alert("Error de conexión Bluetooth.");
       }
     }
   </script>
