@@ -5,14 +5,18 @@
   <title>Luis Transportes - Móvil</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- LIBRERÍA PARA LEER CÓDIGOS QR CON LA CÁMARA -->
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
   <style> 
     body { background-color: #f1f5f9; font-family: 'Segoe UI', sans-serif; } 
+    
+    /* BLOQUEA QUE SE VEA EN PANTALLA NORMAL */
+    @media screen { .print-area { display: none !important; } }
+    
+    /* PERMITE QUE SE VEA SOLO EN LA IMPRESORA / PDF */
     @media print {
       body * { visibility: hidden; }
-      .print-section, .print-section * { visibility: visible; }
-      .print-section { position: absolute; left: 0; top: 0; width: 100%; height: auto; background: white; padding: 10px; display: block !important; }
+      .print-area.active-print, .print-area.active-print * { visibility: visible; }
+      .print-area.active-print { position: absolute; left: 0; top: 0; width: 100%; background: white; padding: 10px; display: block !important; }
       header, main, #sideMenu, #menuOverlay, #loginScreen, #modalVisorFoto, #modalScanner { display: none !important; }
     }
   </style>
@@ -74,7 +78,6 @@
       <button onclick="cambiarVista('vistaEntregas', 'fa-house-circle-check')" class="w-full text-left p-4 rounded-xl hover:bg-slate-100 text-emerald-700 navBtn border border-transparent"><i class="fa-solid fa-house-circle-check w-6 text-center mr-1"></i> Confirmar Entrega</button>
       <button onclick="cambiarVista('vistaHistorial', 'fa-list')" class="w-full text-left p-4 rounded-xl hover:bg-slate-100 navBtn border border-transparent"><i class="fa-solid fa-list w-6 text-center mr-1"></i> Historial Envíos</button>
       
-      <!-- BOTONES DE DUEÑO -->
       <button id="btnNavFinanzas" onclick="cambiarVista('vistaFinanzas', 'fa-chart-line')" class="w-full text-left p-4 rounded-xl hover:bg-slate-100 navBtn hidden border border-transparent"><i class="fa-solid fa-chart-line w-6 text-center mr-1"></i> Balance Financiero</button>
       <button id="btnNavCobranzas" onclick="cambiarVista('vistaCobranzas', 'fa-file-invoice-dollar')" class="w-full text-left p-4 rounded-xl hover:bg-slate-100 navBtn hidden text-emerald-600 border border-transparent"><i class="fa-solid fa-file-invoice-dollar w-6 text-center mr-1"></i> Cobranzas Corp.</button>
       <button id="btnNavPersonal" onclick="cambiarVista('vistaPersonal', 'fa-users')" class="w-full text-left p-4 rounded-xl hover:bg-slate-100 navBtn hidden text-amber-600 border border-transparent"><i class="fa-solid fa-users w-6 text-center mr-1"></i> Gestión Personal</button>
@@ -83,19 +86,17 @@
   </div>
   <div id="menuOverlay" onclick="toggleMenu()" class="fixed inset-0 bg-slate-900 bg-opacity-60 hidden z-40 backdrop-blur-sm"></div>
 
-  <!-- VISTA 1: RECIBIR PAQUETE (REGISTRO) -->
+  <!-- VISTA 1: RECIBIR PAQUETE -->
   <main id="vistaNuevo" class="px-4 hidden">
     <div class="bg-white rounded-2xl shadow-md p-5 mb-6 border-2 border-slate-200">
       <h3 class="font-black text-slate-800 text-xl mb-4 text-center border-b-2 border-slate-100 pb-3 text-blue-900 uppercase tracking-widest">Nuevo Paquete</h3>
       <form onsubmit="guardarEnvioMovil(event)" class="space-y-5">
-        
         <div class="bg-slate-50 p-4 rounded-xl border-2 border-slate-300">
           <p class="font-black text-sm text-blue-900 uppercase tracking-widest mb-3"><i class="fa-solid fa-user mr-1"></i> Remitente</p>
           <input type="text" id="m_ciRem" onblur="buscarM('Rem')" placeholder="CI/RUC Remitente" class="w-full border-2 border-slate-400 p-4 rounded-xl font-black text-slate-900 bg-white placeholder-slate-400 focus:border-blue-700 focus:outline-none mb-3 text-lg" required>
           <input type="text" id="m_nomRem" placeholder="Nombre Remitente" class="w-full border-2 border-slate-400 p-4 rounded-xl font-bold text-slate-900 bg-white placeholder-slate-400 focus:border-blue-700 focus:outline-none mb-3 text-lg" required>
           <input type="text" id="m_telRem" placeholder="Teléfono" class="w-full border-2 border-slate-400 p-4 rounded-xl font-bold text-slate-900 bg-white placeholder-slate-400 focus:border-blue-700 focus:outline-none text-lg" required>
         </div>
-        
         <div class="bg-slate-50 p-4 rounded-xl border-2 border-slate-300">
           <p class="font-black text-sm text-blue-900 uppercase tracking-widest mb-3"><i class="fa-solid fa-location-dot mr-1"></i> Destinatario</p>
           <input type="text" id="m_ciDest" onblur="buscarM('Dest')" placeholder="CI/RUC Destino" class="w-full border-2 border-slate-400 p-4 rounded-xl font-black text-slate-900 bg-white placeholder-slate-400 focus:border-blue-700 focus:outline-none mb-3 text-lg" required>
@@ -103,12 +104,10 @@
           <input type="text" id="m_telDest" placeholder="Teléfono" class="w-full border-2 border-slate-400 p-4 rounded-xl font-bold text-slate-900 bg-white placeholder-slate-400 focus:border-blue-700 focus:outline-none mb-3 text-lg">
           <input type="text" id="m_dirDest" placeholder="Dirección Destino" class="w-full border-2 border-slate-400 p-4 rounded-xl font-bold text-slate-900 bg-white placeholder-slate-400 focus:border-blue-700 focus:outline-none text-lg">
         </div>
-        
         <div class="bg-blue-50 p-4 rounded-xl border-2 border-blue-300 shadow-inner">
           <p class="font-black text-sm text-blue-900 uppercase tracking-widest mb-3"><i class="fa-solid fa-box-open mr-1"></i> Cobro y Detalles</p>
           <input type="text" id="m_detalle" placeholder="¿Qué contiene el paquete?" class="w-full border-2 border-slate-400 p-4 rounded-xl font-bold text-slate-900 bg-white placeholder-slate-400 focus:border-blue-700 focus:outline-none mb-3 text-lg" required>
-          <input type="number" id="m_costo" placeholder="Costo del Envío (Gs.)" class="w-full border-2 border-emerald-500 p-4 rounded-xl font-black text-emerald-800 text-2xl bg-white placeholder-emerald-300 focus:outline-none mb-4 text-center" required>
-          
+          <input type="number" id="m_costo" placeholder="Costo del Envío (Gs.)" class="w-full border-2 border-emerald-500 p-4 rounded-xl font-black text-emerald-800 text-2xl bg-white placeholder-emerald-500 focus:outline-none mb-4 text-center" required>
           <p class="font-black text-xs text-slate-500 uppercase tracking-widest mb-2 ml-1">Modalidad de Pago:</p>
           <select id="m_tipoCli" class="w-full border-2 border-slate-400 p-4 rounded-xl font-black text-slate-900 bg-white focus:outline-none text-lg">
             <option value="Contado">Paga el que ENVÍA (Aquí)</option>
@@ -116,7 +115,6 @@
             <option value="Corporativo">Cuenta CORPORATIVA</option>
           </select>
         </div>
-        
         <div class="border-2 border-dashed border-slate-400 bg-slate-50 p-6 text-center rounded-xl mt-4 cursor-pointer active:bg-slate-100 transition" onclick="document.getElementById('cameraRecepcion').click()">
           <p class="font-black text-slate-600 text-sm uppercase tracking-widest"><i class="fa-solid fa-camera mb-3 text-4xl text-blue-500 block"></i>Foto del Paquete<br><span class="text-[10px] text-slate-400 mt-1 block">(OPCIONAL)</span></p>
           <input type="file" id="cameraRecepcion" accept="image/*" capture="environment" class="hidden" onchange="leerFoto(event, 'previewRecepcion', 2)">
@@ -129,9 +127,7 @@
       <!-- TICKETERA BLUETOOTH -->
       <div class="bg-slate-100 rounded-xl border-2 border-slate-300 p-5 mt-8 shadow-inner">
         <h3 class="font-black text-slate-900 text-sm uppercase tracking-widest mb-4 text-center"><i class="fa-solid fa-print text-blue-800 mr-2"></i> Ticketera Bluetooth</h3>
-        <!-- Campo oculto para guardar el ID generado y mandarlo a imprimir -->
         <input type="hidden" id="idParaImprimir">
-        
         <div class="grid grid-cols-2 gap-4">
           <button type="button" onclick="imprimirTicket(1)" class="bg-slate-800 text-white py-4 rounded-xl font-black shadow-md active:scale-95 transition tracking-widest"><i class="fa-solid fa-receipt mr-1"></i> Cliente</button>
           <button type="button" onclick="imprimirTicket(2)" class="bg-blue-800 text-white py-4 rounded-xl font-black shadow-md active:scale-95 transition tracking-widest"><i class="fa-solid fa-box mr-1"></i> Paquete</button>
@@ -146,19 +142,15 @@
     <div class="bg-white rounded-2xl shadow-sm p-5 mb-4 border-2 border-slate-200">
       <h3 class="font-black text-slate-800 text-xl mb-4 text-center border-b-2 border-slate-100 pb-3 text-blue-900 uppercase tracking-widest">Hoja de Ruta (Viaje)</h3>
       <input type="text" id="m_rutaDestino" placeholder="Ciudad / Destino (Ej: CDE)" class="w-full border-2 border-slate-300 p-4 rounded-xl text-xl text-center font-black mb-4 uppercase text-slate-900 bg-slate-50 placeholder-slate-400 focus:bg-white focus:border-blue-700 focus:outline-none">
-      <button onclick="buscarRutaM(this)" class="w-full bg-blue-800 text-white font-black py-4 rounded-xl shadow-lg transition tracking-widest text-lg active:scale-95"><i class="fa-solid fa-search mr-2"></i> FILTRAR CARGAS</button>
+      <button onclick="buscarRutaM(this)" class="w-full bg-blue-800 hover:bg-slate-900 text-white font-black py-4 rounded-xl shadow-lg transition tracking-widest text-lg active:scale-95"><i class="fa-solid fa-search mr-2"></i> FILTRAR CARGAS</button>
     </div>
-
-    <!-- Resultados Hoja de Ruta -->
     <div id="m_rutaResultados" class="hidden">
       <div class="bg-[#111827] text-white p-6 rounded-2xl shadow-2xl mb-5 border-2 border-slate-700 text-center relative overflow-hidden">
         <p class="text-xs font-bold opacity-70 uppercase tracking-widest mb-1 relative z-10">Efectivo Total a Cobrar (Ruta)</p>
         <p class="text-4xl font-black text-emerald-400 relative z-10 tracking-tighter">Gs. <span id="m_rutaTotalCobrar">0</span></p>
       </div>
-      <div class="flex justify-end mb-4">
-        <button onclick="imprimirPDFRuta_M()" class="bg-slate-800 text-white font-black py-4 px-6 rounded-xl shadow-lg active:scale-95 transition tracking-widest w-full"><i class="fa-solid fa-file-pdf mr-2"></i> GUARDAR PDF / IMPRIMIR</button>
-      </div>
-      <div id="m_listaRutas" class="space-y-4 pb-8"></div>
+      <div class="flex justify-end mb-4"><button onclick="imprimirPDFRuta_M()" class="bg-slate-800 text-white font-black py-4 px-6 rounded-xl shadow-lg active:scale-95 transition tracking-widest w-full"><i class="fa-solid fa-file-pdf mr-2"></i> GUARDAR PDF / IMPRIMIR</button></div>
+      <div id="m_listaRutas" class="space-y-3 pb-8"></div>
     </div>
   </main>
 
@@ -166,7 +158,6 @@
   <main id="vistaEntregas" class="px-4 hidden">
     <div class="bg-white rounded-2xl shadow-sm p-5 mb-4 border-2 border-slate-200">
       <h3 class="font-black text-slate-800 text-xl mb-4 text-center border-b-2 border-slate-100 pb-3 text-blue-900 uppercase tracking-widest">Confirmar Entrega</h3>
-      
       <p class="text-xs font-black text-slate-500 uppercase tracking-widest mb-2 text-center">Ingrese el número de paquete</p>
       <div class="flex items-center gap-2 mb-4">
         <div class="flex flex-1 border-2 border-slate-300 rounded-xl overflow-hidden focus-within:border-blue-700 bg-white shadow-inner">
@@ -175,10 +166,8 @@
         </div>
         <button onclick="abrirScanner()" class="bg-slate-900 text-white p-4 px-6 rounded-xl shadow-lg active:scale-95 transition border-2 border-slate-900" title="Escanear QR del Ticket"><i class="fa-solid fa-qrcode text-3xl"></i></button>
       </div>
-      
       <button id="btnBuscarEnvio" onclick="buscarDetalleEnvioM(this)" class="w-full bg-blue-800 text-white font-black py-4 rounded-xl shadow-lg tracking-widest active:scale-95 transition mb-6 text-lg"><i class="fa-solid fa-search mr-2"></i> BUSCAR PAQUETE</button>
 
-      <!-- Panel de Datos al Encontrar -->
       <div id="m_detalleEnvio" class="hidden bg-slate-50 p-5 rounded-xl border-2 border-slate-200 mb-6">
         <div class="mb-3 border-b-2 border-slate-200 pb-3">
           <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Destinatario</p>
@@ -197,7 +186,6 @@
         </div>
       </div>
 
-      <!-- Area de Foto y Guardar -->
       <div id="m_areaEntrega" class="hidden">
         <div class="border-2 border-dashed border-slate-400 bg-slate-50 p-6 text-center rounded-xl active:bg-slate-100 transition cursor-pointer" onclick="document.getElementById('cameraEntrega').click()">
           <p class="font-black text-slate-700 text-sm uppercase tracking-widest"><i class="fa-solid fa-camera mb-2 text-4xl text-blue-600 block"></i>Foto de Entrega / Firma<br><span class="text-[10px] text-slate-400 block mt-1">(OPCIONAL)</span></p>
@@ -236,8 +224,6 @@
       <h3 class="font-black text-slate-800 text-lg mb-4 text-center border-b-2 border-slate-100 pb-3 text-emerald-800 uppercase tracking-widest">Liquidar Empresa</h3>
       <input type="text" id="m_cobranzaRuc" placeholder="RUC Empresa (Ej: 1234567)" class="w-full border-2 border-slate-400 p-4 rounded-xl font-black text-center text-xl text-slate-900 bg-slate-50 focus:bg-white focus:border-emerald-600 focus:outline-none mb-4">
       <button onclick="buscarDeudaM(this)" class="w-full bg-emerald-600 text-white font-black py-4 rounded-xl shadow-lg transition tracking-widest text-lg active:scale-95"><i class="fa-solid fa-search mr-2"></i> BUSCAR DEUDA</button>
-      
-      <!-- Resultados Cobranza -->
       <div id="m_cobranzaResultados" class="hidden mt-6 pt-6 border-t-2 border-slate-200">
         <div class="text-center pb-4 mb-4 border-b border-slate-100">
           <h3 class="font-black text-2xl text-slate-900 leading-tight uppercase" id="m_cobranzaNombre">Empresa S.A.</h3>
@@ -272,14 +258,12 @@
   </main>
 
   <!-- AREA PDF: COBRANZAS CORPORATIVAS (Oculta hasta imprimir) -->
-  <div id="printAreaCobranzas" class="hidden print-section text-black font-sans">
-    <div class="flex items-center justify-between border-b-4 border-black pb-4 mb-4">
+  <div id="printAreaCobranzas" class="print-area text-black font-sans">
+    <div class="flex items-center justify-between border-b-2 border-black pb-4 mb-4">
       <img src="logo.png" onerror="this.src='logo.jpeg'" style="max-height: 50px; object-fit: contain;">
       <div class="text-right"><h1 class="text-xl font-black uppercase">Luis Transportes</h1><h2 class="text-sm font-bold mt-1">EXTRACTO DE CUENTA</h2><p class="text-[10px] font-semibold" id="printCobFecha"></p></div>
     </div>
-    <div class="mb-4 text-xs leading-tight">
-      <p><strong>Cliente:</strong> <span id="printCobNombre" class="uppercase font-bold"></span></p><p><strong>RUC:</strong> <span id="printCobRuc"></span></p>
-    </div>
+    <div class="mb-4 text-xs leading-tight"><p><strong>Cliente:</strong> <span id="printCobNombre" class="uppercase font-bold"></span></p><p><strong>RUC:</strong> <span id="printCobRuc"></span></p></div>
     <table class="w-full text-left text-[10px] border-collapse border border-black mb-6">
       <thead><tr class="bg-gray-200"><th class="border border-black p-1 font-bold">ID / Fecha</th><th class="border border-black p-1 font-bold">Destino / Detalle</th><th class="border border-black p-1 font-bold text-right">Costo</th></tr></thead>
       <tbody id="printCobTabla"></tbody>
@@ -289,8 +273,8 @@
   </div>
 
   <!-- AREA PDF: HOJA DE RUTA MÓVIL (Oculta hasta imprimir) -->
-  <div id="printAreaRuta" class="hidden print-section text-black font-sans">
-    <div class="flex items-center justify-between border-b-4 border-black pb-4 mb-4">
+  <div id="printAreaRuta" class="print-area text-black font-sans">
+    <div class="flex items-center justify-between border-b-2 border-black pb-4 mb-4">
       <img src="logo.png" onerror="this.src='logo.jpeg'" style="max-height: 50px; object-fit: contain;">
       <div class="text-right"><h1 class="text-xl font-black uppercase">Luis Transportes</h1><h2 class="text-sm font-bold mt-1">HOJA DE RUTA / VIAJE</h2><p class="text-[10px] font-semibold" id="printRutaFecha"></p></div>
     </div>
@@ -306,7 +290,7 @@
     const API_URL = "https://script.google.com/macros/s/AKfycbyAwM6OAW5u_jLp2y2iCdJZtK3P7yUONt2UEFIuVTRYNIrwQGMD03_uJyGpzJnxcKkYmQ/exec";
     let usuarioActual = ""; let fotoEntregaData = ""; let fotoRecepcionData = ""; 
     let historialGlobalM = []; let pendientesDeudaGlobal = []; let idEntregaActivoM = "";
-    let html5QrcodeScanner; // Para el lector de QR
+    let html5QrcodeScanner;
 
     function toggleMenu() {
       const menu = document.getElementById('sideMenu'); const overlay = document.getElementById('menuOverlay');
@@ -352,7 +336,6 @@
       if(vista === 'vistaPersonal') cargarUsuarios();
     }
 
-    // VISOR FLOTANTE ANTI-BLOQUEO
     function abrirVisorFoto(urlDrive) {
       let id = extraerIdDrive(urlDrive); if(!id) return;
       document.getElementById('visorFotoImg').src = `https://drive.google.com/thumbnail?id=${id}&sz=w1000`;
@@ -360,7 +343,7 @@
       document.getElementById('modalVisorFoto').classList.remove('hidden');
     }
 
-    // ESCÁNER QR DE CÁMARA
+    // ESCÁNER QR
     function abrirScanner() {
       document.getElementById('modalScanner').classList.remove('hidden');
       html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: {width: 250, height: 250} }, false);
@@ -368,34 +351,30 @@
     }
     function onScanSuccess(decodedText, decodedResult) {
       cerrarScanner();
-      let num = decodedText.replace(/\D/g, ''); // Extrae solo los números del QR
+      let num = decodedText.replace(/\D/g, ''); 
       if(num) {
         document.getElementById('idEnvioBuscar').value = num;
         buscarDetalleEnvioM(document.getElementById('btnBuscarEnvio'));
       }
     }
-    function onScanFailure(error) { /* Silencioso hasta que engancha */ }
+    function onScanFailure(error) {}
     function cerrarScanner() {
       if(html5QrcodeScanner) html5QrcodeScanner.clear();
       document.getElementById('modalScanner').classList.add('hidden');
     }
 
-    // FORMATEO VISUAL DEL PAGO
     function formatPagoVisual(modo) {
       if(modo === 'Cobro en Destino') return '<span class="text-rose-600 font-black uppercase">Paga RECIBE</span>';
       if(modo === 'Pendiente Fin de Mes') return '<span class="text-blue-600 font-black uppercase">Corp.</span>';
       return '<span class="text-emerald-600 font-black uppercase">Paga ENVÍA</span>';
     }
 
-    // --- NUEVA CONFIRMACIÓN DE ENTREGA MÓVIL ---
     async function buscarDetalleEnvioM(btn) {
       let idBuscado = document.getElementById('idEnvioBuscar').value.trim();
       if(!idBuscado) return alert("Ingrese un número de ID");
       if(!idBuscado.toUpperCase().startsWith("LT-")) idBuscado = "LT-" + idBuscado;
       
-      document.getElementById('m_detalleEnvio').classList.add('hidden');
-      document.getElementById('m_areaEntrega').classList.add('hidden');
-      
+      document.getElementById('m_detalleEnvio').classList.add('hidden'); document.getElementById('m_areaEntrega').classList.add('hidden');
       let tOri = btn.innerHTML; btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Buscando..."; btn.disabled = true;
       const res = await apiRequest({ accion: 'getDetalleEnvio', idBuscado: idBuscado });
       btn.innerHTML = tOri; btn.disabled = false;
@@ -403,16 +382,10 @@
       if(res.success) {
         if(res.envio.estado === 'Entregado') return alert("Este paquete YA FUE ENTREGADO.");
         idEntregaActivoM = res.envio.id;
-        document.getElementById('m_e_destinatario').innerText = res.envio.destinatario;
-        document.getElementById('m_e_direccion').innerText = res.envio.direccion;
-        document.getElementById('m_e_detalle').innerText = res.envio.detalle;
-        document.getElementById('m_e_pagoStr').innerHTML = formatPagoVisual(res.envio.pagoAviso);
-        let aCobrar = (res.envio.pagoAviso === 'Cobro en Destino') ? res.envio.costo : 0;
-        document.getElementById('m_e_cobrar').innerText = aCobrar.toLocaleString('es-PY');
-        
+        document.getElementById('m_e_destinatario').innerText = res.envio.destinatario; document.getElementById('m_e_direccion').innerText = res.envio.direccion; document.getElementById('m_e_detalle').innerText = res.envio.detalle; document.getElementById('m_e_pagoStr').innerHTML = formatPagoVisual(res.envio.pagoAviso);
+        let aCobrar = (res.envio.pagoAviso === 'Cobro en Destino') ? res.envio.costo : 0; document.getElementById('m_e_cobrar').innerText = aCobrar.toLocaleString('es-PY');
         document.getElementById('idEnvioBuscar').value = res.envio.id.replace('LT-','');
-        document.getElementById('m_detalleEnvio').classList.remove('hidden');
-        document.getElementById('m_areaEntrega').classList.remove('hidden');
+        document.getElementById('m_detalleEnvio').classList.remove('hidden'); document.getElementById('m_areaEntrega').classList.remove('hidden');
       } else { alert("ID NO ENCONTRADO en la base de datos."); }
     }
 
@@ -423,47 +396,23 @@
       let tOri = btn.innerHTML; btn.innerHTML = "REGISTRANDO..."; btn.disabled = true;
       const res = await apiRequest({ accion: 'confirmarEntrega', idEnvio: idEntregaActivoM, foto: fotoEntregaData });
       btn.innerHTML = tOri; btn.disabled = false;
-      if(res.success) { 
-        alert("¡Paquete ENTREGADO exitosamente!"); 
-        document.getElementById('idEnvioBuscar').value=''; 
-        document.getElementById('previewEntrega').classList.add('hidden'); 
-        document.getElementById('m_detalleEnvio').classList.add('hidden');
-        document.getElementById('m_areaEntrega').classList.add('hidden');
-        fotoEntregaData=""; idEntregaActivoM=""; historialGlobalM=[]; 
-      } else alert(res.error);
+      if(res.success) { alert("¡Paquete ENTREGADO exitosamente!"); document.getElementById('idEnvioBuscar').value=''; document.getElementById('previewEntrega').classList.add('hidden'); document.getElementById('m_detalleEnvio').classList.add('hidden'); document.getElementById('m_areaEntrega').classList.add('hidden'); fotoEntregaData=""; idEntregaActivoM=""; historialGlobalM=[]; } else alert(res.error);
     }
 
-    // --- MÓDULO HOJA DE RUTA MÓVIL ---
     async function buscarRutaM(btn) {
-      const dest = document.getElementById('m_rutaDestino').value.trim();
-      document.getElementById('m_rutaResultados').classList.add('hidden');
+      const dest = document.getElementById('m_rutaDestino').value.trim(); document.getElementById('m_rutaResultados').classList.add('hidden');
       const textOri = btn.innerHTML; btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> CARGANDO..."; btn.disabled = true;
       const res = await apiRequest({ accion: 'getHojaRuta', destino: dest });
       btn.innerHTML = textOri; btn.disabled = false;
-      
       if(res.success) {
-        document.getElementById('printRutaDestino').innerText = dest || "TODOS";
-        document.getElementById('printRutaFecha').innerText = "Emitido: " + new Date().toLocaleString('es-PY');
+        document.getElementById('printRutaDestino').innerText = dest || "TODOS"; document.getElementById('printRutaFecha').innerText = "Emitido: " + new Date().toLocaleString('es-PY');
         let tHtml = ""; let pHtml = ""; let totalCobrar = 0;
-        
         res.hoja.forEach(p => {
           totalCobrar += p.aCobrar;
-          tHtml += `
-            <div class="bg-white border-2 border-slate-200 rounded-xl p-4 shadow-sm mb-4">
-              <div class="flex justify-between border-b-2 border-slate-100 pb-3 mb-3"><span class="font-black text-blue-900 text-lg">${p.id}</span><span>${formatPagoVisual(p.pagoAviso)}</span></div>
-              <p class="font-bold text-slate-900 text-base leading-tight">${p.destinatario}</p>
-              <p class="text-xs font-bold text-slate-500 mb-2 mt-1"><i class="fa-solid fa-phone"></i> ${p.telefono} | ${p.direccion}</p>
-              <p class="text-xs font-black text-slate-700 bg-slate-50 p-2 rounded-lg border border-slate-200 mb-3"><i class="fa-solid fa-box mr-1"></i> ${p.detalle}</p>
-              <p class="text-right font-black text-emerald-600 text-xl tracking-tighter">Cobrar: Gs. ${p.aCobrar.toLocaleString('es-PY')}</p>
-            </div>`;
-          pHtml += `<tr><td class="border border-black p-1 font-bold">${p.id}</td><td class="border border-black p-1">${p.destinatario}<br><span style="font-size:8px;">${p.direccion}</span></td><td class="border border-black p-1 font-bold text-[8px]">${p.pagoAviso.replace('Cobro en Destino','Paga RECIBE').replace('Pagado','Paga ENVÍA')}</td><td class="border border-black p-1 text-right font-black">Gs. ${p.aCobrar.toLocaleString('es-PY')}</td></tr>`;
+          tHtml += `<div class="bg-white border-2 border-slate-200 rounded-xl p-3 shadow-sm mb-3"><div class="flex justify-between border-b-2 border-slate-100 pb-3 mb-3"><span class="font-black text-blue-900 text-lg">${p.id}</span><span>${formatPagoVisual(p.pagoAviso)}</span></div><p class="font-bold text-slate-900 text-base leading-tight">${p.destinatario}</p><p class="text-xs font-bold text-slate-500 mb-2 mt-1"><i class="fa-solid fa-phone"></i> ${p.telefono} | ${p.direccion}</p><p class="text-xs font-black text-slate-700 bg-slate-50 p-2 rounded-lg border border-slate-200 mb-3"><i class="fa-solid fa-box mr-1"></i> ${p.detalle}</p><p class="text-right font-black text-emerald-600 text-xl tracking-tighter">Cobrar: Gs. ${p.aCobrar.toLocaleString('es-PY')}</p></div>`;
+          pHtml += `<tr><td class="border border-slate-400 p-1 font-bold">${p.id}</td><td class="border border-slate-400 p-1">${p.destinatario}<br><span style="font-size:8px;">${p.direccion}</span></td><td class="border border-slate-400 p-1 font-bold text-[8px]">${p.pagoAviso.replace('Cobro en Destino','Paga RECIBE').replace('Pagado','Paga ENVÍA')}</td><td class="border border-slate-400 p-1 text-right font-black">Gs. ${p.aCobrar.toLocaleString('es-PY')}</td></tr>`;
         });
-        
-        if(res.hoja.length === 0) {
-          tHtml = "<p class='text-center text-sm font-bold text-slate-400 py-4'>No hay cargas en tránsito.</p>";
-          pHtml = "<tr><td colspan='4' class='border border-black p-2 text-center'>No hay cargas registradas</td></tr>";
-        }
-        
+        if(res.hoja.length === 0) { tHtml = "<p class='text-center text-sm font-bold text-slate-400 py-4'>No hay cargas en tránsito.</p>"; pHtml = "<tr><td colspan='4' class='border border-slate-400 p-2 text-center'>No hay cargas registradas</td></tr>"; }
         document.getElementById('m_listaRutas').innerHTML = tHtml; document.getElementById('printRutaTabla').innerHTML = pHtml;
         document.getElementById('m_rutaTotalCobrar').innerText = totalCobrar.toLocaleString('es-PY'); document.getElementById('printRutaTotal').innerText = totalCobrar.toLocaleString('es-PY');
         document.getElementById('m_rutaResultados').classList.remove('hidden');
@@ -471,8 +420,8 @@
     }
 
     function imprimirPDFRuta_M() {
-      document.getElementById('printAreaCobranzas').classList.remove('print-section'); document.getElementById('printAreaCobranzas').classList.add('hidden');
-      document.getElementById('printAreaRuta').classList.remove('hidden'); document.getElementById('printAreaRuta').classList.add('print-section');
+      document.getElementById('printAreaCobranzas').classList.remove('active-print');
+      document.getElementById('printAreaRuta').classList.add('active-print');
       window.print();
     }
 
@@ -499,9 +448,8 @@
       document.getElementById('btnRegMovil').innerHTML = "GUARDAR ENVÍO";
       if(res.success) { 
         alert("CREADO: " + res.id + "\nYa puede imprimir el ticket."); 
-        document.getElementById('idParaImprimir').value = res.id; // Guarda el ID para la ticketera
-        e.target.reset(); 
-        document.getElementById('previewRecepcion').classList.add('hidden'); fotoRecepcionData = ""; historialGlobalM = []; 
+        document.getElementById('idParaImprimir').value = res.id; 
+        e.target.reset(); document.getElementById('previewRecepcion').classList.add('hidden'); fotoRecepcionData = ""; historialGlobalM = []; 
       }
     }
 
@@ -567,7 +515,7 @@
           tHtml += `<div class="bg-slate-50 border-2 border-slate-200 p-4 rounded-xl"><div class="flex justify-between border-b-2 border-slate-200 pb-2 mb-2"><span class="font-black text-blue-900">${p.id}</span><span class="text-[10px] text-slate-500 font-bold">${p.fecha.split(',')[0]}</span></div><p class="text-sm font-black text-slate-800 truncate">${p.destino}</p><p class="text-xs text-slate-600 mb-2 truncate font-bold">${p.detalle}</p><p class="text-right font-black text-emerald-700 text-lg tracking-tighter">Gs. ${p.costo.toLocaleString('es-PY')}</p></div>`;
           pHtml += `<tr><td class="border border-black p-1 font-bold">${p.id}<br><span style="font-size:8px; font-weight:normal;">${p.fecha.split(',')[0]}</span></td><td class="border border-black p-1">${p.destino}<br><span style="font-size:8px;">${p.detalle}</span></td><td class="border border-black p-1 text-right font-bold">Gs. ${p.costo.toLocaleString('es-PY')}</td></tr>`;
         });
-        if(res.pendientes.length === 0) tHtml = "<p class='text-center text-sm font-bold text-slate-500 py-4'>Sin deudas pendientes.</p>";
+        if(res.pendientes.length === 0) tHtml = "<p class='text-center text-xs font-bold text-slate-500 py-4'>Sin deudas pendientes.</p>";
         document.getElementById('m_tablaDeudas').innerHTML = tHtml; document.getElementById('printCobTabla').innerHTML = pHtml;
         document.getElementById('m_cobranzaResultados').classList.remove('hidden');
       }
@@ -576,8 +524,8 @@
     function imprimirPDFCobranza_M() {
       if(pendientesDeudaGlobal.length === 0) return alert("No hay datos.");
       document.getElementById('printCobFecha').innerText = "Emitido: " + new Date().toLocaleString('es-PY');
-      document.getElementById('printAreaRuta').classList.remove('print-section'); document.getElementById('printAreaRuta').classList.add('hidden');
-      document.getElementById('printAreaCobranzas').classList.remove('hidden'); document.getElementById('printAreaCobranzas').classList.add('print-section');
+      document.getElementById('printAreaRuta').classList.remove('active-print');
+      document.getElementById('printAreaCobranzas').classList.add('active-print');
       window.print(); 
     }
 
@@ -603,7 +551,6 @@
     async function borrarUser(u) { if(u === 'admin') return alert("No se puede borrar admin."); if(confirm(`¿Eliminar ${u}?`)) { const res = await apiRequest({ accion: 'eliminarUsuario', usuarioTarget: u }); if(res.success) cargarUsuarios(); } }
     async function solicitarCambioPass(u) { let n = prompt(`Nueva contraseña para ${u}:`); if(n && n.trim() !== "") { const res = await apiRequest({ accion: 'cambiarPassword', usuarioTarget: u, nuevaPass: n.trim() }); if(res.success) alert("Actualizada."); } }
 
-    // --- IMPRESIÓN BLUETOOTH CON COMANDO QR ESC/POS ---
     async function imprimirTicket(tipo) {
       let idParaImprimir = document.getElementById('idParaImprimir').value;
       if(!idParaImprimir) return alert("Debe GUARDAR EL ENVÍO primero para generar el ticket.");
@@ -617,35 +564,22 @@
         let headerTxt = "--------------------------------\n        LUIS TRANSPORTES\n--------------------------------\nCOMPROBANTE DE ENVIO\nID: " + idParaImprimir + "\nFecha: " + new Date().toLocaleDateString() + "\n"; 
         if(tipo === 2) headerTxt += "\n\nCOPIA EMPRESA\nFIRMA: _______________________\nACLARACION:\n"; 
         
-        // CONSTRUIR ARRAY DE BYTES PARA INCLUIR QR EN ESC/POS
-        let encoder = new TextEncoder();
-        let bytes = [];
-        
-        // Inicializar impresora
+        let encoder = new TextEncoder(); let bytes = [];
         bytes.push(0x1B, 0x40);
-        // Texto
         let textBytes = encoder.encode(headerTxt + "\n");
         textBytes.forEach(b => bytes.push(b));
         
-        // COMANDOS QR ESC/POS (Soportado por 95% de ticketeras 58/80mm)
         let qrStr = idParaImprimir;
-        let pL = (qrStr.length + 3) % 256;
-        let pH = Math.floor((qrStr.length + 3) / 256);
+        let pL = (qrStr.length + 3) % 256; let pH = Math.floor((qrStr.length + 3) / 256);
         
-        // Modelo 2
         bytes.push(0x1D, 0x28, 0x6B, 0x04, 0x00, 0x31, 0x41, 0x32, 0x00);
-        // Tamaño 6
         bytes.push(0x1D, 0x28, 0x6B, 0x03, 0x00, 0x31, 0x43, 0x06);
-        // Nivel Error (48 = L)
         bytes.push(0x1D, 0x28, 0x6B, 0x03, 0x00, 0x31, 0x45, 0x30);
-        // Almacenar Datos
         bytes.push(0x1D, 0x28, 0x6B, pL, pH, 0x31, 0x50, 0x30);
         let qrBytes = encoder.encode(qrStr);
         qrBytes.forEach(b => bytes.push(b));
-        // Imprimir QR
         bytes.push(0x1D, 0x28, 0x6B, 0x03, 0x00, 0x31, 0x51, 0x30);
         
-        // Fin de línea
         let footerBytes = encoder.encode("\n\n\n\n\n");
         footerBytes.forEach(b => bytes.push(b));
         
