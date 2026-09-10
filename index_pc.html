@@ -12,7 +12,7 @@
   <!-- LOGIN -->
   <div id="loginScreen" class="fixed inset-0 bg-slate-900 z-50 flex items-center justify-center">
     <div class="bg-white p-10 rounded-2xl shadow-2xl w-96 text-center">
-      <div class="bg-blue-600 text-white rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4 text-3xl shadow-lg"><i class="fa-solid fa-truck-fast"></i></div>
+      <img src="logo.jpeg" onerror="this.style.display='none'" alt="Logo" class="mx-auto h-24 mb-4 rounded-xl object-contain">
       <h1 class="text-2xl font-bold text-slate-800 mb-1">Luis Transportes</h1>
       <p class="text-slate-500 mb-8 font-semibold">Sistema Logístico</p>
       <div class="space-y-4 mb-6">
@@ -20,7 +20,7 @@
         <input type="password" id="passInput" placeholder="Contraseña" class="w-full text-center text-xl border-b-2 border-blue-500 p-2 focus:outline-none bg-slate-50">
       </div>
       <button onclick="ingresarAlSistema(this)" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg"><i class="fa-solid fa-right-to-bracket mr-2"></i> INGRESAR</button>
-      <p class="text-xs text-slate-400 mt-6">Desarrollado Por Fernando Rodriguez 2026</p>
+      <p class="text-[10px] text-slate-400 mt-6 uppercase font-bold">Desarrollado Por Fernando Rodriguez 2026</p>
     </div>
   </div>
 
@@ -28,8 +28,9 @@
     <!-- MENÚ LATERAL -->
     <aside class="w-64 bg-slate-900 text-white flex flex-col justify-between">
       <div>
-        <div class="p-6 text-center border-b border-slate-700">
-          <h2 class="text-xl font-bold">Luis Transportes</h2><p class="text-sm text-blue-400 mt-1 font-semibold" id="userLabel">Dueño</p>
+        <div class="p-6 text-center border-b border-slate-700 bg-slate-950">
+          <img src="logo.jpeg" onerror="this.style.display='none'" alt="Logo" class="mx-auto h-16 mb-2 rounded object-contain bg-white p-1">
+          <h2 class="text-lg font-bold">Luis Transportes</h2><p class="text-xs text-blue-400 mt-1 font-semibold" id="userLabel">Dueño</p>
         </div>
         <nav class="p-4 space-y-2">
           <button onclick="cambiarVistaPC('dashboard')" class="w-full text-left p-3 rounded-lg hover:bg-slate-800"><i class="fa-solid fa-chart-pie w-6"></i> Dashboard</button>
@@ -38,7 +39,7 @@
       </div>
       <div>
         <div class="p-4 border-t border-slate-700"><button onclick="location.reload()" class="w-full text-left p-3 text-red-400 hover:bg-slate-800"><i class="fa-solid fa-power-off w-6"></i> Cerrar Sesión</button></div>
-        <div class="text-center p-3 text-slate-500 text-xs bg-slate-950">Desarrollado Por Fernando Rodriguez 2026</div>
+        <div class="text-center p-3 text-slate-500 text-[10px] uppercase font-bold bg-slate-950">Desarrollado Por<br>Fernando Rodriguez 2026</div>
       </div>
     </aside>
 
@@ -48,7 +49,6 @@
         <button onclick="document.getElementById('modalEnvio').classList.remove('hidden')" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold shadow hover:bg-blue-700"><i class="fa-solid fa-plus mr-2"></i> Nuevo Envío</button>
       </header>
 
-      <!-- VISTA DASHBOARD -->
       <div id="vistaDashboard" class="p-8 space-y-8">
         <div class="grid grid-cols-3 gap-6">
           <div class="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-indigo-500"><p class="text-sm text-slate-500 font-semibold uppercase">Ingresos Mes</p><p class="text-3xl font-bold mt-2">Gs. <span id="dashGanancia">0</span></p></div>
@@ -68,19 +68,19 @@
         </div>
       </div>
 
-      <!-- VISTA HISTORIAL -->
+      <!-- VISTA HISTORIAL (COMPACTA) -->
       <div id="vistaHistorial" class="p-8 hidden">
         <div class="bg-white p-6 rounded-2xl shadow-sm flex gap-4 mb-6 items-center">
           <input type="text" id="inputBusqueda" oninput="filtrarHistorial()" placeholder="Buscar por ID o CI/RUC..." class="flex-1 border p-3 rounded-lg text-lg">
           <select id="filtroTiempo" onchange="filtrarHistorial()" class="border p-3 rounded-lg text-lg font-bold text-slate-700 bg-slate-50">
-            <option value="todos">Todos los tiempos</option>
+            <option value="todos">Todos (Últimos 150)</option>
             <option value="hoy">Hoy</option>
             <option value="semana">Últimos 7 días</option>
             <option value="mes">Este mes</option>
           </select>
           <button onclick="cargarHistorial()" title="Actualizar Datos" class="bg-blue-600 text-white px-6 py-3 font-bold rounded-lg hover:bg-blue-700"><i class="fa-solid fa-rotate-right"></i></button>
         </div>
-        <div id="resultadosBusqueda" class="space-y-4"></div>
+        <div id="resultadosBusqueda" class="space-y-3"></div>
       </div>
     </main>
   </div>
@@ -235,21 +235,22 @@
       }
     }
 
-    // --- MANEJO DE FOTOS DIRECTAS ---
+    // --- MANEJO DE FOTOS Y DISEÑO COMPACTO ---
     function generarRenderFoto(url) {
-      if(!url) return '<span class="text-slate-400 text-sm">Sin foto</span>';
+      if(!url) return '<div class="h-16 flex items-center justify-center bg-slate-100 border rounded text-slate-400 text-xs font-bold w-full">Sin foto</div>';
       let id = "";
       if (url.includes('/file/d/')) id = url.split('/file/d/')[1].split('/')[0];
       else if (url.includes('id=')) id = url.split('id=')[1].split('&')[0];
-      else return `<a href="${url}" target="_blank" class="text-blue-500 underline">Ver Foto</a>`;
+      else return `<a href="${url}" target="_blank" class="text-blue-500 underline text-xs">Ver Foto</a>`;
 
-      let imgUrl = `https://drive.google.com/uc?export=view&id=${id}`;
+      // Usa API Thumbnail (Más rápida y no se bloquea)
+      let imgUrl = `https://drive.google.com/thumbnail?id=${id}&sz=w400`;
       let dlUrl = `https://drive.google.com/uc?export=download&id=${id}`;
       
       return `
-        <div class="mt-2 border rounded p-2 bg-slate-50">
-          <img src="${imgUrl}" class="w-full h-40 object-cover rounded shadow-sm mb-2" alt="Foto Paquete">
-          <a href="${dlUrl}" target="_blank" class="block text-center bg-slate-800 text-white font-bold py-2 rounded text-sm hover:bg-slate-700 transition"><i class="fa-solid fa-download"></i> Descargar</a>
+        <div class="border rounded bg-white overflow-hidden shadow-sm flex flex-col items-center w-full">
+          <img src="${imgUrl}" class="w-full h-24 object-cover" alt="Foto" onerror="this.src='https://via.placeholder.com/150?text=Error';">
+          <a href="${dlUrl}" target="_blank" class="block w-full text-center bg-slate-800 text-white font-bold py-1 text-[10px] hover:bg-slate-700 transition"><i class="fa-solid fa-download"></i> Descargar</a>
         </div>`;
     }
 
@@ -297,24 +298,48 @@
       if(filtrados.length > 0) {
         filtrados.forEach(r => {
           div.innerHTML += `
-            <div class="bg-white border rounded-xl p-5 shadow-sm">
-              <div class="flex justify-between items-center border-b pb-3 mb-3">
-                <span class="font-bold text-lg text-blue-700">${r.id}</span>
-                <span class="px-3 py-1 rounded-full text-sm font-bold ${r.estado==='Entregado'?'bg-green-100 text-green-700':'bg-amber-100 text-amber-700'}">${r.estado}</span>
+            <div class="bg-white border rounded-lg p-4 shadow-sm flex flex-col gap-2">
+              
+              <div class="flex justify-between items-center border-b pb-2">
+                <span class="font-bold text-blue-700">${r.id}</span>
+                <div class="text-right">
+                  <span class="text-xs text-slate-500 mr-2"><i class="fa-regular fa-clock"></i> ${r.fecha}</span>
+                  <span class="px-2 py-1 rounded text-xs font-bold ${r.estado==='Entregado'?'bg-green-100 text-green-700':'bg-amber-100 text-amber-700'}">${r.estado}</span>
+                </div>
               </div>
-              <div class="grid grid-cols-2 gap-4 mb-4">
-                <div><p class="text-sm text-slate-500">Fecha:</p><p class="font-semibold">${r.fecha}</p></div>
-                <div><p class="text-sm text-slate-500">Costo:</p><p class="font-semibold text-emerald-600">Gs. ${Number(r.costo||0).toLocaleString('es-PY')}</p></div>
-                
-                <!-- MOSTRAR NOMBRES AHORA -->
-                <div><p class="text-sm text-slate-500">De (Remitente):</p><p class="font-semibold">${r.nombreRem} <span class="text-xs text-slate-400 block">${r.ciRem}</span></p></div>
-                <div><p class="text-sm text-slate-500">Para (Destino):</p><p class="font-semibold">${r.nombreDest} <span class="text-xs text-slate-400 block">${r.ciDest}</span></p></div>
-                <div class="col-span-2"><p class="text-sm text-slate-500">Detalle:</p><p class="font-semibold text-slate-700 bg-slate-50 p-2 rounded">${r.detalle}</p></div>
+              
+              <div class="grid grid-cols-5 gap-4 text-sm mt-1">
+                <div class="col-span-2">
+                  <p class="text-[10px] text-slate-400 uppercase font-bold">Remitente</p>
+                  <p class="font-bold leading-tight">${r.nombreRem}</p>
+                  <p class="text-xs text-slate-500">${r.ciRem} | <i class="fa-solid fa-phone"></i> ${r.telRem}</p>
+                </div>
+                <div class="col-span-2">
+                  <p class="text-[10px] text-slate-400 uppercase font-bold">Destino</p>
+                  <p class="font-bold leading-tight">${r.nombreDest}</p>
+                  <p class="text-xs text-slate-500">${r.ciDest} | <i class="fa-solid fa-phone"></i> ${r.telDest}</p>
+                </div>
+                <div class="col-span-1 text-right">
+                  <p class="text-[10px] text-slate-400 uppercase font-bold">Costo</p>
+                  <p class="font-bold text-emerald-600">Gs. ${Number(r.costo||0).toLocaleString('es-PY')}</p>
+                </div>
               </div>
-              <div class="grid grid-cols-2 gap-4 mt-4 border-t pt-4">
-                <div><p class="text-sm text-slate-500 font-bold mb-1"><i class="fa-solid fa-box-open text-amber-500 mr-1"></i> Foto de Recepción</p>${generarRenderFoto(r.fotoRecepcion)}</div>
-                <div><p class="text-sm text-slate-500 font-bold mb-1"><i class="fa-solid fa-house-chimney text-green-500 mr-1"></i> Foto de Entrega</p>${generarRenderFoto(r.fotoEntrega)}</div>
+              
+              <div class="bg-slate-50 p-2 rounded text-xs text-slate-700 mt-1 font-medium border border-slate-200">
+                📦 Detalle: ${r.detalle}
               </div>
+
+              <div class="grid grid-cols-2 gap-4 mt-2">
+                <div class="flex items-start gap-2">
+                  <p class="text-[10px] font-bold text-amber-600 w-24 pt-1"><i class="fa-solid fa-box-open mr-1"></i> Foto Origen:</p>
+                  <div class="flex-1">${generarRenderFoto(r.fotoRecepcion)}</div>
+                </div>
+                <div class="flex items-start gap-2">
+                  <p class="text-[10px] font-bold text-green-600 w-24 pt-1"><i class="fa-solid fa-house-chimney mr-1"></i> Foto Destino:</p>
+                  <div class="flex-1">${generarRenderFoto(r.fotoEntrega)}</div>
+                </div>
+              </div>
+              
             </div>`;
         });
       } else {
