@@ -46,11 +46,12 @@
           <img src="logo.png" onerror="this.src='logo.jpeg'" alt="Logo" class="mx-auto h-16 object-contain mix-blend-multiply">
         </div>
         <nav class="p-4 space-y-2 mt-4">
-          <button onclick="cambiarVistaPC('dashboard')" class="w-full text-left p-3 rounded-lg hover:bg-slate-800"><i class="fa-solid fa-chart-pie w-6"></i> Dashboard</button>
-          <button onclick="cambiarVistaPC('ruta')" class="w-full text-left p-3 rounded-lg hover:bg-slate-800 text-blue-300"><i class="fa-solid fa-route w-6"></i> Hoja de Ruta</button>
-          <button onclick="cambiarVistaPC('historial')" class="w-full text-left p-3 rounded-lg hover:bg-slate-800"><i class="fa-solid fa-list w-6"></i> Historial Envíos</button>
-          <button onclick="cambiarVistaPC('cobranzas')" class="w-full text-left p-3 rounded-lg hover:bg-slate-800 text-emerald-400"><i class="fa-solid fa-file-invoice-dollar w-6"></i> Cobranzas Corp.</button>
-          <button onclick="cambiarVistaPC('personal')" class="w-full text-left p-3 rounded-lg hover:bg-slate-800 text-amber-400"><i class="fa-solid fa-users w-6"></i> Personal</button>
+          <button onclick="cambiarVistaPC('dashboard')" class="w-full text-left p-3 rounded-lg hover:bg-slate-800 navBtnPC"><i class="fa-solid fa-chart-pie w-6"></i> Dashboard</button>
+          <button onclick="cambiarVistaPC('ruta')" class="w-full text-left p-3 rounded-lg hover:bg-slate-800 text-blue-300 navBtnPC"><i class="fa-solid fa-route w-6"></i> Hoja de Ruta</button>
+          <button onclick="cambiarVistaPC('entregas')" class="w-full text-left p-3 rounded-lg hover:bg-slate-800 navBtnPC"><i class="fa-solid fa-house-circle-check w-6"></i> Confirmar Entrega</button>
+          <button onclick="cambiarVistaPC('historial')" class="w-full text-left p-3 rounded-lg hover:bg-slate-800 navBtnPC"><i class="fa-solid fa-list w-6"></i> Historial Envíos</button>
+          <button onclick="cambiarVistaPC('cobranzas')" class="w-full text-left p-3 rounded-lg hover:bg-slate-800 text-emerald-400 navBtnPC"><i class="fa-solid fa-file-invoice-dollar w-6"></i> Cobranzas Corp.</button>
+          <button onclick="cambiarVistaPC('personal')" class="w-full text-left p-3 rounded-lg hover:bg-slate-800 text-amber-400 navBtnPC"><i class="fa-solid fa-users w-6"></i> Personal</button>
         </nav>
       </div>
       <div>
@@ -80,6 +81,48 @@
           <div class="bg-white rounded-2xl shadow-sm border overflow-hidden h-fit">
             <div class="p-4 border-b bg-rose-50"><h3 class="font-black text-rose-800 uppercase text-sm"><i class="fa-solid fa-file-invoice-dollar mr-2"></i> Deudas Corporativas</h3></div>
             <table class="w-full text-left text-sm"><thead class="bg-white border-b"><tr><th class="p-3 text-slate-500">Empresa</th><th class="p-3 text-slate-500">Deuda Total</th><th class="p-3 text-slate-500">Antigüedad</th></tr></thead><tbody id="tablaDeudasDashboard" class="divide-y font-semibold text-slate-700"></tbody></table>
+          </div>
+        </div>
+      </div>
+
+      <!-- VISTA CONFIRMAR ENTREGA (NUEVA EN PC) -->
+      <div id="vistaEntregas" class="p-8 hidden">
+        <div class="bg-white rounded-2xl shadow-sm border p-8 max-w-2xl mx-auto">
+          <h3 class="font-black text-slate-800 text-xl mb-6 text-center border-b pb-4 text-blue-900 uppercase">Confirmar Entrega de Paquete</h3>
+          
+          <div class="flex gap-4 mb-6">
+            <input type="text" id="idEnvioBuscar" placeholder="Ingrese ID (Ej: LT-123456)" class="flex-1 border-2 border-slate-300 p-4 rounded-xl text-xl text-center font-black uppercase text-slate-900 bg-white placeholder-slate-400 focus:border-blue-600 focus:outline-none">
+            <button onclick="buscarDetalleEnvioPC(this)" class="bg-blue-800 hover:bg-slate-900 text-white font-black py-4 px-8 rounded-xl shadow-lg transition"><i class="fa-solid fa-search"></i> Buscar</button>
+          </div>
+
+          <div id="pc_detalleEnvio" class="hidden bg-slate-50 p-6 rounded-xl border-2 border-slate-200 mb-6">
+            <div class="grid grid-cols-2 gap-4">
+              <div><p class="text-xs font-black text-slate-500 uppercase">Destinatario</p><p class="font-bold text-slate-900 text-lg" id="pc_e_destinatario">--</p></div>
+              <div><p class="text-xs font-black text-slate-500 uppercase">Dirección</p><p class="font-bold text-slate-900 text-lg truncate" id="pc_e_direccion">--</p></div>
+              <div class="col-span-2"><p class="text-xs font-black text-slate-500 uppercase">Detalle del Paquete</p><p class="font-bold text-slate-900 text-lg" id="pc_e_detalle">--</p></div>
+              <div class="col-span-2 border-t border-slate-300 pt-4 mt-2">
+                <div class="flex justify-between items-center">
+                  <div>
+                    <p class="text-xs font-black text-slate-500 uppercase mb-1">Estado de Pago</p>
+                    <div id="pc_e_pagoStr">--</div>
+                  </div>
+                  <div class="text-right">
+                    <p class="text-xs font-black text-slate-500 uppercase mb-1">Monto a Cobrar Ahora</p>
+                    <p class="text-3xl font-black text-emerald-600">Gs. <span id="pc_e_cobrar">0</span></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="pc_areaEntrega" class="hidden">
+            <div class="border-2 border-dashed border-slate-300 bg-slate-50 p-6 text-center rounded-xl mb-6 cursor-pointer hover:bg-slate-100 transition" onclick="document.getElementById('cameraEntregaPC').click()">
+              <p class="font-bold text-slate-600"><i class="fa-solid fa-camera mb-2 text-3xl text-blue-500 block"></i>Subir Foto de Destino / Firma (OPCIONAL)</p>
+              <input type="file" id="cameraEntregaPC" accept="image/*" class="hidden" onchange="leerFotoEntregaPC(event)">
+            </div>
+            <img id="previewEntregaPC" class="mt-4 mb-6 rounded-xl hidden w-full h-48 object-cover border-2 border-blue-300 shadow-md">
+            
+            <button onclick="subirFotoPC(this)" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black py-5 rounded-xl shadow-lg text-lg tracking-widest transition">REGISTRAR ENTREGA</button>
           </div>
         </div>
       </div>
@@ -170,7 +213,7 @@
     </main>
   </div>
 
-  <!-- AREA PDF COBRANZAS -->
+  <!-- AREAS DE IMPRESIÓN (Mismo formato que antes) -->
   <div id="printAreaCobranzas" class="hidden print-section text-black font-sans">
     <div class="flex items-center justify-between border-b-4 border-blue-900 pb-4 mb-6">
       <img src="logo.png" onerror="this.src='logo.jpeg'" style="max-height: 90px; object-fit: contain;">
@@ -186,27 +229,12 @@
       <p class="mt-4 text-justify">Detalle de extracto de cuenta correspondiente a los servicios de logística pendientes de cobro.</p>
     </div>
     <table class="w-full text-left text-xs border-collapse border border-slate-400 mb-6">
-      <thead>
-        <tr class="bg-slate-200">
-          <th class="border border-slate-400 p-2 font-bold">ID Envío</th>
-          <th class="border border-slate-400 p-2 font-bold">Fecha</th>
-          <th class="border border-slate-400 p-2 font-bold">Destino</th>
-          <th class="border border-slate-400 p-2 font-bold">Detalle de Carga</th>
-          <th class="border border-slate-400 p-2 font-bold text-right">Costo (Gs.)</th>
-        </tr>
-      </thead>
-      <tbody id="printCobTabla"></tbody>
-      <tfoot>
-        <tr class="bg-slate-100">
-          <td colspan="4" class="border border-slate-400 p-3 text-right font-black text-lg text-blue-900">TOTAL A PAGAR:</td>
-          <td class="border border-slate-400 p-3 text-right font-black text-lg text-blue-900">Gs. <span id="printCobTotal">0</span></td>
-        </tr>
-      </tfoot>
+      <thead><tr class="bg-slate-200"><th class="border border-slate-400 p-2 font-bold">ID Envío</th><th class="border border-slate-400 p-2 font-bold">Fecha</th><th class="border border-slate-400 p-2 font-bold">Destino</th><th class="border border-slate-400 p-2 font-bold">Detalle de Carga</th><th class="border border-slate-400 p-2 font-bold text-right">Costo (Gs.)</th></tr></thead><tbody id="printCobTabla"></tbody>
+      <tfoot><tr class="bg-slate-100"><td colspan="4" class="border border-slate-400 p-3 text-right font-black text-lg text-blue-900">TOTAL A PAGAR:</td><td class="border border-slate-400 p-3 text-right font-black text-lg text-blue-900">Gs. <span id="printCobTotal">0</span></td></tr></tfoot>
     </table>
     <div class="mt-24 flex justify-center"><div class="text-center w-64 border-t border-black pt-2"><p class="font-bold text-sm">Firma Autorizada</p><p class="text-xs">Luis Transportes</p></div></div>
   </div>
 
-  <!-- AREA PDF HOJA DE RUTA -->
   <div id="printAreaRuta" class="hidden print-section text-black font-sans">
     <div class="flex items-center justify-between border-b-4 border-blue-900 pb-4 mb-6">
       <img src="logo.png" onerror="this.src='logo.jpeg'" style="max-height: 70px; object-fit: contain;">
@@ -220,27 +248,12 @@
       <p class="text-lg"><strong>Filtro / Destino:</strong> <span id="printRutaDestino" class="uppercase font-bold"></span></p>
     </div>
     <table class="w-full text-left text-xs border-collapse border border-slate-400 mb-6">
-      <thead>
-        <tr class="bg-slate-200">
-          <th class="border border-slate-400 p-2 font-bold">ID</th>
-          <th class="border border-slate-400 p-2 font-bold">Destinatario / Tel</th>
-          <th class="border border-slate-400 p-2 font-bold">Dirección</th>
-          <th class="border border-slate-400 p-2 font-bold">Detalle</th>
-          <th class="border border-slate-400 p-2 font-bold">Modalidad Pago</th>
-          <th class="border border-slate-400 p-2 font-bold text-right">A Cobrar</th>
-        </tr>
-      </thead>
-      <tbody id="printRutaTabla"></tbody>
-      <tfoot>
-        <tr class="bg-slate-100">
-          <td colspan="5" class="border border-slate-400 p-2 text-right font-black text-sm text-blue-900">TOTAL EFECTIVO A RENDIR:</td>
-          <td class="border border-slate-400 p-2 text-right font-black text-sm text-blue-900">Gs. <span id="printRutaTotal">0</span></td>
-        </tr>
-      </tfoot>
+      <thead><tr class="bg-slate-200"><th class="border border-slate-400 p-2 font-bold">ID</th><th class="border border-slate-400 p-2 font-bold">Destinatario / Tel</th><th class="border border-slate-400 p-2 font-bold">Dirección</th><th class="border border-slate-400 p-2 font-bold">Detalle</th><th class="border border-slate-400 p-2 font-bold">Modalidad Pago</th><th class="border border-slate-400 p-2 font-bold text-right">A Cobrar</th></tr></thead><tbody id="printRutaTabla"></tbody>
+      <tfoot><tr class="bg-slate-100"><td colspan="5" class="border border-slate-400 p-2 text-right font-black text-sm text-blue-900">TOTAL EFECTIVO A RENDIR:</td><td class="border border-slate-400 p-2 text-right font-black text-sm text-blue-900">Gs. <span id="printRutaTotal">0</span></td></tr></tfoot>
     </table>
   </div>
 
-  <!-- MODAL NUEVO ENVÍO (TEXTOS NEGROS FUERTES) -->
+  <!-- MODAL NUEVO ENVÍO (Mismo diseño oscuro/claro) -->
   <div id="modalEnvio" class="hidden fixed inset-0 bg-slate-900 bg-opacity-75 z-50 flex justify-center items-center overflow-y-auto p-4">
     <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl p-8 my-8">
       <div class="flex justify-between items-center mb-6 border-b pb-4"><h2 class="text-2xl font-black text-blue-900 uppercase tracking-widest"><i class="fa-solid fa-box mr-2"></i> Registrar Encomienda</h2><button onclick="document.getElementById('modalEnvio').classList.add('hidden')" class="text-slate-800 hover:text-red-500"><i class="fa-solid fa-xmark text-3xl"></i></button></div>
@@ -283,7 +296,7 @@
 
   <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbyAwM6OAW5u_jLp2y2iCdJZtK3P7yUONt2UEFIuVTRYNIrwQGMD03_uJyGpzJnxcKkYmQ/exec";
-    let usuarioActual = ""; let fotoRecBase64 = ""; let historialGlobal = []; let pendientesDeudaGlobal = [];
+    let usuarioActual = ""; let fotoRecBase64 = ""; let historialGlobal = []; let pendientesDeudaGlobal = []; let fotoEntregaPCBase64 = ""; let idEntregaActivoPC = "";
 
     async function apiRequest(payload) {
       try { let res = await fetch(API_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) }); return await res.json(); } catch (e) { return { success: false, error: e.message }; }
@@ -302,8 +315,8 @@
     }
 
     function cambiarVistaPC(vista) {
-      ['vistaDashboard','vistaHistorial','vistaPersonal', 'vistaCobranzas', 'vistaRuta'].forEach(v => document.getElementById(v).classList.add('hidden'));
-      let titulos = { 'dashboard':'Panel de Control', 'ruta':'Hoja de Ruta', 'historial':'Historial de Envíos', 'personal':'Gestión de Personal', 'cobranzas':'Cobranzas Corporativas' };
+      ['vistaDashboard','vistaHistorial','vistaPersonal', 'vistaCobranzas', 'vistaRuta', 'vistaEntregas'].forEach(v => document.getElementById(v).classList.add('hidden'));
+      let titulos = { 'dashboard':'Panel de Control', 'ruta':'Hoja de Ruta', 'historial':'Historial de Envíos', 'personal':'Gestión de Personal', 'cobranzas':'Cobranzas Corporativas', 'entregas': 'Confirmar Entrega' };
       document.getElementById('vista' + vista.charAt(0).toUpperCase() + vista.slice(1)).classList.remove('hidden');
       document.getElementById('tituloHeader').innerText = titulos[vista];
       if(vista === 'dashboard') cargarDashboard(); if(vista === 'historial' && historialGlobal.length === 0) cargarHistorial(); if(vista === 'personal') cargarUsuarios();
@@ -324,6 +337,69 @@
       document.getElementById('btnRegistrar').innerHTML = "GUARDAR ENVÍO EN BASE DE DATOS"; document.getElementById('btnRegistrar').disabled = false;
       if(res.success) { alert("CREADO: " + res.id); document.getElementById('formEnvio').reset(); fotoRecBase64 = ""; document.getElementById('modalEnvio').classList.add('hidden'); cargarDashboard(); historialGlobal = []; }
     }
+
+    // --- NUEVO MÓDULO DE ENTREGA PARA PC ---
+    function formatPagoVisual(modo) {
+      if(modo === 'Cobro en Destino') return '<span class="text-rose-600 font-black">Paga el que RECIBE</span>';
+      if(modo === 'Pendiente Fin de Mes') return '<span class="text-blue-600 font-black">Cuenta Corporativa</span>';
+      return '<span class="text-emerald-600 font-black">Paga el que ENVÍA</span>';
+    }
+
+    async function buscarDetalleEnvioPC(btn) {
+      let idBuscado = document.getElementById('idEnvioBuscar').value.trim();
+      if(!idBuscado) return alert("Ingrese un ID");
+      if(!idBuscado.toUpperCase().startsWith("LT-")) idBuscado = "LT-" + idBuscado;
+      
+      document.getElementById('pc_detalleEnvio').classList.add('hidden');
+      document.getElementById('pc_areaEntrega').classList.add('hidden');
+      
+      let tOri = btn.innerHTML; btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Buscando..."; btn.disabled = true;
+      const res = await apiRequest({ accion: 'getDetalleEnvio', idBuscado: idBuscado });
+      btn.innerHTML = tOri; btn.disabled = false;
+      
+      if(res.success) {
+        if(res.envio.estado === 'Entregado') return alert("Este paquete YA FUE ENTREGADO.");
+        
+        idEntregaActivoPC = res.envio.id;
+        document.getElementById('pc_e_destinatario').innerText = res.envio.destinatario;
+        document.getElementById('pc_e_direccion').innerText = res.envio.direccion;
+        document.getElementById('pc_e_detalle').innerText = res.envio.detalle;
+        document.getElementById('pc_e_pagoStr').innerHTML = formatPagoVisual(res.envio.pagoAviso);
+        
+        let aCobrar = (res.envio.pagoAviso === 'Cobro en Destino') ? res.envio.costo : 0;
+        document.getElementById('pc_e_cobrar').innerText = aCobrar.toLocaleString('es-PY');
+        
+        document.getElementById('idEnvioBuscar').value = res.envio.id;
+        document.getElementById('pc_detalleEnvio').classList.remove('hidden');
+        document.getElementById('pc_areaEntrega').classList.remove('hidden');
+      } else { alert("ID NO ENCONTRADO."); }
+    }
+
+    function leerFotoEntregaPC(e) {
+      const file = e.target.files[0]; if(!file) return; const reader = new FileReader(); 
+      reader.onload = ev => { 
+        fotoEntregaPCBase64 = ev.target.result; 
+        document.getElementById('previewEntregaPC').src = ev.target.result;
+        document.getElementById('previewEntregaPC').classList.remove('hidden');
+      }; 
+      reader.readAsDataURL(file);
+    }
+
+    async function subirFotoPC(btn) {
+      if(!idEntregaActivoPC) return;
+      let tOri = btn.innerHTML; btn.innerHTML = "REGISTRANDO..."; btn.disabled = true;
+      const res = await apiRequest({ accion: 'confirmarEntrega', idEnvio: idEntregaActivoPC, foto: fotoEntregaPCBase64 });
+      btn.innerHTML = tOri; btn.disabled = false;
+      if(res.success) { 
+        alert("¡Paquete ENTREGADO con éxito!"); 
+        document.getElementById('idEnvioBuscar').value = ''; 
+        document.getElementById('pc_detalleEnvio').classList.add('hidden'); 
+        document.getElementById('pc_areaEntrega').classList.add('hidden'); 
+        document.getElementById('previewEntregaPC').classList.add('hidden');
+        fotoEntregaPCBase64 = ""; idEntregaActivoPC = ""; historialGlobal = []; cargarDashboard();
+      } else alert(res.error);
+    }
+    // ----------------------------------------
 
     async function cargarDashboard() {
       const res = await apiRequest({ accion: 'getDashboard' });
@@ -352,12 +428,6 @@
       if(res.success) { historialGlobal = res.resultados; filtrarHistorial(); }
     }
     
-    function formatPagoVisual(modo) {
-      if(modo === 'Cobro en Destino') return '<span class="text-rose-600 font-bold">Paga el que RECIBE</span>';
-      if(modo === 'Pendiente Fin de Mes') return '<span class="text-blue-600 font-bold">Corporativo</span>';
-      return '<span class="text-emerald-600 font-bold">Paga el que ENVÍA</span>';
-    }
-
     function filtrarHistorial() {
       const busq = document.getElementById('inputBusqueda').value.toLowerCase().trim(); const filtroT = document.getElementById('filtroTiempo').value; const div = document.getElementById('resultadosBusqueda'); let hoy = new Date(); hoy.setHours(0,0,0,0);
       let filtrados = historialGlobal.filter(r => {
@@ -375,32 +445,22 @@
       } else { div.innerHTML = "<tr><td colspan='6' class='p-6 text-center text-slate-500 font-bold'>Sin resultados.</td></tr>"; }
     }
 
-    // --- HOJA DE RUTA ---
     async function buscarRuta(btn) {
       const dest = document.getElementById('rutaDestino').value.trim();
       document.getElementById('rutaResultados').classList.add('hidden');
       const textOri = btn.innerHTML; btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> CARGANDO..."; btn.disabled = true;
-      
       const res = await apiRequest({ accion: 'getHojaRuta', destino: dest });
       btn.innerHTML = textOri; btn.disabled = false;
-      
       if(res.success) {
         document.getElementById('printRutaDestino').innerText = dest || "TODOS LOS DESTINOS";
         document.getElementById('printRutaFecha').innerText = "Fecha: " + new Date().toLocaleString('es-PY');
-        
         let tHtml = ""; let pHtml = ""; let totalCobrar = 0;
-        
         res.hoja.forEach(p => {
           totalCobrar += p.aCobrar;
           tHtml += `<tr><td class="p-3 font-black text-blue-800">${p.id}</td><td class="p-3"><p class="font-bold text-slate-800">${p.destinatario}</p><p class="text-xs text-slate-500"><i class="fa-solid fa-phone"></i> ${p.telefono}</p></td><td class="p-3 text-slate-700">${p.direccion}</td><td class="p-3 text-slate-700">${p.detalle}</td><td class="p-3">${formatPagoVisual(p.pagoAviso)}</td><td class="p-3 font-black text-emerald-600 text-right">Gs. ${p.aCobrar.toLocaleString('es-PY')}</td></tr>`;
           pHtml += `<tr><td class="border border-slate-400 p-2 font-bold">${p.id}</td><td class="border border-slate-400 p-2">${p.destinatario}<br>${p.telefono}</td><td class="border border-slate-400 p-2">${p.direccion}</td><td class="border border-slate-400 p-2">${p.detalle}</td><td class="border border-slate-400 p-2 font-bold">${p.pagoAviso.replace('Cobro en Destino','Paga RECIBE').replace('Pagado','Paga ENVÍA')}</td><td class="border border-slate-400 p-2 text-right font-bold text-slate-800">Gs. ${p.aCobrar.toLocaleString('es-PY')}</td></tr>`;
         });
-        
-        if(res.hoja.length === 0) {
-          tHtml = "<tr><td colspan='6' class='p-6 text-center font-bold text-slate-500'>No hay cargas en tránsito para este filtro.</td></tr>";
-          pHtml = "<tr><td colspan='6' class='border border-slate-400 p-2 text-center'>No hay cargas registradas</td></tr>";
-        }
-        
+        if(res.hoja.length === 0) { tHtml = "<tr><td colspan='6' class='p-6 text-center font-bold text-slate-500'>No hay cargas en tránsito para este filtro.</td></tr>"; pHtml = "<tr><td colspan='6' class='border border-slate-400 p-2 text-center'>No hay cargas registradas</td></tr>"; }
         document.getElementById('tablaRuta').innerHTML = tHtml; document.getElementById('printRutaTabla').innerHTML = pHtml;
         document.getElementById('rutaTotalCobrar').innerText = totalCobrar.toLocaleString('es-PY'); document.getElementById('printRutaTotal').innerText = totalCobrar.toLocaleString('es-PY');
         document.getElementById('rutaResultados').classList.remove('hidden');
@@ -408,26 +468,21 @@
     }
 
     function imprimirPDFRuta() {
-      document.getElementById('printAreaCobranzas').classList.remove('print-section');
-      document.getElementById('printAreaCobranzas').classList.add('hidden');
-      document.getElementById('printAreaRuta').classList.remove('hidden');
-      document.getElementById('printAreaRuta').classList.add('print-section');
+      document.getElementById('printAreaCobranzas').classList.remove('print-section'); document.getElementById('printAreaCobranzas').classList.add('hidden');
+      document.getElementById('printAreaRuta').classList.remove('hidden'); document.getElementById('printAreaRuta').classList.add('print-section');
       window.print();
     }
 
-    // --- COBRANZAS CORPORATIVAS ---
     async function buscarDeuda() {
       const ruc = document.getElementById('cobranzaRuc').value.trim(); if(!ruc) return alert("Ingrese el RUC del cliente.");
       document.getElementById('cobranzaResultados').classList.add('hidden');
       const btn = event.currentTarget; btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Buscando..."; btn.disabled = true;
       const res = await apiRequest({ accion: 'getPendientes', ci: ruc });
       btn.innerHTML = "<i class='fa-solid fa-search mr-2'></i> BUSCAR DEUDA"; btn.disabled = false;
-      
       if(res.success) {
         pendientesDeudaGlobal = res.pendientes.map(p => p.id); 
         document.getElementById('cobranzaNombre').innerText = res.cliente; document.getElementById('printCobNombre').innerText = res.cliente; document.getElementById('printCobRuc').innerText = ruc;
         document.getElementById('cobranzaMonto').innerText = res.total.toLocaleString('es-PY'); document.getElementById('printCobTotal').innerText = res.total.toLocaleString('es-PY');
-        
         let tHtml = ""; let printHtml = "";
         res.pendientes.forEach(p => {
           tHtml += `<tr><td class="p-3 font-black text-blue-800">${p.id}</td><td class="p-3 font-bold">${p.fecha.split(',')[0]}</td><td class="p-3 font-bold">${p.destino}</td><td class="p-3 font-bold">${p.detalle}</td><td class="p-3 font-black text-emerald-600 text-right">Gs. ${p.costo.toLocaleString('es-PY')}</td></tr>`;
@@ -441,10 +496,8 @@
     function imprimirPDFCobranza() {
       if(pendientesDeudaGlobal.length === 0) return alert("No hay datos para imprimir.");
       document.getElementById('printCobFecha').innerText = "Fecha de Emisión: " + new Date().toLocaleString('es-PY');
-      document.getElementById('printAreaRuta').classList.remove('print-section');
-      document.getElementById('printAreaRuta').classList.add('hidden');
-      document.getElementById('printAreaCobranzas').classList.remove('hidden');
-      document.getElementById('printAreaCobranzas').classList.add('print-section');
+      document.getElementById('printAreaRuta').classList.remove('print-section'); document.getElementById('printAreaRuta').classList.add('hidden');
+      document.getElementById('printAreaCobranzas').classList.remove('hidden'); document.getElementById('printAreaCobranzas').classList.add('print-section');
       window.print();
     }
 
@@ -452,10 +505,9 @@
       if(pendientesDeudaGlobal.length === 0) return alert("No hay envíos para liquidar.");
       if(!confirm("¿Estás seguro de marcar todos estos envíos como PAGADOS? Esta acción los sumará a tu Dashboard.")) return;
       const res = await apiRequest({ accion: 'saldarDeuda', ids: pendientesDeudaGlobal });
-      if(res.success) { alert("Deuda saldada con éxito."); document.getElementById('cobranzaResultados').classList.add('hidden'); document.getElementById('cobranzaRuc').value = ''; pendientesDeudaGlobal = []; cargarDashboard(); historialGlobal = []; } else { alert("Error al procesar."); }
+      if(res.success) { alert("Deuda saldada con éxito. (" + res.actualizados + " envíos actualizados)"); document.getElementById('cobranzaResultados').classList.add('hidden'); document.getElementById('cobranzaRuc').value = ''; pendientesDeudaGlobal = []; cargarDashboard(); historialGlobal = []; } else { alert("Error al procesar el pago."); }
     }
 
-    // --- PERSONAL ---
     async function cargarUsuarios() {
       document.getElementById('tablaUsuarios').innerHTML = "<tr><td colspan='4' class='p-3 text-center'><i class='fa-solid fa-spinner fa-spin'></i></td></tr>";
       const res = await apiRequest({ accion: 'getUsuarios' });
