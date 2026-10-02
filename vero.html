@@ -59,23 +59,23 @@
         .content-scroll {
             flex: 1;
             overflow-y: auto;
-            padding-bottom: 100px;
+            padding-bottom: 110px;
         }
-        .view-section { display: none; }
-        .view-section.active { display: block; }
+        .app-view { display: none; }
+        .app-view.active { display: block; }
     </style>
 </head>
 <body>
 
     <div class="app-container">
         
-        <!-- HEADER FIJO -->
-        <header class="pt-6 pb-4 px-6 bg-white shadow-sm flex items-center justify-between sticky top-0 z-20 rounded-b-3xl">
+        <!-- HEADER ORIGINAL -->
+        <header class="pt-10 pb-4 px-6 bg-white shadow-sm flex items-center justify-between sticky top-0 z-20 rounded-b-3xl">
             <div class="flex items-center gap-3">
-                <div class="w-12 h-12 flex-shrink-0 flex items-center justify-center">
+                <div class="w-14 h-14 flex-shrink-0 flex items-center justify-center">
                     <svg viewBox="0 0 100 100" class="w-full h-full drop-shadow-sm">
-                        <path d="M38,15 C48,11 60,25 54,35 C42,35 32,24 38,15 Z" fill="#7CBA54" />
-                        <circle cx="50" cy="55" r="34" fill="#F3A01C" />
+                        <path d="M38,15 C48,11 60,25 54,35 C42,35 32,24 38,15 Z" fill="#90BE4A" />
+                        <circle cx="50" cy="55" r="34" fill="#E8B036" />
                         <path d="M 46,38 L 46,73" fill="none" stroke="#FFFFFF" stroke-width="3.5" stroke-linecap="round" />
                         <path d="M 46,38 C 36,36 28,42 32,51 C 26,55 27,65 33,67 C 31,73 38,80 46,73" fill="none" stroke="#FFFFFF" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
                         <path d="M 41,49 C 45,49 45,55 41,55" fill="none" stroke="#FFFFFF" stroke-width="3.5" stroke-linecap="round" />
@@ -87,146 +87,142 @@
                     </svg>
                 </div>
                 <div class="leading-tight">
-                    <h1 class="text-lg font-bold tracking-tighter">
+                    <h1 class="text-xl font-bold tracking-tighter">
                         <span class="text-vero-orange">VERO</span><br>
                         <span class="text-vero-green">RODRÍGUEZ</span>
                     </h1>
                 </div>
             </div>
-            <div class="flex items-center gap-2">
-                <button onclick="switchView('cart')" class="relative bg-vero-lightOrange p-2.5 rounded-full text-vero-orange">
-                    <i class="ph-bold ph-shopping-cart text-xl"></i>
-                    <span id="cart-badge" class="absolute -top-1 -right-1 bg-vero-green text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-bold">0</span>
-                </button>
+            <div class="w-10 h-10 rounded-full bg-gray-200 border-2 border-vero-green overflow-hidden">
+                <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=100&q=80" alt="Perfil" class="w-full h-full object-cover">
             </div>
         </header>
 
-        <!-- CONTENIDO PRINCIPAL SCROLLABLE -->
+        <!-- CONTENIDO SCROLLABLE -->
         <main class="content-scroll px-6 pt-6">
             
-            <!-- VISTA 1: INICIO -->
-            <section id="view-home" class="view-section active">
+            <!-- VISTA 1: INICIO (ESTÉTICA ORIGINAL) -->
+            <div id="view-home" class="app-view active">
                 <div class="mb-6">
                     <h2 class="text-2xl font-bold text-vero-text">¡Hola, Camila! 👋</h2>
-                    <p class="text-sm text-gray-500">Listos para cumplir tus objetivos hoy.</p>
+                    <p class="text-sm text-gray-500">Semana 3 de tu plan de recomposición.</p>
                 </div>
 
                 <!-- Hábitos Diarios -->
-                <div class="grid grid-cols-3 gap-3 mb-6">
+                <div class="grid grid-cols-3 gap-3 mb-8">
                     <div class="bg-blue-50 rounded-2xl p-4 flex flex-col items-center justify-center text-center cursor-pointer transition active:scale-95" onclick="toggleHabit(this, 'blue')">
                         <i class="ph-fill ph-drop text-2xl text-blue-400 mb-1"></i>
-                        <span class="text-xs font-semibold text-gray-600">2/3 Litros</span>
+                        <span class="text-xs font-medium text-gray-600">2/3 Litros</span>
                     </div>
                     <div class="bg-vero-lightOrange rounded-2xl p-4 flex flex-col items-center justify-center text-center cursor-pointer transition active:scale-95" onclick="toggleHabit(this, 'orange')">
                         <i class="ph-fill ph-barbell text-2xl text-vero-orange mb-1"></i>
-                        <span class="text-xs font-semibold text-gray-600">Gym Hecho</span>
+                        <span class="text-xs font-medium text-gray-600">Entreno</span>
                     </div>
                     <div class="bg-indigo-50 rounded-2xl p-4 flex flex-col items-center justify-center text-center cursor-pointer transition active:scale-95" onclick="toggleHabit(this, 'indigo')">
                         <i class="ph-fill ph-moon-stars text-2xl text-indigo-400 mb-1"></i>
-                        <span class="text-xs font-semibold text-gray-600">7.5 Hrs</span>
+                        <span class="text-xs font-medium text-gray-600">7.5 Hrs</span>
                     </div>
                 </div>
 
-                <!-- Banner Smartwatch Resumen -->
-                <div class="bg-gradient-to-r from-gray-900 to-gray-800 rounded-3xl p-5 text-white mb-6 shadow-xl cursor-pointer" onclick="switchView('stats')">
-                    <div class="flex justify-between items-center mb-3">
-                        <span class="text-xs font-medium text-vero-green flex items-center gap-1">
-                            <i class="ph-fill ph-watch text-sm"></i> Sincronizado con Smartwatch
-                        </span>
-                        <span class="text-xs text-gray-400">Ver más →</span>
-                    </div>
-                    <div class="grid grid-cols-3 gap-2 text-center">
-                        <div class="bg-white/10 rounded-2xl p-2">
-                            <p class="text-[10px] text-gray-400">Pasos</p>
-                            <p class="text-sm font-bold">8,430</p>
+                <!-- Progreso / Reporte Rápido (Original) -->
+                <div class="bg-gradient-to-r from-vero-green to-vero-orange rounded-3xl p-5 text-white mb-8 shadow-lg shadow-orange-100">
+                    <div class="flex justify-between items-center mb-4">
+                        <div>
+                            <h3 class="font-semibold text-white/90">Tu Progreso</h3>
+                            <div class="flex items-baseline gap-1">
+                                <span class="text-3xl font-bold">64.5</span>
+                                <span class="text-sm font-medium">kg</span>
+                            </div>
                         </div>
-                        <div class="bg-white/10 rounded-2xl p-2">
-                            <p class="text-[10px] text-gray-400">Calorías</p>
-                            <p class="text-sm font-bold text-vero-orange">540 kcal</p>
-                        </div>
-                        <div class="bg-white/10 rounded-2xl p-2">
-                            <p class="text-[10px] text-gray-400">Pulso</p>
-                            <p class="text-sm font-bold text-red-400">128 bpm</p>
+                        <div class="bg-white/20 px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-sm">
+                            Meta: 60 kg
                         </div>
                     </div>
-                </div>
-
-                <!-- Acceso Rápido a Menú y Citas -->
-                <div class="grid grid-cols-2 gap-4 mb-6">
-                    <button onclick="switchView('store')" class="bg-vero-lightGreen p-4 rounded-3xl text-left border border-green-100 transition active:scale-95">
-                        <div class="w-10 h-10 bg-vero-green text-white rounded-2xl flex items-center justify-center mb-3">
-                            <i class="ph-fill ph-bowl-food text-xl"></i>
-                        </div>
-                        <h4 class="font-bold text-sm text-vero-text">Tienda Tinder</h4>
-                        <p class="text-xs text-gray-500">Elige tus viandas</p>
-                    </button>
-                    <button onclick="switchView('appointment')" class="bg-vero-lightOrange p-4 rounded-3xl text-left border border-orange-100 transition active:scale-95">
-                        <div class="w-10 h-10 bg-vero-orange text-white rounded-2xl flex items-center justify-center mb-3">
-                            <i class="ph-fill ph-calendar-check text-xl"></i>
-                        </div>
-                        <h4 class="font-bold text-sm text-vero-text">Agendar Cita</h4>
-                        <p class="text-xs text-gray-500">Control con Vero</p>
-                    </button>
-                </div>
-            </section>
-
-            <!-- VISTA 2: TIENDA / TINDER DE VIANDAS -->
-            <section id="view-store" class="view-section">
-                <div class="mb-4">
-                    <h2 class="text-2xl font-bold text-vero-text">Menú & Viandas 🥗</h2>
-                    <p class="text-sm text-gray-500">Desliza o añade tus platos adaptados a tus macros.</p>
-                </div>
-
-                <!-- Tarjeta Estilo Tinder de Comida -->
-                <div id="tinder-card" class="bg-white rounded-3xl shadow-lg border border-gray-100 overflow-hidden mb-6 transition-all duration-300">
-                    <div class="h-48 relative">
-                        <img id="meal-img" src="https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=500&q=80" alt="Plato" class="w-full h-full object-cover">
-                        <span id="meal-tag" class="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-vero-text shadow">
-                            $4.500 Gs
-                        </span>
+                    <div class="w-full bg-white/30 rounded-full h-2 mb-2">
+                        <div class="bg-white h-2 rounded-full" style="width: 60%"></div>
                     </div>
-                    <div class="p-5">
-                        <h3 id="meal-title" class="font-bold text-lg text-vero-text mb-1">Bowl de Quinoa y Pollo Teriyaki</h3>
-                        <p id="meal-desc" class="text-xs text-gray-500 mb-4">Pechuga grillada, quinoa orgánica, vegetales salteados en sésamo y salsa teriyaki baja en sodio.</p>
+                    <p class="text-xs text-white/80 text-right">¡Faltan 4.5 kg, tú puedes!</p>
+                </div>
+
+                <!-- Menú del Día (Original) -->
+                <div class="mb-8">
+                    <div class="flex justify-between items-end mb-4">
+                        <h3 class="text-lg font-bold text-vero-text">Tu Menú de Hoy</h3>
+                        <a href="#" onclick="switchTab('store')" class="text-sm font-semibold text-vero-green">Ver tienda</a>
+                    </div>
+                    
+                    <div class="space-y-3">
+                        <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
+                            <div class="w-12 h-12 bg-vero-lightGreen rounded-xl flex items-center justify-center flex-shrink-0 text-vero-green">
+                                <i class="ph-fill ph-bowl-food text-2xl"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-xs text-gray-400 font-semibold uppercase tracking-wider">Almuerzo • 13:00</p>
+                                <p class="text-sm font-medium text-vero-text">Bowl de Quinoa y Pollo teriyaki</p>
+                                <p class="text-xs text-gray-500 mt-1">450 kcal • 35g Proteína</p>
+                            </div>
+                        </div>
                         
-                        <!-- Macros -->
-                        <div class="grid grid-cols-3 gap-2 bg-gray-50 p-3 rounded-2xl mb-4 text-center">
-                            <div>
-                                <p class="text-[10px] text-gray-400 font-semibold">CALORÍAS</p>
-                                <p id="meal-cal" class="text-sm font-bold text-vero-orange">450 kcal</p>
+                        <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4 opacity-75">
+                            <div class="w-12 h-12 bg-indigo-50 rounded-xl flex items-center justify-center flex-shrink-0 text-indigo-400">
+                                <i class="ph-fill ph-moon text-2xl"></i>
                             </div>
-                            <div>
-                                <p class="text-[10px] text-gray-400 font-semibold">PROTEÍNA</p>
-                                <p id="meal-prot" class="text-sm font-bold text-vero-green">38g</p>
+                            <div class="flex-1">
+                                <p class="text-xs text-gray-400 font-semibold uppercase tracking-wider">Cena • 20:30</p>
+                                <p class="text-sm font-medium text-vero-text">Ensalada fresca con atún</p>
+                                <p class="text-xs text-gray-500 mt-1">320 kcal • 28g Proteína</p>
                             </div>
-                            <div>
-                                <p class="text-[10px] text-gray-400 font-semibold">CARBS</p>
-                                <p id="meal-carb" class="text-sm font-bold text-blue-500">42g</p>
-                            </div>
-                        </div>
-
-                        <!-- Botones de Acción Estilo Tinder -->
-                        <div class="flex gap-4">
-                            <button onclick="nextMeal(false)" class="flex-1 bg-red-50 text-red-500 py-3 rounded-2xl font-bold flex items-center justify-center gap-2 transition active:scale-95">
-                                <i class="ph-bold ph-x text-lg"></i> Pasar
-                            </button>
-                            <button onclick="addCurrentMealToCart()" class="flex-1 bg-vero-green text-white py-3 rounded-2xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-green-100 transition active:scale-95">
-                                <i class="ph-bold ph-heart text-lg"></i> Pedir
-                            </button>
                         </div>
                     </div>
                 </div>
-            </section>
 
-            <!-- VISTA 3: ESTADÍSTICAS SMARTWATCH -->
-            <section id="view-stats" class="view-section">
-                <div class="mb-4">
+                <!-- Tienda de Viandas (Original + Funcional) -->
+                <div>
+                    <div class="flex justify-between items-end mb-4">
+                        <h3 class="text-lg font-bold text-vero-text">Pide tus Viandas</h3>
+                        <a href="#" onclick="switchTab('store')" class="text-sm font-semibold text-vero-orange">Ver menú</a>
+                    </div>
+                    
+                    <div class="flex gap-4 overflow-x-auto pb-4">
+                        <div class="min-w-[200px] bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden flex-shrink-0">
+                            <div class="h-32 bg-gray-200 relative">
+                                <img src="https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=400&q=80" class="w-full h-full object-cover">
+                                <div class="absolute top-2 right-2 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-lg text-xs font-bold text-vero-text">$4.500</div>
+                            </div>
+                            <div class="p-4">
+                                <h4 class="font-semibold text-sm mb-1 text-vero-text">Salmón con Vegetales</h4>
+                                <p class="text-xs text-gray-500 mb-3">480 kcal • Alto Omega 3.</p>
+                                <button onclick="addToCart('Salmón con Vegetales', 4500)" class="w-full bg-vero-orange text-white py-2 rounded-xl text-sm font-semibold shadow-md shadow-orange-200 transition active:scale-95">
+                                    Agregar
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="min-w-[200px] bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden flex-shrink-0">
+                            <div class="h-32 bg-gray-200 relative">
+                                <img src="https://images.unsplash.com/photo-1543339308-43e59d6b73a6?auto=format&fit=crop&w=400&q=80" class="w-full h-full object-cover">
+                                <div class="absolute top-2 right-2 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-lg text-xs font-bold text-vero-text">$3.800</div>
+                            </div>
+                            <div class="p-4">
+                                <h4 class="font-semibold text-sm mb-1 text-vero-text">Wrap de Pollo Fit</h4>
+                                <p class="text-xs text-gray-500 mb-3">390 kcal • Ideal post-gym.</p>
+                                <button onclick="addToCart('Wrap de Pollo Fit', 3800)" class="w-full bg-vero-orange text-white py-2 rounded-xl text-sm font-semibold shadow-md shadow-orange-200 transition active:scale-95">
+                                    Agregar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VISTA 2: REPORTES & SMARTWATCH (INTEGRADO SIN ROMPER DISEÑO) -->
+            <div id="view-stats" class="app-view">
+                <div class="mb-6">
                     <h2 class="text-2xl font-bold text-vero-text">Métricas del Reloj ⌚</h2>
-                    <p class="text-sm text-gray-500">Datos en tiempo real sincronizados con tu Smartwatch.</p>
+                    <p class="text-sm text-gray-500">Sincronización en vivo vía Smartwatch.</p>
                 </div>
 
                 <div class="space-y-4">
-                    <!-- Frecuencia Cardíaca -->
                     <div class="bg-white p-5 rounded-3xl shadow-sm border border-gray-100 flex items-center justify-between">
                         <div class="flex items-center gap-4">
                             <div class="w-12 h-12 bg-red-50 text-red-500 rounded-2xl flex items-center justify-center">
@@ -234,247 +230,207 @@
                             </div>
                             <div>
                                 <p class="text-xs text-gray-400 font-semibold">RITMO CARDÍACO</p>
-                                <p class="text-lg font-bold text-vero-text">128 <span class="text-xs font-normal text-gray-500">BPM (Entrenando)</span></p>
+                                <p class="text-lg font-bold text-vero-text">128 <span class="text-xs font-normal text-gray-500">BPM</span></p>
                             </div>
                         </div>
-                        <span class="text-xs bg-red-100 text-red-600 px-2.5 py-1 rounded-full font-semibold">Activo</span>
+                        <span class="text-xs bg-red-100 text-red-600 px-2.5 py-1 rounded-full font-semibold">Entrenando</span>
                     </div>
 
-                    <!-- Sueño -->
+                    <div class="bg-white p-5 rounded-3xl shadow-sm border border-gray-100 flex items-center justify-between">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-blue-50 text-blue-500 rounded-2xl flex items-center justify-center">
+                                <i class="ph-fill ph-sneaker-move text-2xl"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-400 font-semibold">PASOS DIARIOS</p>
+                                <p class="text-lg font-bold text-vero-text">8,430 <span class="text-xs font-normal text-gray-500">pasos</span></p>
+                            </div>
+                        </div>
+                        <span class="text-xs bg-blue-100 text-blue-600 px-2.5 py-1 rounded-full font-semibold">Meta 10k</span>
+                    </div>
+
                     <div class="bg-white p-5 rounded-3xl shadow-sm border border-gray-100 flex items-center justify-between">
                         <div class="flex items-center gap-4">
                             <div class="w-12 h-12 bg-indigo-50 text-indigo-500 rounded-2xl flex items-center justify-center">
                                 <i class="ph-fill ph-moon text-2xl"></i>
                             </div>
                             <div>
-                                <p class="text-xs text-gray-400 font-semibold">CALIDAD DE SUEÑO</p>
-                                <p class="text-lg font-bold text-vero-text">7h 42m <span class="text-xs font-normal text-green-500">Optimo</span></p>
+                                <p class="text-xs text-gray-400 font-semibold">SUEÑO</p>
+                                <p class="text-lg font-bold text-vero-text">7h 42m <span class="text-xs font-normal text-green-500">Óptimo</span></p>
                             </div>
                         </div>
-                        <span class="text-xs bg-indigo-100 text-indigo-600 px-2.5 py-1 rounded-full font-semibold">92%</span>
+                        <span class="text-xs bg-indigo-100 text-indigo-600 px-2.5 py-1 rounded-full font-semibold">92% Calidad</span>
                     </div>
+                </div>
+            </div>
 
-                    <!-- Gasto Calórico -->
-                    <div class="bg-white p-5 rounded-3xl shadow-sm border border-gray-100 flex items-center justify-between">
-                        <div class="flex items-center gap-4">
-                            <div class="w-12 h-12 bg-orange-50 text-vero-orange rounded-2xl flex items-center justify-center">
-                                <i class="ph-fill ph-fire text-2xl"></i>
-                            </div>
-                            <div>
-                                <p class="text-xs text-gray-400 font-semibold">QUEMADAS HOY</p>
-                                <p class="text-lg font-bold text-vero-text">2,140 <span class="text-xs font-normal text-gray-500">kcal totales</span></p>
+            <!-- VISTA 3: TIENDA COMPLETA & CARRITO -->
+            <div id="view-store" class="app-view">
+                <div class="mb-4">
+                    <h2 class="text-2xl font-bold text-vero-text">Catálogo de Viandas 🛍️</h2>
+                    <p class="text-sm text-gray-500">Arma tu semana con los platos de Vero.</p>
+                </div>
+
+                <div class="space-y-4 mb-6">
+                    <div class="bg-white p-4 rounded-3xl shadow-sm border border-gray-100 flex items-center gap-4">
+                        <img src="https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=200&q=80" class="w-20 h-20 rounded-2xl object-cover">
+                        <div class="flex-1">
+                            <h4 class="font-bold text-sm text-vero-text">Bowl de Quinoa y Pollo</h4>
+                            <p class="text-xs text-gray-400 mb-2">450 kcal • 38g Proteína</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm font-bold text-vero-orange">$4.500</span>
+                                <button onclick="addToCart('Bowl de Quinoa y Pollo', 4500)" class="bg-vero-green text-white px-4 py-1.5 rounded-xl text-xs font-bold">Pedir</button>
                             </div>
                         </div>
-                        <span class="text-xs bg-orange-100 text-vero-orange px-2.5 py-1 rounded-full font-semibold">Meta OK</span>
                     </div>
-                </div>
-            </section>
 
-            <!-- VISTA 4: AGENDAMIENTO DE CITAS -->
-            <section id="view-appointment" class="view-section">
-                <div class="mb-4">
-                    <h2 class="text-2xl font-bold text-vero-text">Agendá tu Cita 📅</h2>
-                    <p class="text-sm text-gray-500">Selecciona el día y horario con Vero Rodríguez.</p>
-                </div>
-
-                <div class="bg-white p-5 rounded-3xl shadow-sm border border-gray-100 mb-4">
-                    <label class="block text-xs font-bold text-gray-400 mb-2 uppercase">Seleccionar Fecha</label>
-                    <input type="date" class="w-full bg-gray-50 border border-gray-200 rounded-2xl p-3 text-sm font-medium text-vero-text outline-none focus:border-vero-green">
-                </div>
-
-                <div class="bg-white p-5 rounded-3xl shadow-sm border border-gray-100 mb-6">
-                    <label class="block text-xs font-bold text-gray-400 mb-2 uppercase">Horarios Disponibles</label>
-                    <div class="grid grid-cols-3 gap-2">
-                        <button onclick="selectTime(this)" class="py-2.5 rounded-xl text-xs font-bold border border-gray-200 hover:border-vero-green hover:bg-vero-lightGreen transition">09:00 Hs</button>
-                        <button onclick="selectTime(this)" class="py-2.5 rounded-xl text-xs font-bold border border-gray-200 hover:border-vero-green hover:bg-vero-lightGreen transition">11:30 Hs</button>
-                        <button onclick="selectTime(this)" class="py-2.5 rounded-xl text-xs font-bold border border-gray-200 hover:border-vero-green hover:bg-vero-lightGreen transition">15:00 Hs</button>
-                        <button onclick="selectTime(this)" class="py-2.5 rounded-xl text-xs font-bold border border-gray-200 hover:border-vero-green hover:bg-vero-lightGreen transition">17:30 Hs</button>
-                        <button onclick="selectTime(this)" class="py-2.5 rounded-xl text-xs font-bold border border-gray-200 hover:border-vero-green hover:bg-vero-lightGreen transition">19:00 Hs</button>
+                    <div class="bg-white p-4 rounded-3xl shadow-sm border border-gray-100 flex items-center gap-4">
+                        <img src="https://images.unsplash.com/photo-1467003909585-2f8a72700288?auto=format&fit=crop&w=200&q=80" class="w-20 h-20 rounded-2xl object-cover">
+                        <div class="flex-1">
+                            <h4 class="font-bold text-sm text-vero-text">Salmón con Espárragos</h4>
+                            <p class="text-xs text-gray-400 mb-2">510 kcal • 42g Proteína</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm font-bold text-vero-orange">$6.500</span>
+                                <button onclick="addToCart('Salmón con Espárragos', 6500)" class="bg-vero-green text-white px-4 py-1.5 rounded-xl text-xs font-bold">Pedir</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <button onclick="bookAppointment()" class="w-full bg-vero-orange text-white py-4 rounded-2xl font-bold shadow-lg shadow-orange-200 transition active:scale-95">
-                    Confirmar Cita con Vero
-                </button>
-            </section>
-
-            <!-- VISTA 5: CARRITO / COMPRAS FICTICIO -->
-            <section id="view-cart" class="view-section">
-                <div class="mb-4">
-                    <h2 class="text-2xl font-bold text-vero-text">Tu Carrito de Viandas 🛍️</h2>
-                    <p class="text-sm text-gray-500">Resumen de tus platos seleccionados.</p>
-                </div>
-
-                <div id="cart-items-container" class="space-y-3 mb-6">
-                    <!-- Los items agregados aparecerán aquí -->
-                    <div class="text-center py-10 text-gray-400 text-sm">Tu carrito está vacío. ¡Elige platos en la tienda!</div>
-                </div>
-
-                <div id="cart-summary" class="bg-white p-5 rounded-3xl shadow-sm border border-gray-100 hidden mb-6">
-                    <div class="flex justify-between mb-2 text-sm">
-                        <span class="text-gray-500">Subtotal</span>
-                        <span id="cart-subtotal" class="font-bold text-vero-text">0 Gs</span>
-                    </div>
-                    <div class="flex justify-between mb-4 text-sm">
-                        <span class="text-gray-500">Envío al Gym / Casa</span>
-                        <span class="font-bold text-vero-green">Gratis</span>
-                    </div>
-                    <hr class="border-gray-100 mb-4">
-                    <div class="flex justify-between text-base font-bold">
-                        <span>Total</span>
+                <!-- Resumen de Carrito Activo -->
+                <div class="bg-white p-5 rounded-3xl shadow-sm border border-gray-100">
+                    <h3 class="font-bold text-sm mb-3 text-vero-text">Tu Carrito Actual</h3>
+                    <div id="cart-items" class="text-xs text-gray-500 mb-3">No hay platos seleccionados aún.</div>
+                    <div class="flex justify-between font-bold text-sm border-t pt-3 border-gray-100">
+                        <span>Total:</span>
                         <span id="cart-total" class="text-vero-orange">0 Gs</span>
                     </div>
                 </div>
+            </div>
 
-                <button id="checkout-btn" onclick="checkoutOrder()" class="w-full bg-vero-green text-white py-4 rounded-2xl font-bold shadow-lg shadow-green-200 transition active:scale-95 hidden">
-                    Finalizar Pedido Ficticio
-                </button>
-            </section>
+            <!-- VISTA 4: CHAT / CITAS CON VERO -->
+            <div id="view-chat" class="app-view">
+                <div class="mb-4">
+                    <h2 class="text-2xl font-bold text-vero-text">Asesoría con Vero 💬</h2>
+                    <p class="text-sm text-gray-500">Canal directo con tu nutricionista.</p>
+                </div>
+                <div class="bg-white p-5 rounded-3xl shadow-sm border border-gray-100 space-y-3">
+                    <div class="bg-vero-lightGreen p-3 rounded-2xl text-xs text-vero-text">
+                        <b>Vero Rodríguez:</b> ¡Hola Camila! Estuve viendo los datos de tu reloj y entrenaste excelente hoy. ¿Cómo venimos con las viandas?
+                    </div>
+                    <div class="flex gap-2 mt-4">
+                        <input type="text" placeholder="Escribe un mensaje..." class="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs outline-none">
+                        <button onclick="showToast('Mensaje enviado a Vero 🚀')" class="bg-vero-orange text-white px-4 py-2 rounded-xl text-xs font-bold">Enviar</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VISTA 5: PERFIL -->
+            <div id="view-profile" class="app-view">
+                <div class="mb-4">
+                    <h2 class="text-2xl font-bold text-vero-text">Tu Perfil 👤</h2>
+                    <p class="text-sm text-gray-500">Configuración de cuenta y objetivos.</p>
+                </div>
+                <div class="bg-white p-5 rounded-3xl shadow-sm border border-gray-100 space-y-3 text-sm">
+                    <p><b>Nombre:</b> Camila Duarte</p>
+                    <p><b>Objetivo:</b> Bajar grasa / Recomposición</p>
+                    <p><b>Gimnasio:</b> FitCenter Asunción</p>
+                    <button onclick="showToast('Datos actualizados con éxito')" class="w-full bg-vero-green text-white py-3 rounded-xl font-bold text-xs mt-2">Guardar Cambios</button>
+                </div>
+            </div>
 
         </main>
 
-        <!-- NAVEGACIÓN INFERIOR (BOTTOM NAV) -->
-        <nav class="absolute bottom-0 w-full bg-white border-t border-gray-100 px-6 py-4 rounded-t-3xl shadow-[0_-10px_40px_rgba(0,0,0,0.05)] z-20 flex justify-between items-center">
-            <button onclick="switchView('home')" id="nav-home" class="flex flex-col items-center text-vero-orange gap-1">
-                <i class="ph-fill ph-house text-2xl"></i>
-                <span class="text-[10px] font-semibold">Inicio</span>
-            </button>
-            <button onclick="switchView('store')" id="nav-store" class="flex flex-col items-center text-gray-400 hover:text-vero-green transition gap-1">
-                <i class="ph ph-bowl-food text-2xl"></i>
-                <span class="text-[10px] font-semibold">Tienda</span>
-            </button>
-            <button onclick="switchView('stats')" id="nav-stats" class="flex flex-col items-center text-gray-400 hover:text-vero-green transition gap-1">
-                <i class="ph ph-watch text-2xl"></i>
-                <span class="text-[10px] font-semibold">Reloj</span>
-            </button>
-            <button onclick="switchView('appointment')" id="nav-appointment" class="flex flex-col items-center text-gray-400 hover:text-vero-green transition gap-1">
-                <i class="ph ph-calendar text-2xl"></i>
-                <span class="text-[10px] font-semibold">Citas</span>
-            </button>
+        <!-- NAVEGACIÓN INFERIOR ORIGINAL -->
+        <nav class="absolute bottom-0 w-full bg-white border-t border-gray-100 px-6 py-4 rounded-t-3xl shadow-[0_-10px_40px_rgba(0,0,0,0.05)] z-20">
+            <div class="flex justify-between items-center">
+                <a href="#" onclick="switchTab('home')" id="nav-home" class="flex flex-col items-center text-vero-orange gap-1">
+                    <i class="ph-fill ph-house text-2xl"></i>
+                    <span class="text-[10px] font-semibold">Inicio</span>
+                </a>
+                <a href="#" onclick="switchTab('stats')" id="nav-stats" class="flex flex-col items-center text-gray-400 hover:text-vero-green transition gap-1">
+                    <i class="ph ph-chart-line-up text-2xl"></i>
+                    <span class="text-[10px] font-semibold">Reportes</span>
+                </a>
+                <!-- Botón Flotante Central -->
+                <div class="relative -top-6">
+                    <button onclick="switchTab('store')" class="bg-vero-green text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg shadow-green-200 transition active:scale-95">
+                        <i class="ph-fill ph-shopping-bag text-2xl"></i>
+                    </button>
+                </div>
+                <a href="#" onclick="switchTab('chat')" id="nav-chat" class="flex flex-col items-center text-gray-400 hover:text-vero-green transition gap-1">
+                    <i class="ph ph-chat-circle-dots text-2xl"></i>
+                    <span class="text-[10px] font-semibold">Chat</span>
+                </a>
+                <a href="#" onclick="switchTab('profile')" id="nav-profile" class="flex flex-col items-center text-gray-400 hover:text-vero-green transition gap-1">
+                    <i class="ph ph-user text-2xl"></i>
+                    <span class="text-[10px] font-semibold">Perfil</span>
+                </a>
+            </div>
         </nav>
 
-        <!-- TOAST DE NOTIFICACIÓN -->
-        <div id="toast" class="absolute top-20 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white px-4 py-2 rounded-full text-xs font-semibold opacity-0 transition-opacity duration-300 pointer-events-none z-50 shadow-xl">
-            Notificación
+        <!-- Toast de Notificación -->
+        <div id="toast" class="absolute top-24 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-4 py-2 rounded-full text-xs font-medium opacity-0 transition-opacity duration-300 pointer-events-none z-50">
+            Mensaje
         </div>
 
     </div>
 
     <script>
-        // Datos del Tinder de comidas
-        const meals = [
-            { title: "Bowl de Quinoa y Pollo Teriyaki", desc: "Pechuga grillada, quinoa orgánica, vegetales salteados y sésamo.", cal: "450 kcal", prot: "38g", carb: "42g", price: 4500, img: "https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=500&q=80" },
-            { title: "Wrap Integral de Lomito Fit", desc: "Tortilla integral, tiras de lomito magro, palta, rúcula y queso light.", cal: "390 kcal", prot: "32g", carb: "30g", price: 3800, img: "https://images.unsplash.com/photo-1543339308-43e59d6b73a6?auto=format&fit=crop&w=500&q=80" },
-            { title: "Salmón Rosado con Espárragos", desc: "Filet de salmón a la plancha con puré de calabaza y espárragos al vapor.", cal: "510 kcal", prot: "42g", carb: "18g", price: 6500, img: "https://images.unsplash.com/photo-1467003909585-2f8a72700288?auto=format&fit=crop&w=500&q=80" }
-        ];
-        let currentMealIndex = 0;
         let cart = [];
 
-        function switchView(viewName) {
-            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
-            document.getElementById('view-' + viewName).classList.add('active');
+        function switchTab(tabName) {
+            document.querySelectorAll('.app-view').forEach(el => el.classList.remove('active'));
+            document.getElementById('view-' + tabName).classList.add('active');
 
             // Reset nav colors
-            ['home', 'store', 'stats', 'appointment'].forEach(n => {
+            ['home', 'stats', 'chat', 'profile'].forEach(n => {
                 const btn = document.getElementById('nav-' + n);
-                if(btn) {
-                    btn.className = "flex flex-col items-center text-gray-400 hover:text-vero-green transition gap-1";
-                }
+                if(btn) btn.className = "flex flex-col items-center text-gray-400 hover:text-vero-green transition gap-1";
             });
 
-            if(viewName !== 'cart') {
-                const activeNav = document.getElementById('nav-' + viewName);
-                if(activeNav) activeNav.className = "flex flex-col items-center text-vero-orange gap-1";
+            if(tabName !== 'store') {
+                const activeBtn = document.getElementById('nav-' + tabName);
+                if(activeBtn) activeBtn.className = "flex flex-col items-center text-vero-orange gap-1";
             }
         }
 
         function toggleHabit(element, colorName) {
-            element.classList.toggle('ring-2');
-            showToast('¡Hábito actualizado!');
-        }
-
-        function nextMeal(liked) {
-            currentMealIndex = (currentMealIndex + 1) % meals.length;
-            const m = meals[currentMealIndex];
-            document.getElementById('meal-title').innerText = m.title;
-            document.getElementById('meal-desc').innerText = m.desc;
-            document.getElementById('meal-cal').innerText = m.cal;
-            document.getElementById('meal-prot').innerText = m.prot;
-            document.getElementById('meal-carb').innerText = m.carb;
-            document.getElementById('meal-tag').innerText = m.price.toLocaleString() + ' Gs';
-            document.getElementById('meal-img').src = m.img;
-
-            if(liked) {
-                showToast('¡Añadido a tus favoritos!');
+            const isChecked = element.classList.contains('ring-2');
+            if (isChecked) {
+                element.classList.remove('ring-2', `ring-${colorName}-400`, `bg-${colorName}-100`);
+                element.classList.add(`bg-${colorName}-50`);
+            } else {
+                element.classList.remove(`bg-${colorName}-50`);
+                element.classList.add('ring-2', `ring-${colorName}-400`, `bg-${colorName}-100`);
+                if(colorName === 'orange') showToast('¡Bien entrenado hoy! 💪');
+                if(colorName === 'blue') showToast('¡Sigue hidratándote! 💧');
             }
         }
 
-        function addCurrentMealToCart() {
-            const m = meals[currentMealIndex];
-            cart.push(m);
-            document.getElementById('cart-badge').innerText = cart.length;
-            showToast('¡Plato agregado al pedido!');
-            updateCartUI();
-            nextMeal(false);
+        function addToCart(name, price) {
+            cart.push({name, price});
+            updateCartDisplay();
+            showToast(`¡Agregado: ${name}! 🛒`);
         }
 
-        function updateCartUI() {
-            const container = document.getElementById('cart-items-container');
-            const summary = document.getElementById('cart-summary');
-            const checkoutBtn = document.getElementById('checkout-btn');
-
+        function updateCartDisplay() {
+            const container = document.getElementById('cart-items');
+            const totalEl = document.getElementById('cart-total');
             if(cart.length === 0) {
-                container.innerHTML = `<div class="text-center py-10 text-gray-400 text-sm">Tu carrito está vacío. ¡Elige platos en la tienda!</div>`;
-                summary.classList.add('hidden');
-                checkoutBtn.classList.add('hidden');
+                container.innerHTML = "No hay platos seleccionados aún.";
+                totalEl.innerText = "0 Gs";
                 return;
             }
-
-            let html = '';
+            let html = '<ul class="space-y-1">';
             let total = 0;
-            cart.forEach((item, index) => {
+            cart.forEach(item => {
                 total += item.price;
-                html += `
-                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between">
-                        <div>
-                            <h4 class="font-bold text-sm text-vero-text">${item.title}</h4>
-                            <p class="text-xs text-gray-400">${item.cal} • ${item.price.toLocaleString()} Gs</p>
-                        </div>
-                        <button onclick="removeFromCart(${index})" class="text-red-400 p-2"><i class="ph-bold ph-trash"></i></button>
-                    </div>
-                `;
+                html += `<li>• ${item.name} ($${item.price.toLocaleString()})</li>`;
             });
-
+            html += '</ul>';
             container.innerHTML = html;
-            document.getElementById('cart-subtotal').innerText = total.toLocaleString() + ' Gs';
-            document.getElementById('cart-total').innerText = total.toLocaleString() + ' Gs';
-            summary.classList.remove('hidden');
-            checkoutBtn.classList.remove('hidden');
-        }
-
-        function removeFromCart(index) {
-            cart.splice(index, 1);
-            document.getElementById('cart-badge').innerText = cart.length;
-            updateCartUI();
-            showToast('Plato eliminado');
-        }
-
-        function checkoutOrder() {
-            showToast('¡Pedido realizado con éxito! 🚀');
-            cart = [];
-            document.getElementById('cart-badge').innerText = '0';
-            updateCartUI();
-            setTimeout(() => switchView('home'), 1500);
-        }
-
-        function selectTime(btn) {
-            document.querySelectorAll('#view-appointment button').forEach(b => b.classList.remove('bg-vero-green', 'text-white'));
-            btn.classList.add('bg-vero-green', 'text-white');
-        }
-
-        function bookAppointment() {
-            showToast('¡Cita agendada correctamente con Vero! 📅');
-            setTimeout(() => switchView('home'), 1500);
+            totalEl.innerText = total.toLocaleString() + ' Gs';
         }
 
         function showToast(message) {
