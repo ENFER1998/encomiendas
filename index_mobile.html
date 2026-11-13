@@ -6,6 +6,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
   <style> 
     body { background-color: #f1f5f9; font-family: 'Segoe UI', sans-serif; } 
     
@@ -291,6 +292,7 @@
     let usuarioActual = ""; let fotoEntregaData = ""; let fotoRecepcionData = ""; 
     let historialGlobalM = []; let pendientesDeudaGlobal = []; let idEntregaActivoM = "";
     let html5QrcodeScanner;
+    let ultimoEnvioImprimir = null;
 
     function toggleMenu() {
       const menu = document.getElementById('sideMenu'); const overlay = document.getElementById('menuOverlay');
@@ -329,7 +331,9 @@
       if(iconClass) document.getElementById('tituloAppIcon').innerHTML = `<i class="fa-solid ${iconClass}"></i>`;
       
       document.querySelectorAll('.navBtn').forEach(b => { b.classList.remove('bg-blue-50', 'text-blue-800', 'border-blue-200'); b.classList.add('hover:bg-slate-100', 'border-transparent'); });
-      event.currentTarget.classList.add('bg-blue-50', 'text-blue-800', 'border-blue-200'); event.currentTarget.classList.remove('hover:bg-slate-100', 'border-transparent');
+      if (typeof event !== 'undefined' && event && event.currentTarget) {
+        event.currentTarget.classList.add('bg-blue-50', 'text-blue-800', 'border-blue-200'); event.currentTarget.classList.remove('hover:bg-slate-100', 'border-transparent');
+      }
       
       toggleMenu(); 
       if(vista === 'vistaHistorial' && historialGlobalM.length === 0) cargarHistorialMovil();
@@ -445,10 +449,16 @@
       e.preventDefault(); document.getElementById('btnRegMovil').innerHTML = "CARGANDO...";
       const datos = { ciRem: document.getElementById('m_ciRem').value, nomRem: document.getElementById('m_nomRem').value, telRem: document.getElementById('m_telRem').value, ciDest: document.getElementById('m_ciDest').value, nomDest: document.getElementById('m_nomDest').value, telDest: document.getElementById('m_telDest').value, dirDest: document.getElementById('m_dirDest').value, detalle: document.getElementById('m_detalle').value, costo: document.getElementById('m_costo').value, tipoCli: document.getElementById('m_tipoCli').value };
       const res = await apiRequest({ accion: 'guardarEnvio', datos: datos, agente: usuarioActual, fotoRecepcion: fotoRecepcionData });
-      document.getElementById('btnRegMovil').innerHTML = "GUARDAR ENVÍO";
+      document.getElementById('btnRegMovil').innerHTML = '<i class="fa-solid fa-floppy-disk mr-2"></i> GUARDAR ENVÍO';
       if(res.success) { 
-        alert("CREADO: " + res.id + "\nYa puede imprimir el ticket."); 
+        ultimoEnvioImprimir = {
+          id: res.id,
+          fecha: new Date().toLocaleString('es-PY'),
+          agente: usuarioActual || 'Agente',
+          ...datos
+        };
         document.getElementById('idParaImprimir').value = res.id; 
+        alert("CREADO: " + res.id + "\nYa puede imprimir el ticket."); 
         e.target.reset(); document.getElementById('previewRecepcion').classList.add('hidden'); fotoRecepcionData = ""; historialGlobalM = []; 
       }
     }
@@ -551,41 +561,263 @@
     async function borrarUser(u) { if(u === 'admin') return alert("No se puede borrar admin."); if(confirm(`¿Eliminar ${u}?`)) { const res = await apiRequest({ accion: 'eliminarUsuario', usuarioTarget: u }); if(res.success) cargarUsuarios(); } }
     async function solicitarCambioPass(u) { let n = prompt(`Nueva contraseña para ${u}:`); if(n && n.trim() !== "") { const res = await apiRequest({ accion: 'cambiarPassword', usuarioTarget: u, nuevaPass: n.trim() }); if(res.success) alert("Actualizada."); } }
 
+    // =========================================================
+    // UTILIDADES PARA IMPRESIÓN TÉRMICA ESC/POS (58mm / 384px)
+    // =========================================================
+    function limpiarTextoTicket(str) {
+      if (!str) return '';
+      return String(str)
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^\x20-\x7E\n]/g, '');
+    }
+
+    function wrap32(texto, prefijo = '') {
+      const limpio = limpiarTextoTicket(prefijo + (texto || '-'));
+      const words = limpio.split(/\s+/);
+      const lines = [];
+      let current = '';
+      for (const w of words) {
+        if (!current) {
+          current = w;
+        } else if ((current + ' ' + w).length <= 32) {
+          current += ' ' + w;
+        } else {
+          lines.push(current);
+          current = w;
+        }
+      }
+      if (current) lines.push(current);
+      return lines.join('\n');
+    }
+
+    function textoModalidadPago(tipoCli) {
+      if (tipoCli === 'Destino') return 'PAGA QUIEN RECIBE (DESTINO)';
+      if (tipoCli === 'Corporativo') return 'CUENTA CORPORATIVA';
+      return 'PAGA QUIEN ENVIA (CONTADO)';
+    }
+
+    function cargarImagenLogo() {
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        img.onload = () => resolve(img);
+        img.onerror = () => {
+          const img2 = new Image();
+          img2.crossOrigin = "anonymous";
+          img2.onload = () => resolve(img2);
+          img2.onerror = () => resolve(null);
+          img2.src = "logo.jpeg";
+        };
+        img.src = "logo.png";
+      });
+    }
+
+    function generarCanvasLogo(img, maxWidth = 300, maxHeight = 130) {
+      const ratio = Math.min(maxWidth / img.width, maxHeight / img.height);
+      const drawW = Math.max(8, Math.round(img.width * ratio));
+      const drawH = Math.max(8, Math.round(img.height * ratio));
+      const canvas = document.createElement('canvas');
+      canvas.width = 384;
+      canvas.height = drawH + 8;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      const offsetX = Math.floor((384 - drawW) / 2);
+      ctx.drawImage(img, offsetX, 4, drawW, drawH);
+      return canvas;
+    }
+
+    function generarCanvasQR(texto, sizePx = 220) {
+      if (typeof qrcode === 'undefined') return null;
+      const qr = qrcode(0, 'M');
+      qr.addData(texto);
+      qr.make();
+      const count = qr.getModuleCount();
+      const quiet = 3;
+      const totalModules = count + quiet * 2;
+      const scale = Math.max(3, Math.floor(sizePx / totalModules));
+      const realSize = totalModules * scale;
+
+      const canvas = document.createElement('canvas');
+      canvas.width = 384;
+      canvas.height = realSize;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      const offsetX = Math.floor((384 - realSize) / 2);
+      ctx.fillStyle = '#000000';
+      for (let r = 0; r < count; r++) {
+        for (let c = 0; c < count; c++) {
+          if (qr.isDark(r, c)) {
+            ctx.fillRect(offsetX + (c + quiet) * scale, (r + quiet) * scale, scale, scale);
+          }
+        }
+      }
+      return canvas;
+    }
+
+    function canvasA_ESCPOS_Raster(canvas) {
+      const width = canvas.width;
+      const height = canvas.height;
+      const ctx = canvas.getContext('2d');
+      const imgData = ctx.getImageData(0, 0, width, height).data;
+      const bytesPerRow = Math.ceil(width / 8);
+
+      const cmd = [
+        0x1D, 0x76, 0x30, 0x00,
+        bytesPerRow & 0xFF, (bytesPerRow >> 8) & 0xFF,
+        height & 0xFF, (height >> 8) & 0xFF
+      ];
+
+      for (let y = 0; y < height; y++) {
+        for (let bx = 0; bx < bytesPerRow; bx++) {
+          let byteVal = 0;
+          for (let bit = 0; bit < 8; bit++) {
+            const x = bx * 8 + bit;
+            if (x < width) {
+              const idx = (y * width + x) * 4;
+              const r = imgData[idx];
+              const g = imgData[idx + 1];
+              const b = imgData[idx + 2];
+              const a = imgData[idx + 3];
+              const lum = a < 128 ? 255 : (0.299 * r + 0.587 * g + 0.114 * b);
+              if (lum < 150) {
+                byteVal |= (0x80 >> bit);
+              }
+            }
+          }
+          cmd.push(byteVal);
+        }
+      }
+      return cmd;
+    }
+
+    async function enviarBytesBluetooth(char, bytes) {
+      const CHUNK_SIZE = 100;
+      for (let i = 0; i < bytes.length; i += CHUNK_SIZE) {
+        const chunk = new Uint8Array(bytes.slice(i, i + CHUNK_SIZE));
+        if (char.properties && char.properties.writeWithoutResponse && char.writeValueWithoutResponse) {
+          await char.writeValueWithoutResponse(chunk);
+        } else {
+          await char.writeValue(chunk);
+        }
+        await new Promise(r => setTimeout(r, 20));
+      }
+    }
+
     async function imprimirTicket(tipo) {
       let idParaImprimir = document.getElementById('idParaImprimir').value;
-      if(!idParaImprimir) return alert("Debe GUARDAR EL ENVÍO primero para generar el ticket.");
-      
+      if (!idParaImprimir) return alert("Debe GUARDAR EL ENVÍO primero para generar el ticket.");
+
+      const env = (ultimoEnvioImprimir && ultimoEnvioImprimir.id === idParaImprimir)
+        ? ultimoEnvioImprimir
+        : {
+            id: idParaImprimir,
+            fecha: new Date().toLocaleString('es-PY'),
+            agente: usuarioActual || 'Agente',
+            ciRem: document.getElementById('m_ciRem').value || '-',
+            nomRem: document.getElementById('m_nomRem').value || '-',
+            telRem: document.getElementById('m_telRem').value || '-',
+            ciDest: document.getElementById('m_ciDest').value || '-',
+            nomDest: document.getElementById('m_nomDest').value || '-',
+            telDest: document.getElementById('m_telDest').value || '-',
+            dirDest: document.getElementById('m_dirDest').value || '-',
+            detalle: document.getElementById('m_detalle').value || '-',
+            costo: document.getElementById('m_costo').value || 0,
+            tipoCli: document.getElementById('m_tipoCli').value || 'Contado'
+          };
+
       try {
-        const device = await navigator.bluetooth.requestDevice({ acceptAllDevices: true, optionalServices: ['000018f0-0000-1000-8000-00805f9b34fb'] }); 
-        const server = await device.gatt.connect(); 
-        const service = await server.getPrimaryService('000018f0-0000-1000-8000-00805f9b34fb'); 
+        const device = await navigator.bluetooth.requestDevice({
+          acceptAllDevices: true,
+          optionalServices: ['000018f0-0000-1000-8000-00805f9b34fb']
+        });
+        const server = await device.gatt.connect();
+        const service = await server.getPrimaryService('000018f0-0000-1000-8000-00805f9b34fb');
         const char = await service.getCharacteristic('00002af1-0000-1000-8000-00805f9b34fb');
-        
-        let headerTxt = "--------------------------------\n        LUIS TRANSPORTES\n--------------------------------\nCOMPROBANTE DE ENVIO\nID: " + idParaImprimir + "\nFecha: " + new Date().toLocaleDateString() + "\n"; 
-        if(tipo === 2) headerTxt += "\n\nCOPIA EMPRESA\nFIRMA: _______________________\nACLARACION:\n"; 
-        
-        let encoder = new TextEncoder(); let bytes = [];
+
+        const encoder = new TextEncoder();
+        const bytes = [];
+        // Inicializar impresora
         bytes.push(0x1B, 0x40);
-        let textBytes = encoder.encode(headerTxt + "\n");
-        textBytes.forEach(b => bytes.push(b));
-        
-        let qrStr = idParaImprimir;
-        let pL = (qrStr.length + 3) % 256; let pH = Math.floor((qrStr.length + 3) / 256);
-        
-        bytes.push(0x1D, 0x28, 0x6B, 0x04, 0x00, 0x31, 0x41, 0x32, 0x00);
-        bytes.push(0x1D, 0x28, 0x6B, 0x03, 0x00, 0x31, 0x43, 0x06);
-        bytes.push(0x1D, 0x28, 0x6B, 0x03, 0x00, 0x31, 0x45, 0x30);
-        bytes.push(0x1D, 0x28, 0x6B, pL, pH, 0x31, 0x50, 0x30);
-        let qrBytes = encoder.encode(qrStr);
-        qrBytes.forEach(b => bytes.push(b));
-        bytes.push(0x1D, 0x28, 0x6B, 0x03, 0x00, 0x31, 0x51, 0x30);
-        
-        let footerBytes = encoder.encode("\n\n\n\n\n");
-        footerBytes.forEach(b => bytes.push(b));
-        
-        await char.writeValue(new Uint8Array(bytes)); 
-        alert("Imprimiendo...");
-      } catch(e) { alert("Error Bluetooth. Asegúrese de que la ticketera esté encendida y emparejada."); }
+
+        // 1. LOGO EN RASTER (GS v 0)
+        const logoImg = await cargarImagenLogo();
+        if (logoImg) {
+          bytes.push(0x1B, 0x61, 0x01); // Centrar
+          const logoCanvas = generarCanvasLogo(logoImg, 300, 130);
+          const logoRaster = canvasA_ESCPOS_Raster(logoCanvas);
+          logoRaster.forEach(b => bytes.push(b));
+          bytes.push(0x0A);
+        }
+
+        // 2. ENCABEZADO
+        bytes.push(0x1B, 0x61, 0x01); // Centrar
+        bytes.push(0x1B, 0x45, 0x01); // Negrita ON
+        encoder.encode("LUIS TRANSPORTES\n").forEach(b => bytes.push(b));
+        encoder.encode("COMPROBANTE DE ENVIO\n").forEach(b => bytes.push(b));
+        bytes.push(0x1B, 0x45, 0x00); // Negrita OFF
+
+        // 3. DATOS COMPLETOS DEL ENVÍO
+        bytes.push(0x1B, 0x61, 0x00); // Alinear Izquierda
+        const costoFmt = Number(env.costo || 0).toLocaleString('es-PY');
+
+        let cuerpo = "";
+        cuerpo += "================================\n";
+        cuerpo += "ID: " + limpiarTextoTicket(env.id) + "\n";
+        cuerpo += "Fecha: " + limpiarTextoTicket(env.fecha) + "\n";
+        cuerpo += wrap32(env.agente, "Agente: ") + "\n";
+        cuerpo += "--------------------------------\n";
+        cuerpo += "REMITENTE (ENVIA):\n";
+        cuerpo += wrap32(env.nomRem) + "\n";
+        cuerpo += "CI/RUC: " + limpiarTextoTicket(env.ciRem) + "\n";
+        cuerpo += "Tel: " + limpiarTextoTicket(env.telRem) + "\n";
+        cuerpo += "--------------------------------\n";
+        cuerpo += "DESTINATARIO (RECIBE):\n";
+        cuerpo += wrap32(env.nomDest) + "\n";
+        cuerpo += "CI/RUC: " + limpiarTextoTicket(env.ciDest) + "\n";
+        cuerpo += "Tel: " + limpiarTextoTicket(env.telDest || '-') + "\n";
+        cuerpo += wrap32(env.dirDest || '-', "Dir: ") + "\n";
+        cuerpo += "--------------------------------\n";
+        cuerpo += "DETALLE DEL ENVIO:\n";
+        cuerpo += wrap32(env.detalle) + "\n";
+        cuerpo += "--------------------------------\n";
+        cuerpo += "COSTO: Gs. " + limpiarTextoTicket(costoFmt) + "\n";
+        cuerpo += wrap32(textoModalidadPago(env.tipoCli), "PAGO: ") + "\n";
+        cuerpo += "================================\n";
+
+        encoder.encode(cuerpo).forEach(b => bytes.push(b));
+
+        // 4. CÓDIGO QR EN RASTER (compatible con GoLink GL033 y cualquier 58mm)
+        const qrCanvas = generarCanvasQR(env.id, 220);
+        if (qrCanvas) {
+          bytes.push(0x1B, 0x61, 0x01); // Centrar
+          const qrRaster = canvasA_ESCPOS_Raster(qrCanvas);
+          qrRaster.forEach(b => bytes.push(b));
+          encoder.encode("Escanear para verificar paquete\n").forEach(b => bytes.push(b));
+        }
+
+        // 5. PIE SEGÚN TIPO DE COPIA
+        bytes.push(0x1B, 0x61, 0x00); // Izquierda
+        let pie = "";
+        if (tipo === 1) {
+          pie += "\nCOPIA CLIENTE\nGracias por su preferencia!\n";
+        } else {
+          pie += "\nCOPIA PAQUETE / EMPRESA\n";
+          pie += "FIRMA: _________________________\n\n";
+          pie += "ACLARACION: ____________________\n\n";
+          pie += "CI: ____________________________\n";
+        }
+        pie += "\n\n\n\n";
+        encoder.encode(pie).forEach(b => bytes.push(b));
+
+        await enviarBytesBluetooth(char, bytes);
+        alert("Imprimiendo ticket...");
+      } catch (e) {
+        alert("Error Bluetooth. Asegúrese de que la ticketera esté encendida y emparejada.");
+      }
     }
   </script>
 </body>
