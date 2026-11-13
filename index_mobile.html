@@ -293,6 +293,8 @@
     let historialGlobalM = []; let pendientesDeudaGlobal = []; let idEntregaActivoM = "";
     let html5QrcodeScanner;
     let ultimoEnvioImprimir = null;
+    let bleDeviceCache = null;
+    let bleCharCache = null;
 
     function toggleMenu() {
       const menu = document.getElementById('sideMenu'); const overlay = document.getElementById('menuOverlay');
@@ -562,6 +564,120 @@
     async function solicitarCambioPass(u) { let n = prompt(`Nueva contraseña para ${u}:`); if(n && n.trim() !== "") { const res = await apiRequest({ accion: 'cambiarPassword', usuarioTarget: u, nuevaPass: n.trim() }); if(res.success) alert("Actualizada."); } }
 
     // =========================================================
+    // CONEXIÓN UNIVERSAL BLUETOOTH BLE PARA CUALQUIER TICKETERA
+    // (GoLink, LUO LU-SIY29, Xprinter, Goojprt, Rongta, Zjiang, etc.)
+    // =========================================================
+    const PRINTER_BLE_SERVICES = [
+      '000018f0-0000-1000-8000-00805f9b34fb', // Estándar ESC/POS (GoLink, Xprinter, etc.)
+      'e7810a71-73ae-499d-8c15-faa9aef0c3f2', // Genéricas chinas / Rongta / Zjiang
+      '49535343-fe7d-4ae5-8fa9-9fafd205e455', // ISSC / Microchip Transparent UART
+      '0000ff00-0000-1000-8000-00805f9b34fb', // LUO / Goojprt / 58mm económicas
+      '0000ffe0-0000-1000-8000-00805f9b34fb', // HM-10 / JDY / UART BLE
+      '0000ae30-0000-1000-8000-00805f9b34fb', // Cat/Pocket printers & mini BLE
+      '0000af30-0000-1000-8000-00805f9b34fb',
+      '0000fee7-0000-1000-8000-00805f9b34fb',
+      '6e400001-b5a3-f393-e0a9-e50e24dcca9e'  // Nordic UART Service (NUS)
+    ];
+
+    const IGNORED_BLE_SERVICES = new Set([
+      '00001800-0000-1000-8000-00805f9b34fb', // Generic Access
+      '00001801-0000-1000-8000-00805f9b34fb', // Generic Attribute
+      '0000180a-0000-1000-8000-00805f9b34fb', // Device Information
+      '0000180f-0000-1000-8000-00805f9b34fb'  // Battery Service
+    ]);
+
+    async function obtenerCaracteristicaImpresora() {
+      if (!navigator.bluetooth) {
+        throw new Error("Este navegador no soporta Web Bluetooth. Use Google Chrome en Android.");
+      }
+
+      if (bleDeviceCache && bleDeviceCache.gatt && bleDeviceCache.gatt.connected && bleCharCache) {
+        return bleCharCache;
+      }
+
+      if (!bleDeviceCache) {
+        bleDeviceCache = await navigator.bluetooth.requestDevice({
+          acceptAllDevices: true,
+          optionalServices: PRINTER_BLE_SERVICES
+        });
+        bleDeviceCache.addEventListener('gattserverdisconnected', () => {
+          bleCharCache = null;
+        });
+      }
+
+      const server = bleDeviceCache.gatt.connected
+        ? bleDeviceCache.gatt
+        : await bleDeviceCache.gatt.connect();
+
+      const services = await server.getPrimaryServices();
+      let fallbackChar = null;
+
+      for (const service of services) {
+        const sUuid = service.uuid.toLowerCase();
+        if (IGNORED_BLE_SERVICES.has(sUuid)) continue;
+
+        let chars = [];
+        try {
+          chars = await service.getCharacteristics();
+        } catch (err) {
+          continue;
+        }
+
+        for (const c of chars) {
+          if (c.properties.writeWithoutResponse || c.properties.write) {
+            const cUuid = c.uuid.toLowerCase();
+            // Priorizar características conocidas de escritura de impresoras
+            if (
+              cUuid.includes('2af1') ||
+              cUuid.includes('bef8d6c9') ||
+              cUuid.includes('49535343-8841') ||
+              cUuid.includes('ff02') ||
+              cUuid.includes('ffe1') ||
+              cUuid.includes('ae01') ||
+              cUuid.includes('6e400002')
+            ) {
+              bleCharCache = c;
+              return c;
+            }
+            if (!fallbackChar) fallbackChar = c;
+          }
+        }
+      }
+
+      if (fallbackChar) {
+        bleCharCache = fallbackChar;
+        return fallbackChar;
+      }
+
+      throw new Error("No se encontró un canal de impresión BLE compatible en esta impresora.");
+    }
+
+    async function enviarBytesBluetooth(char, bytes) {
+      let chunkSize = 64;
+      let i = 0;
+
+      while (i < bytes.length) {
+        const chunk = new Uint8Array(bytes.slice(i, i + chunkSize));
+        try {
+          if (char.properties.writeWithoutResponse && char.writeValueWithoutResponse) {
+            await char.writeValueWithoutResponse(chunk);
+          } else {
+            await char.writeValue(chunk);
+          }
+          i += chunkSize;
+          await new Promise(r => setTimeout(r, 15));
+        } catch (err) {
+          if (chunkSize > 20) {
+            // Muchas impresoras económicas (LUO, HM-10, etc.) tienen MTU máximo de 20 bytes
+            chunkSize = 20;
+          } else {
+            throw err;
+          }
+        }
+      }
+    }
+
+    // =========================================================
     // UTILIDADES PARA IMPRESIÓN TÉRMICA ESC/POS (58mm / 384px)
     // =========================================================
     function limpiarTextoTicket(str) {
@@ -694,19 +810,6 @@
       return cmd;
     }
 
-    async function enviarBytesBluetooth(char, bytes) {
-      const CHUNK_SIZE = 100;
-      for (let i = 0; i < bytes.length; i += CHUNK_SIZE) {
-        const chunk = new Uint8Array(bytes.slice(i, i + CHUNK_SIZE));
-        if (char.properties && char.properties.writeWithoutResponse && char.writeValueWithoutResponse) {
-          await char.writeValueWithoutResponse(chunk);
-        } else {
-          await char.writeValue(chunk);
-        }
-        await new Promise(r => setTimeout(r, 20));
-      }
-    }
-
     async function imprimirTicket(tipo) {
       let idParaImprimir = document.getElementById('idParaImprimir').value;
       if (!idParaImprimir) return alert("Debe GUARDAR EL ENVÍO primero para generar el ticket.");
@@ -730,38 +833,30 @@
           };
 
       try {
-        const device = await navigator.bluetooth.requestDevice({
-          acceptAllDevices: true,
-          optionalServices: ['000018f0-0000-1000-8000-00805f9b34fb']
-        });
-        const server = await device.gatt.connect();
-        const service = await server.getPrimaryService('000018f0-0000-1000-8000-00805f9b34fb');
-        const char = await service.getCharacteristic('00002af1-0000-1000-8000-00805f9b34fb');
-
+        const char = await obtenerCaracteristicaImpresora();
         const encoder = new TextEncoder();
-        const bytes = [];
-        // Inicializar impresora
-        bytes.push(0x1B, 0x40);
 
-        // 1. LOGO EN RASTER (GS v 0)
+        // 1. INICIALIZAR + LOGO EN RASTER
+        const initBytes = [0x1B, 0x40];
+        await enviarBytesBluetooth(char, initBytes);
+
         const logoImg = await cargarImagenLogo();
         if (logoImg) {
-          bytes.push(0x1B, 0x61, 0x01); // Centrar
           const logoCanvas = generarCanvasLogo(logoImg, 300, 130);
-          const logoRaster = canvasA_ESCPOS_Raster(logoCanvas);
-          logoRaster.forEach(b => bytes.push(b));
-          bytes.push(0x0A);
+          const logoBytes = [0x1B, 0x61, 0x01, ...canvasA_ESCPOS_Raster(logoCanvas), 0x0A];
+          await enviarBytesBluetooth(char, logoBytes);
+          await new Promise(r => setTimeout(r, 120));
         }
 
-        // 2. ENCABEZADO
-        bytes.push(0x1B, 0x61, 0x01); // Centrar
-        bytes.push(0x1B, 0x45, 0x01); // Negrita ON
-        encoder.encode("LUIS TRANSPORTES\n").forEach(b => bytes.push(b));
-        encoder.encode("COMPROBANTE DE ENVIO\n").forEach(b => bytes.push(b));
-        bytes.push(0x1B, 0x45, 0x00); // Negrita OFF
+        // 2. ENCABEZADO Y DATOS COMPLETOS DEL ENVÍO
+        const textBytes = [];
+        textBytes.push(0x1B, 0x61, 0x01); // Centrar
+        textBytes.push(0x1B, 0x45, 0x01); // Negrita ON
+        encoder.encode("LUIS TRANSPORTES\n").forEach(b => textBytes.push(b));
+        encoder.encode("COMPROBANTE DE ENVIO\n").forEach(b => textBytes.push(b));
+        textBytes.push(0x1B, 0x45, 0x00); // Negrita OFF
 
-        // 3. DATOS COMPLETOS DEL ENVÍO
-        bytes.push(0x1B, 0x61, 0x00); // Alinear Izquierda
+        textBytes.push(0x1B, 0x61, 0x00); // Izquierda
         const costoFmt = Number(env.costo || 0).toLocaleString('es-PY');
 
         let cuerpo = "";
@@ -787,20 +882,24 @@
         cuerpo += "COSTO: Gs. " + limpiarTextoTicket(costoFmt) + "\n";
         cuerpo += wrap32(textoModalidadPago(env.tipoCli), "PAGO: ") + "\n";
         cuerpo += "================================\n";
+        encoder.encode(cuerpo).forEach(b => textBytes.push(b));
 
-        encoder.encode(cuerpo).forEach(b => bytes.push(b));
+        await enviarBytesBluetooth(char, textBytes);
 
-        // 4. CÓDIGO QR EN RASTER (compatible con GoLink GL033 y cualquier 58mm)
+        // 3. CÓDIGO QR EN RASTER
         const qrCanvas = generarCanvasQR(env.id, 220);
         if (qrCanvas) {
-          bytes.push(0x1B, 0x61, 0x01); // Centrar
-          const qrRaster = canvasA_ESCPOS_Raster(qrCanvas);
-          qrRaster.forEach(b => bytes.push(b));
-          encoder.encode("Escanear para verificar paquete\n").forEach(b => bytes.push(b));
+          const qrBytes = [
+            0x1B, 0x61, 0x01,
+            ...canvasA_ESCPOS_Raster(qrCanvas),
+            ...encoder.encode("Escanear para verificar paquete\n")
+          ];
+          await enviarBytesBluetooth(char, qrBytes);
+          await new Promise(r => setTimeout(r, 120));
         }
 
-        // 5. PIE SEGÚN TIPO DE COPIA
-        bytes.push(0x1B, 0x61, 0x00); // Izquierda
+        // 4. PIE SEGÚN TIPO DE COPIA
+        const footerBytes = [0x1B, 0x61, 0x00];
         let pie = "";
         if (tipo === 1) {
           pie += "\nCOPIA CLIENTE\nGracias por su preferencia!\n";
@@ -811,12 +910,14 @@
           pie += "CI: ____________________________\n";
         }
         pie += "\n\n\n\n";
-        encoder.encode(pie).forEach(b => bytes.push(b));
+        encoder.encode(pie).forEach(b => footerBytes.push(b));
 
-        await enviarBytesBluetooth(char, bytes);
+        await enviarBytesBluetooth(char, footerBytes);
         alert("Imprimiendo ticket...");
       } catch (e) {
-        alert("Error Bluetooth. Asegúrese de que la ticketera esté encendida y emparejada.");
+        bleCharCache = null;
+        if (e && e.name === 'NotFoundError') return; // Usuario canceló el selector
+        alert("Error Bluetooth: " + (e && e.message ? e.message : "Verifique que la ticketera esté encendida, emparejada y sea compatible con BLE."));
       }
     }
   </script>
